@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Informatika</title>
-    <!-- TAILWIND CDN -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -16,46 +14,38 @@
             --bg-white: #ffffff;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
         body {
             font-family: "Inter", sans-serif;
         }
-
         /* EVENT CARD */
         .sticky-nav {
             transition: all 0.3s ease;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
         }
-
         .header {
             text-align: center;
             margin-bottom: 50px;
             margin-top: 50px;
         }
-
         .header h1 {
             font-size: 2rem;
             color: #333;
             margin-bottom: 10px;
             font-weight: 600;
         }
-
         .header p {
             color: #888;
             font-size: 1rem;
         }
-
         .events-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
             margin-bottom: 40px;
         }
-
         .event-card {
             background: white;
             border-radius: 16px;
@@ -64,23 +54,19 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
         }
-
         .event-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 8px 24px rgba(236, 70, 164, 0.15);
         }
-
         .card-image {
             width: 100%;
             height: 350px;
             object-fit: cover;
             background-color: #f0f0f0;
         }
-
         .card-content {
             padding: 24px;
         }
-
         .card-badge {
             display: inline-block;
             padding: 4px 8px;
@@ -92,7 +78,6 @@
             color: #ec46a4;
             background-color: white;
         }
-
         .card-title {
             font-size: 1.25rem;
             color: #333;
@@ -101,7 +86,6 @@
             line-height: 1.4;
             min-height: 60px;
         }
-
         .card-description {
             color: #666;
             font-size: 0.9rem;
@@ -109,7 +93,6 @@
             margin-bottom: 20px;
             min-height: 75px;
         }
-
         .card-footer {
             display: flex;
             justify-content: space-between;
@@ -117,18 +100,15 @@
             padding-top: 16px;
             border-top: 1px solid #f0f0f0;
         }
-
         .card-date {
             color: #888;
             font-size: 0.85rem;
         }
-
         .card-days {
             color: #ec46a4;
             font-weight: 600;
             font-size: 0.85rem;
         }
-
         .view-all-btn {
             display: block;
             width: fit-content;
@@ -144,234 +124,163 @@
             transition: all 0.3s ease;
             text-decoration: none;
         }
-
         .view-all-btn:hover {
             background-color: #ec46a4;
             color: white;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(236, 70, 164, 0.3);
         }
-
-        /* --- Update untuk Link Gambar --- */
         .card-image-link {
             display: block;
-            /* Agar link membungkus gambar sepenuhnya */
             text-decoration: none;
         }
-
-        /* --- Update untuk Link Judul --- */
         .card-title a {
             text-decoration: none;
-            /* Menghilangkan garis bawah */
             color: inherit;
-            /* Mengikuti warna parent (.card-title yaitu #333) */
             transition: color 0.3s ease;
-            /* Efek halus saat di-hover */
         }
-
-        /* Efek Hover pada Judul (Opsional tapi bagus) */
         .card-title a:hover {
             color: #ec46a4;
-            /* Berubah jadi pink saat disorot kursor */
         }
-
         @media (max-width: 768px) {
-
-            /* HEADER */
             .header {
                 margin-top: 32px;
                 margin-bottom: 32px;
                 padding: 0 1rem;
                 text-align: center;
             }
-
             .header h1 {
                 font-size: 1.6rem;
                 line-height: 1.3;
                 margin-bottom: 0.5rem;
             }
-
             .header p {
                 font-size: 0.9rem;
                 line-height: 1.6;
             }
-
-            /* GRID */
             .events-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
                 padding: 0 1rem;
             }
-
-            /* CARD */
             .event-card {
                 border-radius: 14px;
             }
-
             .card-image {
                 height: 220px;
-                /* PENTING: jangan terlalu tinggi di HP */
             }
-
             .card-content {
                 padding: 16px;
             }
-
             .card-badge {
                 font-size: 0.65rem;
                 margin-bottom: 8px;
             }
-
             .card-title {
                 font-size: 1rem;
                 line-height: 1.4;
                 margin-bottom: 8px;
                 min-height: auto;
             }
-
             .card-description {
                 font-size: 0.85rem;
                 line-height: 1.6;
                 margin-bottom: 14px;
                 min-height: auto;
             }
-
             .card-footer {
                 padding-top: 12px;
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 4px;
             }
-
             .card-date,
             .card-days {
                 font-size: 0.8rem;
             }
-
-            /* BUTTON */
             .view-all-btn {
                 margin-top: 24px;
                 padding: 8px 18px;
                 font-size: 0.75rem;
             }
         }
-
-
-        /* BOX SARAN */
         .card-container {
             display: flex;
             flex-direction: column;
-            /* Mobile: Atas-Bawah */
             width: 99%;
             max-width: 1200px;
             background-color: white;
             border-radius: 24px;
-            /* Rounded-3xl */
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            /* Shadow-2xl */
             overflow: hidden;
             margin: auto;
             padding-top: 50px;
         }
-
-        /* 3. Layout Desktop (Media Query) */
         @media (min-width: 1024px) {
             .card-container {
                 flex-direction: row;
-                /* Desktop: Kiri-Kanan */
             }
         }
-
-        /* 4. Bagian Form (Kiri) */
         .form-section {
             flex: 1;
             padding: 3rem;
             display: flex;
             flex-direction: column;
-            /* INI YANG BENAR */
             justify-content: center;
             width: 100%;
-            /* HAPUS width 100px */
         }
-
-        /* Jarak antar elemen form (Ganti space-y-8) */
         .form-group {
             margin-bottom: 2rem;
-            /* Jarak lega ke bawah */
         }
 
-        /* Grid untuk Email & Phone */
         .form-row {
             display: grid;
             grid-template-columns: 1fr;
             gap: 1.5rem;
-            /* Jarak antar kolom (gap-6) */
         }
-
         @media (min-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr 1fr;
-                /* Dua kolom di tablet/desktop */
             }
         }
-
-        /* 5. Styling Label & Input */
         label {
             display: block;
             font-size: 0.875rem;
-            /* text-sm */
             font-weight: 500;
             color: #4b5563;
-            /* Gray-600 */
             margin-bottom: 0.75rem;
-            /* mb-3: Jarak label ke input */
         }
-
         .required {
             color: #ef4444;
-            /* Merah */
         }
-
         input,
         textarea {
             width: 100%;
             padding: 0.75rem 1rem;
-            /* px-4 py-3 */
             background-color: #f9fafb;
-            /* Gray-50 */
             border: 1px solid #e5e7eb;
-            /* Gray-200 */
             border-radius: 0.75rem;
-            /* Rounded-xl */
             font-size: 0.875rem;
             outline: none;
             transition: all 0.2s;
         }
-
-        /* Efek Focus */
         input:focus,
         textarea:focus {
             border-color: transparent;
             box-shadow: 0 0 0 2px #ec46a4;
-            /* Ring Pink */
         }
-
         textarea {
             resize: none;
         }
-
-        /* 6. Tombol Submit */
         .button-wrapper {
             display: flex;
             justify-content: flex-end;
             padding-top: 0.5rem;
         }
-
         .submit-btn {
             padding: 0.5rem 4rem;
             border: none;
             border-radius: 9999px;
-            /* Full rounded */
             background: linear-gradient(135deg, #ec46a4 0%, #d63384 100%);
             color: white;
             font-weight: 600;
@@ -380,84 +289,66 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s, box-shadow 0.2s;
         }
-
         .submit-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
-
-        /* 7. Bagian Gambar (Kanan) */
         .image-section {
             flex: 1;
             position: relative;
             min-height: 400px;
             border-radius: 100px;
         }
-
         .image-section img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
-            /* Menghilangkan gap default img */
         }
 
-        /* Tampilan box saran mobile */
         @media (max-width: 640px) {
-
             .card-container {
                 width: 100%;
                 border-radius: 16px;
                 padding-top: 24px;
                 box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
             }
-
             .form-section {
                 padding: 1.5rem;
             }
-
             label {
                 font-size: 0.8rem;
                 margin-bottom: 0.5rem;
             }
-
             input,
             textarea {
                 font-size: 0.85rem;
                 padding: 0.65rem 0.9rem;
             }
-
             .form-group {
                 margin-bottom: 1.25rem;
             }
-
             .button-wrapper {
                 justify-content: center;
             }
-
             .submit-btn {
                 width: 100%;
                 padding: 0.75rem 0;
                 font-size: 0.9rem;
             }
-
             .image-section {
                 min-height: 220px;
                 border-radius: 0;
             }
-
             .image-section img {
                 border-radius: 0;
             }
         }
-
-        /* ABOUT */
         .event-hero {
             width: 100%;
             background-color: #ffffff;
             padding: 64px 0;
         }
-
         .event-hero__container {
             max-width: 1280px;
             margin: 0 auto;
@@ -467,57 +358,45 @@
             gap: 40px;
             align-items: center;
         }
-
-        /* PHOTO GRID */
         .event-hero__photo-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 16px;
         }
-
         .event-hero__photo {
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-
         .event-hero__photo img {
             width: 100%;
             height: 160px;
             object-fit: cover;
             display: block;
         }
-
         .event-hero__photo--large {
             grid-column: span 2;
         }
-
         .event-hero__photo--large img {
             height: 256px;
         }
-
-        /* CONTENT */
         .event-hero__title {
             font-size: 36px;
             font-weight: 700;
             color: #111827;
             line-height: 1.25;
         }
-
         .event-hero__description {
             margin-top: 16px;
             color: #4b5563;
             line-height: 1.7;
         }
-
-        /* FEATURES */
         .event-hero__features {
             margin-top: 24px;
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
-
         .event-hero__feature-item {
             display: flex;
             align-items: center;
@@ -525,7 +404,6 @@
             color: #374151;
             font-weight: 500;
         }
-
         .event-hero__icon {
             padding: 12px;
             background-color: #EC46A4;
@@ -535,8 +413,6 @@
             align-items: center;
             justify-content: center;
         }
-
-        /* BUTTON */
         .event-hero__btn {
             margin-top: 32px;
             padding: 8px 24px;
@@ -548,20 +424,15 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
         .event-hero__btn:hover {
             background-color: #EC46A4;
             color: #ffffff;
         }
-
-        /* RESPONSIVE */
         @media (max-width: 768px) {
             .event-hero__container {
                 grid-template-columns: 1fr;
             }
         }
-
-        /* Search Bar */
         .event-search {
             width: 90%;
             background-color: #F8F9FA;
@@ -572,13 +443,11 @@
             border: 1px solid #f1f3f5;
             margin: 0 auto;
         }
-
         .event-search__inner {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
-
         .event-search__input {
             flex-grow: 1;
             height: 48px;
@@ -590,17 +459,14 @@
             font-size: 14px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
-
         .event-search__input::placeholder {
             color: #9ca3af;
         }
-
         .event-search__input:focus {
             outline: none;
             border-color: transparent;
             box-shadow: 0 0 0 2px rgba(236, 70, 164, 0.2);
         }
-
         .event-search__button {
             height: 48px;
             padding: 0 40px;
@@ -610,89 +476,64 @@
             border: none;
             border-radius: 12px;
             cursor: pointer;
-
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-
             line-height: 1;
             white-space: nowrap;
-
             box-shadow: 0 6px 14px rgba(236, 70, 164, 0.35);
             transition: background-color 0.3s ease;
         }
-
         .event-search__button:hover {
             background-color: #c53b95;
         }
-
         .event-search__icon {
             width: 20px;
             height: 20px;
         }
-
-        /* RESPONSIVE */
         @media (min-width: 768px) {
             .event-search__inner {
                 flex-direction: row;
             }
         }
-
-        /* Dots Craousel */
         .indicator {
             width: 8px;
             height: 8px;
-            background-color: #d1d5db;
-            /* gray-300 */
+            background-color: #d1d5db;            /* gray-300 */
             border-radius: 9999px;
             transition: all 0.3s ease;
             cursor: pointer;
             z-index: 1000;
         }
-
         .indicator.active {
             width: 24px;
             background-color: #EC46A4;
-            /* warna brand kamu */
         }
-
-        /* Hero */
-        /* Carousel wrapper */
         #carousel {
             display: flex;
             transition: transform 0.7s ease;
         }
-
-        /* Setiap slide */
         .carousel-slide {
             min-width: 100%;
             display: flex;
             justify-content: center;
         }
-
-        /* Gambar banner */
         .carousel-slide img {
             width: 95%;
             height: 500px;
-            /* tinggi utama */
             max-height: 520px;
-            /* batas maksimal */
             object-fit: cover;
             border-radius: 1.5rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
-
         .carousel-wrapper {
             position: relative;
             width: 100%;
         }
-
-        /* DOT CONTAINER */
         #indicators {
             position: absolute;
             bottom: -5px;
-            /* NEMPEL ke bawah image */
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -704,8 +545,6 @@
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
         }
-
-        /* DOT */
         #indicators .dot {
             width: 8px;
             height: 8px;
@@ -713,89 +552,61 @@
             border-radius: 50%;
             transition: all 0.3s ease;
         }
-
-        /* DOT AKTIF (kayak di contoh gambar kamu) */
         #indicators .dot.active {
             width: 22px;
             border-radius: 999px;
             background: #ec46a4;
         }
-
-        /* untk tampilan navbar di mobile */
-        /* Animasi sederhana agar tidak kaku saat muncul */
         @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: translateY(-10px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-
         .animate-fade-in {
             animation: fadeIn 0.3s ease-out;
         }
-
-        /* --- NAVBAR STYLES --- */
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-
-            /* GANTI background-color lama Anda dengan ini: */
-            /* rgba(255, 255, 255, 0.8) artinya Putih dengan kegelapan 80% (20% transparan) */
             background-color: rgba(255, 255, 255, 0.8);
-
-            /* TAMBAHKAN properti blur ini: */
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            /* Wajib agar jalan di Safari/iPhone */
-
             padding: 1rem 1.5rem;
             box-shadow: var(--shadow);
             z-index: 1000;
         }
-
         .container-navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             max-width: 1200px;
-            /* Lebar maksimal konten */
             margin: 0 auto;
         }
-
-        /* Logo */
         .logo img {
             height: 50px;
-            /* Setara h-10 di Tailwind */
             display: block;
         }
-
-        /* Links (Menu Tengah) */
         .nav-links {
             display: flex;
             gap: 2.5rem;
-            /* Jarak antar menu */
         }
-
         .nav-links a {
             text-decoration: none;
             color: var(--text-color);
             font-weight: 500;
             transition: color 0.3s;
         }
-
         .nav-links a:hover,
         .nav-links a.active {
             color: var(--primary-color);
         }
-
-        /* Button Register */
         .btn-register {
             background-color: var(--primary-color);
             color: white;
@@ -807,90 +618,62 @@
             transition: transform 0.2s, background-color 0.2s;
             display: inline-block;
         }
-
         .btn-register:hover {
             transform: scale(1.05);
         }
-
-        /* Hamburger Button */
         .hamburger {
             background: none;
             border: none;
             cursor: pointer;
             color: var(--text-color);
         }
-
-        /* --- MOBILE MENU (Awalnya Sembunyi) --- */
         .mobile-menu {
             display: none;
-            /* Default hidden */
             flex-direction: column;
             gap: 1rem;
             margin-top: 1rem;
             padding-top: 1rem;
             border-top: 1px solid #f3f4f6;
         }
-
-        /* Class ini ditambahkan oleh Javascript saat diklik */
         .mobile-menu.open {
             display: flex;
         }
-
         .mobile-menu a {
             text-decoration: none;
             color: var(--text-color);
             padding: 0.5rem 0;
             font-weight: 500;
         }
-
         .mobile-menu a:hover,
         .mobile-menu a.active {
             color: var(--primary-color);
         }
-
         .btn-register.full-width {
             text-align: center;
             width: 100%;
             margin-top: 0.5rem;
             color: white
         }
-
-        /* --- RESPONSIVE LOGIC (MEDIA QUERIES) --- */
-        /* Tampilan MOBILE (Layar kecil) */
-        /* Kita menyembunyikan elemen desktop dan memunculkan elemen mobile */
         .desktop-only {
             display: none;
         }
-
         .mobile-only {
             display: block;
         }
-
-        /* Tampilan DESKTOP (Layar > 768px) */
         @media (min-width: 768px) {
-
-            /* Munculkan menu desktop dan tombol register desktop */
             .desktop-only {
                 display: flex;
-                /* Kembalikan ke flex untuk nav-links */
             }
-
-            /* Khusus untuk tombol container agar tidak flex tapi block */
             .nav-btn.desktop-only {
                 display: block;
             }
-
-            /* Sembunyikan hamburger dan menu mobile */
             .mobile-only {
                 display: none;
             }
-
             .mobile-menu {
                 display: none !important;
-                /* Paksa sembunyi di desktop walau JS aktif */
             }
         }
-
         html {
             scroll-behavior: smooth;
         }
@@ -899,71 +682,7 @@
 
 <body class="bg-white">
     <!-- NAVBAR -->
-    <nav class="navbar">
-        <div class="container-navbar">
-
-            <div class="logo">
-                <img src="image/logo1.png" alt="Logo">
-            </div>
-            <div class="nav-links desktop-only">
-                <a href="#" class="active">Beranda</a>
-                <a href="{{ url('/list-event') }}">Event</a>
-                <a href="#">About</a>
-                <a href="#footer">Contact</a>
-            </div>
-
-            <div class="nav-btn desktop-only">
-                <a href="#" class="btn-register">Register</a>
-            </div>
-
-            <button id="menuBtn" class="hamburger mobile-only" aria-label="Menu">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-
-        </div>
-
-        <div id="mobileMenu" class="mobile-menu">
-            <a href="#" class="active">Beranda</a>
-            <a href="#">Event</a>
-            <a href="#">About</a>
-            <a href="#">Contact</a>
-            <a href="#" class="btn-register full-width">Register Now</a>
-        </div>
-    </nav>
-
-    <!-- MOBILE DROPDOWN -->
-    <div id="mobileMenu" class="hidden fixed top-[100px] left-0 w-full bg-white shadow-md md:hidden z-100">
-        <div class="flex flex-col px-6 py-4 gap-4">
-            <a href="#" class="text-[#EC46A4] font-semibold">Beranda</a>
-            <a href="#" class="text-gray-700 hover:text-[#EC46A4]">Event</a>
-            <a href="#" class="text-gray-700 hover:text-[#EC46A4]">About</a>
-            <a href="#" class="text-gray-700 hover:text-[#EC46A4]">Contact</a>
-
-            <a href="#" class="mt-2 text-center bg-[#EC46A4] text-white font-semibold py-3 rounded-lg">
-                Register
-            </a>
-        </div>
-    </div>
-
-
-    <!-- MOBILE DROPDOWN -->
-    <div id="mobileMenu"
-        class="fixed top-[80px] left-0 w-full bg-white shadow-lg opacity-0 block md:hidden invisible translate-y-[-10px] transition-all duration-300 z-999  menu-toggle text-gray-700">
-
-        <div class="flex flex-col px-6 py-6 gap-4">
-            <a href="#" class="font-semibold text-[#EC46A4]">Beranda</a>
-            <a href="#" class="text-gray-700">Event</a>
-            <a href="#" class="text-gray-700">About</a>
-            <a href="#" class="text-gray-700">Contact</a>
-
-            <a href="#" class="mt-4 text-center bg-[#EC46A4] text-white py-3 rounded-lg font-semibold shadow">
-                Register
-            </a>
-        </div>
-    </div>
+    @include('include.navbar')
 
     <!-- HERO SLIDER -->
     <section class="pt-24 pb-14 text-center">
@@ -1260,62 +979,7 @@
         </div>
     </div>
     <!-- FOOTER -->
-    <footer class="bg-white border-t mt-12" id="footer">
-        <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-12">
-            <!-- Tentang -->
-            <div>
-                <img src="{{ asset('image/hima.png') }}" alt="HMIF Logo" class="w-24 h-18 mb-4">
-                <h2 class="text-sm font-semibold mb-3 text-left text-black">Tentang HMIF ITATS</h2>
-                <p class="text-gray-600 text-xs leading-relaxed text-left">
-                    Wadah kolaborasi dan pengembangan mahasiswa Informatika. Berkarya,
-                    berdampak, dan bertumbuh bersama.
-                </p>
-            </div>
-
-            <!-- Navigasi -->
-            <div>
-                <h2 class="text-sm font-semibold mb-3 text-left text-black">Navigasi</h2>
-                <ul class="text-xs space-y-2 text-gray-600 text-left">
-                    <li><a href="#" class="hover:text-gray-900">Struktur Organisasi</a></li>
-                    <li><a href="#" class="hover:text-gray-900">Divisi</a></li>
-                    <li><a href="#" class="hover:text-gray-900">Program Kerja</a></li>
-                    <li><a href="#" class="hover:text-gray-900">Kegiatan</a></li>
-                    <li><a href="#" class="hover:text-gray-900">Pengumuman & Berita</a></li>
-                </ul>
-            </div>
-            <!-- Kontak -->
-            <div>
-                <h2 class="text-sm font-semibold mb-3 text-left">Kontak</h2>
-                <p class="text-gray-600 text-left text-xs">
-                    <span class="font-medium">Email:</span> hmifitats1991@gmail.com
-                </p>
-                <p class="text-gray-600 mt-3 leading-relaxed text-xs text-left">
-                    <span class="font-medium">Alamat:</span> Jl. Arief Rahman Hakim No.100,<br>
-                    Klampis Ngasem, Kec. Sukolilo, Surabaya,<br>
-                    Jawa Timur 60117
-                </p>
-            </div>
-
-            <!-- Ikuti Kami -->
-            <div>
-                <h2 class="text-lg font-semibold mb-3 text-left text-sm">Ikuti Kami</h2>
-                <ul class="space-y-2 text-gray-600 text-left text-xs">
-                    <li><a href="#" class="hover:text-gray-900">Instagram</a></li>
-                    <li><a href="#" class="hover:text-gray-900">LinkedIn</a></li>
-                    <li><a href="#" class="hover:text-gray-900">YouTube</a></li>
-                </ul>
-            </div>
-        </div>
-        <!-- Bawah -->
-        <div class="border-t">
-            <div class="max-w-7xl mx-auto px-6 py-6 text-gray-600 text-xs flex flex-col md:flex-row justify-between">
-                <p>© 2025 HMIF. Semua hak dilindungi.</p>
-                <p class="mt-2 md:mt-0">
-                    UI berbasis design tokens: primary biru, accent amber, netral yang bersih.
-                </p>
-            </div>
-        </div>
-    </footer>
+    @include('include.footer')
     <!-- SCRIPT SLIDER -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -1383,7 +1047,6 @@
         const mobileMenu = document.getElementById('mobileMenu');
 
         menuBtn.addEventListener('click', () => {
-            // Toggle class 'open' untuk memunculkan menu
             mobileMenu.classList.toggle('open');
         });
     </script>
