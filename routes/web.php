@@ -25,13 +25,10 @@ Route::post('/register', [TeamController::class, 'store']);
 Route::get('/team/edit', [TeamController::class, 'edit'])->name('participants.edit'); // Match legacy name
 Route::put('/team/update', [TeamController::class, 'update'])->name('participants.update');
 
-Route::get('/detail-event', function () {
-    return view('detail_Event');
-})->name('event.detail');
+use App\Http\Controllers\EventController;
 
-Route::get('/list-event', function () {
-    return view('list_event');
-})->name('event.list');
+Route::get('/list-event', [EventController::class, 'index'])->name('event.list');
+Route::get('/events/{slug}', [EventController::class, 'show'])->name('event.detail');
 
 Route::post('role/{id}/toggle-status', [RoleController::class, 'toggleStatus'])->name('role.toggleStatus');
 Route::resource('role', RoleController::class);

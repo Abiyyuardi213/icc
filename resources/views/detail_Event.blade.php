@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Event - ICC 2026</title>
-    <link rel="stylesheet" href="style.css">
+
     <style>
         /* --- RESET & VARIABLES --- */
         :root {
@@ -327,6 +327,38 @@
         .btn-notif:hover {
             background-color: #fff0f7;
         }
+        
+        /* Badges for Event Detail */
+        /* .badge-lomba {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            border: 1px solid;
+            color: #EC46A4;
+            border-color: #EC46A4;
+            background-color: #fff0f7;
+        }
+        
+        .event-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 0.5rem;
+            color: #111827;
+        }
+        
+        .event-meta {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        
+        .fw-bold {
+            font-weight: 700;
+            color: #374151;
+        } */
 
 
         /* --- FOOTER STYLES (Native CSS from Tailwind) --- */
@@ -453,18 +485,23 @@
     <nav class="navbar">
         <div class="container-navbar">
             <div class="logo">
-                <img src="image/logo.png" alt="Informatics Events">
+                <img src="{{ asset('image/logo1.png') }}" alt="Informatics Events">
             </div>
 
             <div class="nav-links desktop-only">
                 <a href="{{ url('/home') }}" >Beranda</a>
-                <a href="#event">Event</a>
-                <a href="#">About</a>
+                <a href="{{ route('event.list') }}">Event</a>
+                <a href="{{ url('/home#about') }}">About</a>
                 <a href="#footer">Contact</a>
             </div>
 
             <div class="nav-btn desktop-only">
-                <a href="#" class="btn-register">Register</a>
+                @auth
+                    <a href="{{ url('/dashboard') }}" class="btn-register">Dashboard</a>
+                @else
+                    <a href="{{ route('login') }}" class="btn-register" style="background:transparent; color: var(--text-color); box-shadow:none;">Login</a>
+                    <a href="{{ route('register.account') }}" class="btn-register">Register</a>
+                @endauth
             </div>
 
             <button id="menuBtn" class="hamburger mobile-only" aria-label="Menu">
@@ -477,10 +514,15 @@
 
         <div id="mobileMenu" class="mobile-menu">
             <a href="{{ url('/home') }}" class="active">Beranda</a>
-            <a href="#event">Event</a>
-            <a href="#">About</a>
+            <a href="{{ route('event.list') }}">Event</a>
+            <a href="{{ url('/home#about') }}">About</a>
             <a href="#footer">Contact</a>
-            <a href="#" class="btn-register full-width">Register Now</a>
+            @auth
+                <a href="{{ url('/dashboard') }}" class="btn-register full-width">Dashboard</a>
+            @else
+                <a href="{{ route('login') }}">Login</a>
+                <a href="{{ route('register.account') }}" class="btn-register full-width">Daftar Akun</a>
+            @endauth
         </div>
     </nav>
 
@@ -489,59 +531,34 @@
             <div class="event-top-section">
 
                 <div class="event-poster">
-                    <img src="image/poster1.png" alt="Informatic Coding Competition 2026">
+                    <img src="{{ asset('image/poster1.png') }}" alt="{{ $event->name }}">
                 </div>
 
                 <div class="event-header">
                     <span class="badge-lomba">Lomba</span>
-                    <h1 class="event-title">Informatic Coding Competition - 2026: Show Your Skill, Prove Your Logic, and
-                        Be The Champion</h1>
-                    <p class="event-meta">Terbuka Hingga : <span class="fw-bold">20-12-2026</span></p>
+                    <h1 class="event-title">{{ $event->name }}</h1>
+                    <p class="event-meta">Terbuka Hingga : <span class="fw-bold">
+                        {{ $event->registration_end ? $event->registration_end->format('d-m-Y') : '-' }}
+                    </span></p>
                 </div>
 
             </div>
 
             <div class="event-body">
                 <h3>Deskripsi</h3>
-                <p>Yuk, ikutan kompetisi koding paling bergengsi tahun ini! Informatic Coding Competition (ICC) 2026
-                    hadir kembali sebagai ajang pembuktian kemampuan logika dan teknis <strong>mahasiswa Institut
-                        Teknologi Adhi Tama Surabaya (ITATS)</strong>.</p>
-                <p>Di kompetisi ini, kamu bisa memilih cabang lomba yang sesuai dengan keahlianmu, mulai dari merancang
-                    struktur data yang efisien hingga memecahkan masalah pemrograman yang kompleks. Cocok banget buat
-                    kamu mahasiswa angkatan 2024 dan 2025 yang ingin menguji skill, menambah portofolio, dan tentunya
-                    memperebutkan hadiah jutaan rupiah!</p>
+                <p>{!! $event->description !!}</p>
 
-                <h3>Cabang Lomba yang Tersedia:</h3>
-                <div class="category-item">
-                    <h4>1. Basis Data</h4>
-                    <ul>
-                        <li>Khusus Mahasiswa Angkatan 2024 (Wajib sudah menempuh mata kuliah Basis Data)</li>
-                        <li>Uji kemampuanmu dalam merancang, mengelola, dan memanipulasi data untuk solusi yang efektif.
-                        </li>
-                    </ul>
-                </div>
-                <div class="category-item">
-                    <h4>2. Pemrograman Terstruktur</h4>
-                    <ul>
-                        <li>Khusus Mahasiswa Angkatan 2025 (Wajib sudah menempuh mata kuliah Pemrograman Terstruktur)
-                        </li>
-                        <li>Tantang logikamu dalam menyelesaikan masalah algoritma dengan kode yang bersih dan
-                            terstruktur.</li>
-                    </ul>
-                </div>
+                @if($event->max_members > 1)
+                <h3>Ketentuan Tim:</h3>
+                <ul>
+                    <li>Maksimal anggota: {{ $event->max_members }} orang</li>
+                </ul>
+                @endif
 
                 <h3>Jadwal Pelaksanaan:</h3>
                 <ul>
-                    <li><strong>Pendaftaran:</strong> Hingga 12 Januari 2026 (Wajib diselesaikan selambat-lambatnya
-                        tanggal ini!)</li>
-                    <li><strong>Babak Penyisihan (Online):</strong> 10 Januari 2026 | Pukul 08:00 - 15:00 WIB</li>
-                    <li><strong>Babak Final (Offline):</strong>
-                        <ul class="nested-list">
-                            <li>Basis Data: 12 Januari 2026 | 08:00 - 15:00 WIB</li>
-                            <li>Pemrograman Terstruktur: 13 Januari 2026 | 08:00 - 15:00 WIB</li>
-                        </ul>
-                    </li>
-                    <li><strong>Lokasi Final:</strong> Laboratorium of Computing and Simualtion Engineering (LCSE) ITATS</li>
+                    <li><strong>Pendaftaran:</strong> {{ $event->registration_start ? $event->registration_start->format('d M Y') : '-' }} s/d {{ $event->registration_end ? $event->registration_end->format('d M Y') : '-' }}</li>
+                    <li><strong>Pelaksanaan Event:</strong> {{ $event->event_start ? $event->event_start->format('d M Y') : '-' }} s/d {{ $event->event_end ? $event->event_end->format('d M Y') : '-' }}</li>
                 </ul>
 
                 <h3>Ketentuan Peserta:</h3>
@@ -561,8 +578,8 @@
 
                 <h3>Cara Daftar:</h3>
                 <p>Langsung kunjungi link berikut untuk mendaftarkan timmu:<br>
-                    <a href="https://icc-2026.sistemin.site" class="link-highlight">🔗
-                        https://icc-2026.sistemin.site</a>
+                    <a href="{{ route('team.register', ['event_id' => $event->id]) }}" class="link-highlight">🔗
+                        Daftar Di sini</a>
                 </p>
 
                 <h3>Contact Person (CP):</h3>
@@ -578,7 +595,7 @@
                     juara di ICC 2026! 🚀</p>
 
                 <div class="cta-container">
-                    <a href="{{ route('team.register') }}" class="btn-cta-large">Daftar Sekarang</a>
+                    <a href="{{ route('team.register', ['event_id' => $event->id]) }}" class="btn-cta-large">Daftar Sekarang</a>
                     <button class="btn-notif">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -595,7 +612,7 @@
         <div class="footer-container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <img src="image/hima.png" alt="HMIF Logo" class="footer-logo">
+                    <img src="{{ asset('image/hima.png') }}" alt="HMIF Logo" class="footer-logo">
                     <h2 class="footer-title">Tentang HMIF ITATS</h2>
                     <p class="footer-text">
                         Wadah kolaborasi dan pengembangan mahasiswa Informatika. Berkarya, berdampak, dan bertumbuh
