@@ -21,11 +21,20 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/register-account', [AuthController::class, 'showRegister'])->name('register.account'); // User Registration
 Route::post('/register-account', [AuthController::class, 'register']);
 
+// Dashboard (protected) - render dashboard view
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware('auth')->name('dashboard');
+
 Route::get('/register', [TeamController::class, 'create'])->name('team.register');
 Route::post('/register', [TeamController::class, 'store']);
 Route::get('/team/edit', [TeamController::class, 'edit'])->name('participants.edit'); // Match legacy name
 Route::put('/team/update', [TeamController::class, 'update'])->name('participants.update');
 
+// Participants create route for dashboard link (requires authenticated user)
+Route::get('/participants/create', [TeamController::class, 'create'])
+    ->middleware('auth')
+    ->name('participants.create');
 
 Route::get('/list-event', [EventController::class, 'index'])->name('event.list');
 Route::get('/events/{slug}', [EventController::class, 'show'])->name('event.detail');
