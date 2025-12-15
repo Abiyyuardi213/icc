@@ -329,7 +329,7 @@
         }
         
         /* Badges for Event Detail */
-        /* .badge-lomba {
+        .badge-lomba {
             display: inline-block;
             padding: 4px 12px;
             border-radius: 99px;
@@ -358,7 +358,7 @@
         .fw-bold {
             font-weight: 700;
             color: #374151;
-        } */
+        }
 
 
         /* --- FOOTER STYLES (Native CSS from Tailwind) --- */

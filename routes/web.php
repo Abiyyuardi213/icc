@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,7 +26,6 @@ Route::post('/register', [TeamController::class, 'store']);
 Route::get('/team/edit', [TeamController::class, 'edit'])->name('participants.edit'); // Match legacy name
 Route::put('/team/update', [TeamController::class, 'update'])->name('participants.update');
 
-use App\Http\Controllers\EventController;
 
 Route::get('/list-event', [EventController::class, 'index'])->name('event.list');
 Route::get('/events/{slug}', [EventController::class, 'show'])->name('event.detail');
