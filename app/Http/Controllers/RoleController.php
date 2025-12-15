@@ -9,7 +9,7 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $roles = Role::orderBy('created_at', 'asc')->get(); // Urutkan dari yang paling lama ke terbaru
+        $roles = Role::orderBy('created_at', 'asc')->get();
         return view('admin.role.index', compact('roles'));
     }
 
@@ -21,12 +21,12 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'role_name' => 'required|string|max:255',
-            'role_description' => 'nullable|string',
-            'role_status' => 'required|boolean',
+            'name' => 'required|string|max:255|unique:roles,name',
+            'description' => 'nullable|string',
+            'is_active' => 'boolean',
         ]);
 
-        Role::createRole($request->all());
+        Role::create($request->all());
 
         return redirect()->route('role.index')->with('success', 'Role berhasil ditambahkan.');
     }
@@ -40,13 +40,13 @@ class RoleController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'role_name' => 'required|string|max:255',
-            'role_description' => 'nullable|string',
-            'role_status' => 'required|boolean',
+            'name' => 'required|string|max:255|unique:roles,name,' . $id,
+            'description' => 'nullable|string',
+            'is_active' => 'boolean',
         ]);
 
         $role = Role::findOrFail($id);
-        $role->updateRole($request->all());
+        $role->update($request->all());
 
         return redirect()->route('role.index')->with('success', 'Role berhasil diperbarui.');
     }
@@ -54,7 +54,7 @@ class RoleController extends Controller
     public function destroy($id)
     {
         $role = Role::findOrFail($id);
-        $role->deleteRole();
+        $role->delete();
 
         return redirect()->route('role.index')->with('success', 'Role berhasil dihapus.');
     }
@@ -63,7 +63,8 @@ class RoleController extends Controller
     {
         try {
             $role = Role::findOrFail($id);
-            $role->toggleStatus();
+            $role->is_active = !$role->is_active;
+            $role->save();
 
             return response()->json([
                 'success' => true,

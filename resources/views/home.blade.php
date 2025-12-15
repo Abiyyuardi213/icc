@@ -754,7 +754,7 @@
 
     </section>
     {{-- ABOUT --}}
-    <section class="event-hero">
+    <section class="event-hero" id="about">
         <div class="event-hero__container">
 
             <!-- LEFT: FOTO-FOTO -->

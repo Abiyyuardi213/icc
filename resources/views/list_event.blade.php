@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Event - Informatics Events</title>
-    <link rel="stylesheet" href="style.css">
+
     <style>
         /* =========================================
    1. VARIABLES & RESET (Dasar)
@@ -45,20 +45,12 @@
             top: 0;
             left: 0;
             width: 100%;
-
-            /* Efek Kaca Buram (Blur) */
-            background-color: rgba(255, 255, 255, 0.85);
-            /* 85% Putih */
-            backdrop-filter: blur(12px);
-            /* Blur belakangnya */
-            -webkit-backdrop-filter: blur(12px);
-            /* Support Safari */
-
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: 1rem 1.5rem;
             box-shadow: var(--shadow);
             z-index: 1000;
-            /* Agar selalu di atas konten lain */
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .container-navbar {
@@ -69,13 +61,11 @@
             margin: 0 auto;
         }
 
-        /* Logo */
         .logo img {
-            height: 40px;
+            height: 50px;
             display: block;
         }
 
-        /* Menu Desktop (Links) */
         .nav-links {
             display: flex;
             gap: 2.5rem;
@@ -85,8 +75,8 @@
             text-decoration: none;
             color: var(--text-color);
             font-weight: 500;
-            font-size: 0.95rem;
             transition: color 0.3s;
+            font-size: 1rem;
         }
 
         .nav-links a:hover,
@@ -94,66 +84,61 @@
             color: var(--primary-color);
         }
 
-        /* Tombol Register Navbar */
         .btn-register {
             background-color: var(--primary-color);
             color: white;
             text-decoration: none;
             font-weight: 600;
-            padding: 0.6rem 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(236, 70, 164, 0.3);
-            transition: all 0.2s;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(236, 70, 164, 0.35);
+            transition: transform 0.2s, background-color 0.2s;
             display: inline-block;
         }
 
         .btn-register:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
+            transform: scale(1.05);
         }
 
-        /* Hamburger Button (Mobile) */
         .hamburger {
             background: none;
             border: none;
             cursor: pointer;
             color: var(--text-color);
-            padding: 0.5rem;
         }
 
-        /* Menu Mobile Dropdown */
         .mobile-menu {
             display: none;
-            /* Default sembunyi */
             flex-direction: column;
             gap: 1rem;
             margin-top: 1rem;
             padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid #f3f4f6;
         }
 
         .mobile-menu.open {
             display: flex;
-            /* Muncul saat class .open ditambahkan JS */
         }
 
         .mobile-menu a {
             text-decoration: none;
             color: var(--text-color);
-            font-weight: 500;
             padding: 0.5rem 0;
+            font-weight: 500;
         }
 
-        .mobile-menu a:hover {
+        .mobile-menu a:hover,
+        .mobile-menu a.active {
             color: var(--primary-color);
         }
 
         .btn-register.full-width {
             text-align: center;
             width: 100%;
+            margin-top: 0.5rem;
+            color: white
         }
 
-        /* --- LOGIKA RESPONSIF NAVBAR --- */
         .desktop-only {
             display: none;
         }
@@ -565,40 +550,7 @@
 
 <body>
 
-    <nav class="navbar">
-        <div class="container-navbar">
-
-            <div class="logo">
-                <img src="image/logo1.png" alt="Informatics Events">
-            </div>
-
-            <div class="nav-links desktop-only">
-                <a href="#" class="active">Beranda</a>
-                <a href="#">Event</a>
-                <a href="#">About</a>
-                <a href="#footer">Contact</a>
-            </div>
-
-            <div class="nav-btn desktop-only">
-                <a href="#" class="btn-register">Register</a>
-            </div>
-
-            <button id="menuBtn" class="hamburger mobile-only" aria-label="Menu">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-        </div>
-
-        <div id="mobileMenu" class="mobile-menu">
-            <a href="#" class="active">Beranda</a>
-            <a href="#">Event</a>
-            <a href="#">About</a>
-            <a href="#footer">Contact</a>
-            <a href="#" class="btn-register full-width">Register Now</a>
-        </div>
-    </nav>
+    @include('include.navbar')
     <main class="main-content-list">
 
         <div class="container-search">
@@ -628,129 +580,38 @@
 
         <div class="container-grid">
 
+        @forelse($events as $event)
             <div class="event-card">
-                <a href="detail_event.html" class="card-image-link">
-                    <img src="image/poster1.png" alt="ICC 2026" class="card-image">
+                <a href="{{ route('event.detail', $event->slug) }}" class="card-image-link">
+                    <!-- Placeholder image logic -->
+                    <img src="{{ asset('image/poster1.png') }}" alt="{{ $event->name }}" class="card-image">
                 </a>
                 <div class="card-content">
                     <span class="card-badge badge-lomba">Lomba</span>
                     <h3 class="card-title">
-                        <a href="detail_event.html">
-                            Informatic Coding Competition - 2026: Show Your Skill, Prove...
+                        <a href="{{ route('event.detail', $event->slug) }}">
+                            {{ $event->name }}
                         </a>
                     </h3>
-                    <p class="card-description">Lomba Coding Basis Data dan Pemrograman Terstruktur adalah kompetisi
-                        untuk mahasiswa yang ingin menguji kemampuan logika...</p>
+                    <p class="card-description">{{ $event->description }}</p>
 
                     <div class="card-footer">
-                        <span class="card-date">10-01-2026</span>
-                        <span class="card-days">5 Hari Lagi</span>
+                        <span class="card-date">{{ $event->registration_end ? $event->registration_end->format('d-m-Y') : '-' }}</span>
+                        <span class="card-days">
+                            @if($event->registration_end)
+                                {{ ceil($event->registration_end->diffInDays(now())) }} Hari Lagi
+                            @else
+                                -
+                            @endif
+                        </span>
                     </div>
                 </div>
             </div>
-
-            <div class="event-card">
-                <a href="detail_event.html" class="card-image-link">
-                    <img src="image/poster2.png" alt="Sosialisasi" class="card-image">
-                </a>
-                <div class="card-content">
-                    <span class="card-badge badge-sosialisasi">Sosialisasi</span>
-                    <h3 class="card-title">
-                        <a href="detail_event.html">
-                            Mengenal Lebih Dekat Teknik Informatika: Membangun Pondasi...
-                        </a>
-                    </h3>
-                    <p class="card-description">Teknik Informatika adalah bidang yang mempelajari cara merancang,
-                        membangun, dan mengembangkan teknologi yang dipakai...</p>
-
-                    <div class="card-footer">
-                        <span class="card-date">09-11-2026</span>
-                        <span class="card-days">20 Hari Lagi</span>
-                    </div>
-                </div>
+        @empty
+            <div class="col-span-3 text-center p-10">
+                <p>Belum ada event yang tersedia saat ini.</p>
             </div>
-
-            <div class="event-card">
-                <a href="detail_event.html" class="card-image-link">
-                    <img src="image/poster3.png" alt="PDH" class="card-image">
-                </a>
-                <div class="card-content">
-                    <span class="card-badge badge-penjualan">Penjualan</span>
-                    <h3 class="card-title">
-                        <a href="detail_event.html">
-                            Pre-Order PDH Teknik Informatika ITATS - 2025
-                        </a>
-                    </h3>
-                    <p class="card-description">Pre-order PDH Teknik Informatika ITATS 2025 dibuka untuk seluruh
-                        mahasiswa yang ingin mendapatkan pakaian dinas harian...</p>
-
-                    <div class="card-footer">
-                        <span class="card-date">10-07-2026</span>
-                        <span class="card-days">12 Hari Lagi</span>
-                    </div>
-                </div>
-            </div>
-            <div class="event-card">
-                <a href="detail_event.html" class="card-image-link">
-                    <img src="image/poster3.png" alt="PDH" class="card-image">
-                </a>
-                <div class="card-content">
-                    <span class="card-badge badge-penjualan">Penjualan</span>
-                    <h3 class="card-title">
-                        <a href="detail_event.html">
-                            Pre-Order PDH Teknik Informatika ITATS - 2025
-                        </a>
-                    </h3>
-                    <p class="card-description">Pre-order PDH Teknik Informatika ITATS 2025 dibuka untuk seluruh
-                        mahasiswa yang ingin mendapatkan pakaian dinas harian...</p>
-
-                    <div class="card-footer">
-                        <span class="card-date">10-07-2026</span>
-                        <span class="card-days">12 Hari Lagi</span>
-                    </div>
-                </div>
-            </div>
-            <div class="event-card">
-                <a href="detail_event.html" class="card-image-link">
-                    <img src="image/poster1.png" alt="ICC 2026" class="card-image">
-                </a>
-                <div class="card-content">
-                    <span class="card-badge badge-lomba">Lomba</span>
-                    <h3 class="card-title">
-                        <a href="detail_event.html">
-                            Informatic Coding Competition - 2026: Show Your Skill, Prove...
-                        </a>
-                    </h3>
-                    <p class="card-description">Lomba Coding Basis Data dan Pemrograman Terstruktur adalah kompetisi
-                        untuk mahasiswa yang ingin menguji kemampuan logika...</p>
-
-                    <div class="card-footer">
-                        <span class="card-date">10-01-2026</span>
-                        <span class="card-days">5 Hari Lagi</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="event-card">
-                <a href="detail_event.html" class="card-image-link">
-                    <img src="image/poster2.png" alt="Sosialisasi" class="card-image">
-                </a>
-                <div class="card-content">
-                    <span class="card-badge badge-sosialisasi">Sosialisasi</span>
-                    <h3 class="card-title">
-                        <a href="detail_event.html">
-                            Mengenal Lebih Dekat Teknik Informatika: Membangun Pondasi...
-                        </a>
-                    </h3>
-                    <p class="card-description">Teknik Informatika adalah bidang yang mempelajari cara merancang,
-                        membangun, dan mengembangkan teknologi yang dipakai...</p>
-
-                    <div class="card-footer">
-                        <span class="card-date">09-11-2026</span>
-                        <span class="card-days">20 Hari Lagi</span>
-                    </div>
-                </div>
-            </div>
+        @endforelse
 
         </div>
     </main>
@@ -758,7 +619,7 @@
         <div class="footer-container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <img src="image/hima.png" alt="HMIF Logo" class="footer-logo">
+                    <img src="{{ asset('image/hima.png') }}" alt="HMIF Logo" class="footer-logo">
                     <h2 class="footer-title">Tentang HMIF ITATS</h2>
                     <p class="footer-text">
                         Wadah kolaborasi dan pengembangan mahasiswa Informatika. Berkarya, berdampak, dan bertumbuh

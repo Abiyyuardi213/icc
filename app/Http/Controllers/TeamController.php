@@ -10,49 +10,163 @@ class TeamController extends Controller
 {
     public function create()
     {
-        return view('registration');
+        $events = \App\Models\Event::where('is_active', true)->get();
+        return view('registration', compact('events'));
     }
 
     public function store(Request $request)
     {
+        // ... (Validation Logic same as before, but ensure competition_type matches event id)
         $rules = [
-            'competition_type' => ['required', 'string', Rule::in(['Basis Data', 'Pemrograman Terstruktur'])],
-            'team_name' => 'required|string|max:255|unique:teams,team_name',
-
+            'competition_id' => ['required', 'exists:events,id'], // Changed from competition_type string
+            'team_name' => 'required|string|max:255|unique:teams,name',
+            
+            // Leader
             'leader_name' => 'required|string|max:255',
-            'leader_npm' => 'required|string|max:255|unique:teams,leader_npm',
-            'leader_email' => 'required|email|max:255|unique:teams,leader_email',
+            'leader_npm' => 'required|string|max:255', 
+            'leader_email' => 'required|email|max:255',
             'leader_phone' => 'required|string|max:15',
 
+            // Members
             'member_1_name' => 'required|string|max:255',
-            'member_1_npm' => 'required|string|max:255|unique:teams,member_1_npm',
+            'member_1_npm' => 'required|string|max:255',
 
             'member_2_name' => 'nullable|string|max:255',
-            'member_2_npm' => 'nullable|string|max:255|unique:teams,member_2_npm|required_with:member_2_name',
+            'member_2_npm' => 'nullable|string|max:255|required_with:member_2_name',
         ];
+        
+        $request->validate($rules);
 
-        $validatedData = $request->validate($rules, [
-            'competition_type.required' => 'Jenis kompetisi wajib dipilih.',
-            'team_name.unique' => 'Nama tim ini sudah terdaftar.',
-            'leader_email.unique' => 'Email ketua tim ini sudah terdaftar.',
-            'leader_npm.unique' => 'NPM ketua tim ini sudah terdaftar sebagai ketua di tim lain.',
-            'member_1_npm.unique' => 'NPM anggota tim 1 ini sudah terdaftar sebagai anggota tim 1 di tim lain.',
-            'member_2_npm.unique' => 'NPM anggota tim 2 ini sudah terdaftar sebagai anggota tim 2 di tim lain.',
-            'member_2_npm.required_with' => 'NPM Anggota Tim 2 wajib diisi jika Nama Anggota Tim 2 diisi.',
-        ]);
-
-        $npms = array_filter([
-            $validatedData['leader_npm'],
-            $validatedData['member_1_npm'],
-            $validatedData['member_2_npm'] ?? null
-        ]);
-
-        if (count($npms) !== count(array_unique($npms))) {
-            return back()->withErrors(['npm_duplicate' => 'NPM Ketua dan Anggota tidak boleh ada yang sama dalam satu tim.'])->withInput();
+        // Check Duplicate Team for User
+        if (\Illuminate\Support\Facades\Auth::user()->team) {
+             return back()->withErrors(['team_name' => 'Anda sudah terdaftar di satu tim.'])->withInput();
         }
 
-        Team::create($validatedData);
+        \Illuminate\Support\Facades\DB::beginTransaction();
+        try {
+            $team = \App\Models\Team::create([
+                'user_id' => \Illuminate\Support\Facades\Auth::id(),
+                'event_id' => $request->competition_id,
+                'name' => $request->team_name,
+                'status' => 'pending',
+            ]);
 
-        return redirect('/register')->with('success', 'Registrasi Tim ICC 2026 berhasil! Selamat berkompetisi!');
+            // Leader
+            $team->members()->create([
+                'name' => $request->leader_name,
+                'npm' => $request->leader_npm,
+                'email' => $request->leader_email,
+                'phone' => $request->leader_phone,
+                'role' => 'leader',
+            ]);
+
+            // Member 1
+            $team->members()->create([
+                'name' => $request->member_1_name,
+                'npm' => $request->member_1_npm,
+                'role' => 'member',
+            ]);
+
+            // Member 2
+            if ($request->member_2_name) {
+                $team->members()->create([
+                    'name' => $request->member_2_name,
+                    'npm' => $request->member_2_npm,
+                    'role' => 'member',
+                ]);
+            }
+
+            \Illuminate\Support\Facades\DB::commit();
+            return redirect('/home')->with('success', 'Registrasi Tim Berhasil!');
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollback();
+            return back()->withErrors(['system' => $e->getMessage()])->withInput();
+        }
+    }
+
+    public function edit()
+    {
+        $team = \Illuminate\Support\Facades\Auth::user()->team;
+        if(!$team) return redirect('/register');
+        
+        $events = \App\Models\Event::where('is_active', true)->get();
+        return view('admin.team.edit', compact('team', 'events'));
+    }
+
+    public function update(Request $request)
+    {
+        $team = \Illuminate\Support\Facades\Auth::user()->team;
+        if(!$team) return abort(404);
+
+        $rules = [
+            'team_name' => 'required|string|max:255|unique:teams,name,' . $team->id,
+            
+            // Leader
+            'leader_name' => 'required|string|max:255',
+            'leader_npm' => 'required|string|max:255', 
+            'leader_phone' => 'required|string|max:15',
+
+            // Members
+            'member_1_name' => 'required|string|max:255',
+            'member_1_npm' => 'required|string|max:255',
+
+            'member_2_name' => 'nullable|string|max:255',
+            'member_2_npm' => 'nullable|string|max:255|required_with:member_2_name',
+        ];
+        
+        $request->validate($rules);
+
+        \Illuminate\Support\Facades\DB::beginTransaction();
+        try {
+            $team->update([
+                'name' => $request->team_name,
+            ]);
+
+            // Update Leader
+            $team->leader->update([
+                'name' => $request->leader_name,
+                'npm' => $request->leader_npm,
+                'phone' => $request->leader_phone,
+            ]);
+
+            // Update Member 1 (Assuming order 0 is member 1)
+            // Ideally we use IDs, but for simplicity we rely on 'role' and order
+            $mem1 = $team->members()->where('role', 'member')->skip(0)->first();
+            if($mem1) {
+                $mem1->update([
+                    'name' => $request->member_1_name,
+                    'npm' => $request->member_1_npm,
+                ]);
+            }
+
+            // Update Member 2
+             $mem2 = $team->members()->where('role', 'member')->skip(1)->first();
+             if ($request->member_2_name) {
+                 if ($mem2) {
+                     $mem2->update([
+                        'name' => $request->member_2_name,
+                        'npm' => $request->member_2_npm,
+                     ]);
+                 } else {
+                     // Create new if didn't exist
+                    $team->members()->create([
+                        'name' => $request->member_2_name,
+                        'npm' => $request->member_2_npm,
+                        'role' => 'member',
+                    ]);
+                 }
+             } else {
+                 // Delete if cleared
+                 if ($mem2) $mem2->delete();
+             }
+
+            \Illuminate\Support\Facades\DB::commit();
+            return redirect('/home')->with('success', 'Data Tim Berhasil Diperbarui!');
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollback();
+            return back()->withErrors(['system' => $e->getMessage()])->withInput();
+        }
     }
 }

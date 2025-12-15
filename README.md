@@ -1,59 +1,117 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Informatics Coding Competition (ICC) Platform
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Platform web untuk pendaftaran dan manajemen lomba Informatika (ICC). Aplikasi ini memungkinkan peserta untuk mendaftar akun, membentuk tim, memilih kategori lomba, dan mengelola data tim mereka.
 
-## About Laravel
+## 🚀 Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+-   **Authentication**: Registrasi dan Login peserta.
+-   **Dynamic Events**: Kategori lomba (misal: Basis Data, Pemrograman) dikelola via database, bukan hardcoded.
+-   **Team Management**: Satu User (Ketua) mengelola Satu Tim.
+-   **Team Members**: Mendukung input anggota tim yang fleksibel.
+-   **Dashboard**: Panel status untuk melihat data tim dan status verifikasi.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🗂️ Struktur Database & Relasi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Aplikasi ini menggunakan desain database relasional yang ternormalisasi:
 
-## Learning Laravel
+1.  **Users**: Data akun login (Email, Password).
+    -   _Relasi_: One-to-One dengan `Teams`.
+2.  **Roles**: Hak akses user (Admin vs User).
+3.  **Events**: Data perlombaan (Nama, Deskripsi, Jadwal, Batas Anggota).
+    -   _Relasi_: One-to-Many dengan `Teams`.
+4.  **Teams**: Data tim peserta.
+    -   _Relasi_: BelongsTo `User` (Ketua/Pemilik Akun).
+    -   _Relasi_: BelongsTo `Event` (Kategori Lomba yang diikuti).
+5.  **Team Members**: Data detail anggota tim (Nama, NPM, No HP).
+    -   _Relasi_: BelongsTo `Team`.
+6.  **Submissions**: File yang dikumpulkan peserta.
+    -   _Relasi_: BelongsTo `Team` dan `Event`.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🔄 Alur Penggunaan (User Flow)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1.  **Registrasi Akun**: Pengunjung mendaftar akun baru (`/register`).
+2.  **Login**: Masuk ke sistem menggunakan email & password.
+3.  **Registrasi Tim**:
+    -   Akses menu pendaftaran.
+    -   Pilih **Jenis Kompetisi** (Data diambil dari tabel `events`).
+    -   Isi Nama Tim dan Data Anggota.
+    -   _Note_: NPM anggota akan divalidasi agar tidak ada duplikasi antar tim.
+4.  **Dashboard**:
+    -   Setelah mendaftar, user akan dialihkan ke Dashboard.
+    -   User dapat melihat detail tim, status kelulusan, dan jadwal.
 
-## Laravel Sponsors
+## 🛠️ Instalasi & Setup
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Ikuti langkah berikut untuk menjalankan project di local environment:
 
-### Premium Partners
+### Prerequisite
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+-   PHP >= 8.2
+-   Composer
+-   Node.js & NPM
+-   MySQL
 
-## Contributing
+### Langkah Instalasi
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1.  **Clone Repository**
 
-## Code of Conduct
+    ```bash
+    git clone https://github.com/username/icc-project.git
+    cd ipc-project
+    ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+2.  **Install Dependencies**
 
-## Security Vulnerabilities
+    ```bash
+    composer install
+    npm install
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3.  **Setup Environment**
 
-## License
+    -   Copy file `.env.example` menjadi `.env`:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    ```bash
+    cp .env.example .env
+    ```
+
+    -   Atur konfigurasi database di `.env`:
+
+    ```ini
+    DB_DATABASE=icc_db
+    DB_USERNAME=root
+    DB_PASSWORD=
+    ```
+
+4.  **Generate Key**
+
+    ```bash
+    php artisan key:generate
+    ```
+
+5.  **Migrasi & Seeding (PENTING)**
+    Langkah ini akan membuat tabel dan mengisi data Lomba (Events) default.
+
+    ```bash
+    php artisan migrate:fresh --seed
+    ```
+
+6.  **Jalankan Aplikasi**
+    Buka dua terminal:
+
+    ```bash
+    # Terminal 1 (Backend)
+    php artisan serve
+    ```
+
+    ```bash
+    # Terminal 2 (Frontend Assets)
+    npm run dev
+    ```
+
+7.  **Akses Web**
+    Buka browser di [http://localhost:8000](http://localhost:8000).
+
+## 👨‍💻 Kontribusi
+
+Silakan buat Pull Request untuk fitur baru atau perbaikan bug. Pastikan mengikuti naming convention tabel (plural) dan controller yang disepakati.
