@@ -25,7 +25,14 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/home');
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+
+            if ($user->role && strtolower($user->role->name) === 'admin') {
+                return redirect()->route('admin.dashboard');
+            }
+
+            return redirect()->route('dashboard');
         }
 
         return back()->withErrors([
@@ -46,15 +53,19 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
+        $role = \App\Models\Role::where('name', 'Participant')->first();
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id' => $role ? $role->id : null, // Default to Participant
         ]);
+        
 
         Auth::login($user);
 
-        return redirect('/home');
+        return redirect()->route('dashboard');
     }
 
     public function logout(Request $request)

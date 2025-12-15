@@ -1,212 +1,203 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akademik WR 1 - Peran</title>
-    <link rel="icon" type="image/png" href="{{ asset('image/itats-1080.jpg') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        .toggle-status {
-            width: 50px;
-            height: 24px;
-            appearance: none;
-            background: #ddd;
-            border-radius: 12px;
-            position: relative;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+@extends('layouts.admin')
 
-        .toggle-status:checked {
-            background: linear-gradient(90deg, #28a745, #2ecc71);
-        }
+@section('title', 'Manajemen Peran')
 
-        .toggle-status::before {
-            content: "❌";
-            position: absolute;
-            top: 3px;
-            left: 4px;
-            width: 18px;
-            height: 18px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.3s ease;
-            text-align: center;
-            font-size: 12px;
-            line-height: 18px;
-        }
+@section('styles')
+@endsection
 
-        .toggle-status:checked::before {
-            content: "✔️";
-            transform: translateX(26px);
-            color: #28a745;
-        }
-    </style>
-</head>
-<body class="hold-transition sidebar-mini layout-fixed">
-    <div class="wrapper">
-        @include('include.navbarSistem')
-        @include('include.sidebar')
+@section('content')
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">Manajemen Peran</h1>
+        <p class="text-gray-600">Kelola peran pengguna dalam sistem</p>
+    </div>
+    <a href="{{ route('role.create') }}" class="bg-[#EC46A4] hover:bg-[#d63f93] text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+        Tambah Peran
+    </a>
+</div>
 
-        <div class="content-wrapper">
-            <div class="content-header">
-                <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h1 class="m-0">Manajemen Peran</h1>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <section class="content">
-                <div class="container-fluid">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h3 class="card-title">Daftar Peran</h3>
-                            <a href="{{ route('role.create') }}" class="btn btn-primary btn-sm ml-auto">
-                                <i class="fas fa-plus"></i> Tambah Peran
-                            </a>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table id="roleTable" class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>ID</th>
-                                            <th>Nama Peran</th>
-                                            <th>Deskripsi</th>
-                                            <th>Status Peran</th>
-                                            <th>Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($roles as $index => $role)
-                                            <tr>
-                                                <td>{{ $index + 1 }}</td>
-                                                <td>{{ $role->id }}</td>
-                                                <td>{{ $role->role_name }}</td>
-                                                <td>{{ $role->role_description }}</td>
-                                                <td class="text-center">
-                                                    <input type="checkbox" class="toggle-status"
-                                                        data-role-id="{{ $role->id }}"
-                                                        {{ $role->role_status ? 'checked' : '' }}>
-                                                </td>
-                                                <td class="text-center">
-                                                    <a href="{{ route('role.edit', $role->id) }}" class="btn btn-info btn-sm">
-                                                        <i class="fas fa-edit"></i> Edit
-                                                    </a>
-                                                    <button class="btn btn-danger btn-sm delete-role-btn"
-                                                        data-toggle="modal"
-                                                        data-target="#deleteRoleModal"
-                                                        data-role-id="{{ $role->id }}">
-                                                        <i class="fas fa-trash"></i> Hapus
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-4">
+    <div class="overflow-x-auto">
+        <table id="roleTable" class="w-full text-left border-collapse display nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Peran</th>
+                    <th>Deskripsi</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($roles as $index => $role)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td class="font-medium text-gray-900">{{ $role->name ?? $role->role_name }}</td>
+                        <td>{{ $role->description ?? $role->role_description }}</td>
+                        <td class="text-center">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer toggle-status" 
+                                    data-role-id="{{ $role->id }}" 
+                                    {{ ($role->is_active ?? $role->role_status) ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#EC46A4] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                            </label>
+                        </td>
+                        <td class="text-center">
+                            <div class="flex justify-center gap-2">
+                                <a href="{{ route('role.edit', $role->id) }}" class="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="Edit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                    </svg>
+                                </a>
+                                <button type="button" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition delete-role-btn" 
+                                    data-role-id="{{ $role->id }}" 
+                                    title="Hapus">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
                             </div>
-                            <div id="tablePagination"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        @include('include.footerSistem')
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
+</div>
 
-    <!-- Modal Konfirmasi Hapus -->
-    <div class="modal fade" id="deleteRoleModal" tabindex="-1" aria-labelledby="deleteRoleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="deleteRoleModalLabel"><i class="fas fa-exclamation-triangle"></i> Konfirmasi Hapus</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus peran ini? Tindakan ini tidak dapat dibatalkan.
-                </div>
-                <form id="deleteForm" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i> Hapus</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    @include('services.ToastModal')
-    @include('services.LogoutModal')
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
-    <script src="{{ asset('js/ToastScript.js') }}"></script>
-    <script>
-        $(document).ready(function () {
-            $("#roleTable").DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true
-            });
+@endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        $('#roleTable').DataTable({
+            responsive: true,
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                infoFiltered: "(difilter dari _MAX_ total data)",
+                paginate: {
+                    first: "Awal",
+                    last: "Akhir",
+                    next: "Lanjut",
+                    previous: "Kembali"
+                },
+                zeroRecords: "Tidak ada data yang cocok"
+            }
         });
+    });
 
-        $(document).ready(function () {
-            $('.delete-role-btn').click(function () {
-                let roleId = $(this).data('role-id');
-                let deleteUrl = "{{ url('role') }}/" + roleId;
-                $('#deleteForm').attr('action', deleteUrl);
-            });
-        });
+    document.addEventListener('DOMContentLoaded', function() {
 
-        $(document).ready(function () {
-            $(".toggle-status").change(function () {
-                let roleId = $(this).data("role-id");
-                let status = $(this).prop("checked") ? 1 : 0;
-
-                $.post("{{ url('role') }}/" + roleId + "/toggle-status", {
-                    _token: '{{ csrf_token() }}',
-                    role_status: status
-                }, function (res) {
-                    if (res.success) {
-                        $(".toast-body").text(res.message);
-                        $("#toastNotification").toast({ autohide: true, delay: 3000 }).toast("show");
+        // Toggle Status
+        const toggles = document.querySelectorAll('.toggle-status');
+        toggles.forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const roleId = this.getAttribute('data-role-id');
+                const status = this.checked; // Boolean
+                
+                // Show loading toast (optional, usually fast enough)
+                
+                fetch(`{{ url('role') }}/${roleId}/toggle-status`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    // Send any body if needed, controller might toggle based on logic
+                    body: JSON.stringify({}) 
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        Toast.fire({
+                            icon: 'success',
+                            title: data.message || 'Status berhasil diubah'
+                        });
                     } else {
-                        alert("Gagal memperbarui status.");
+                        throw new Error(data.message || 'Gagal update status');
                     }
-                }).fail(function () {
-                    alert("Terjadi kesalahan dalam mengubah status.");
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Gagal mengubah status'
+                    });
+                    this.checked = !status; // Revert checkbox
                 });
             });
         });
 
-        $(document).ready(function() {
-            @if (session('success') || session('error'))
-                $('#toastNotification').toast({
-                    delay: 3000,
-                    autohide: true
-                }).toast('show');
-            @endif
+        // Delete Role with SweetAlert2 & AJAX
+        // Delegate event for DataTables (since it redraws DOM)
+        document.querySelector('body').addEventListener('click', function(e) {
+            if (e.target.closest('.delete-role-btn')) {
+                const button = e.target.closest('.delete-role-btn');
+                const roleId = button.getAttribute('data-role-id');
+                
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Data yang dihapus tidak dapat dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#EC46A4',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    showLoaderOnConfirm: true,
+                    preConfirm: () => {
+                        return fetch(`{{ url('role') }}/${roleId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({ _method: 'DELETE' })
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(response.statusText)
+                            }
+                            return response.json()
+                        })
+                        .then(data => {
+                            if (!data.success) {
+                                throw new Error(data.message || 'Gagal menghapus data')
+                            }
+                            return data
+                        })
+                        .catch(error => {
+                            Swal.showValidationMessage(
+                                `Request failed: ${error}`
+                            )
+                        })
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Role berhasil dihapus.'
+                        });
+                        // Remove row from DataTable
+                        const table = $('#roleTable').DataTable();
+                        table.row(button.closest('tr')).remove().draw();
+                    }
+                });
+            }
         });
-    </script>
-</body>
-</html>
+
+        // Close modal logic removed as we use SweetAlert2 now
+    });
+</script>
+@endsection

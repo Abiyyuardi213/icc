@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Informatics Events')</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- CSS is embedded for now as requested to match the theme -->
     <style>
         /* =========================================

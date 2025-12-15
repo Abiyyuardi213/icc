@@ -8,10 +8,25 @@ use Illuminate\Validation\Rule;
 
 class TeamController extends Controller
 {
-    public function create()
+    public function __construct()
     {
+        $this->middleware('auth');
+    }
+
+    public function create(Request $request)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        
+        // Redirect if already has a team
+        if($user->team) {
+            return redirect()->route('participants.edit')->with('info', 'Anda sudah terdaftar. Silakan edit data tim Anda di sini.');
+        }
+
         $events = \App\Models\Event::where('is_active', true)->get();
-        return view('registration', compact('events'));
+        $selected_event_id = $request->query('event_id');
+        $selected_event = $events->find($selected_event_id);
+
+        return view('registration', compact('events', 'selected_event', 'user'));
     }
 
     public function store(Request $request)
@@ -91,7 +106,7 @@ class TeamController extends Controller
         if(!$team) return redirect('/register');
         
         $events = \App\Models\Event::where('is_active', true)->get();
-        return view('admin.team.edit', compact('team', 'events'));
+        return view('user.team.edit', compact('team', 'events'));
     }
 
     public function update(Request $request)

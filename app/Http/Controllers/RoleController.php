@@ -28,6 +28,10 @@ class RoleController extends Controller
 
         Role::create($request->all());
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Role berhasil ditambahkan.']);
+        }
+
         return redirect()->route('role.index')->with('success', 'Role berhasil ditambahkan.');
     }
 
@@ -48,13 +52,24 @@ class RoleController extends Controller
         $role = Role::findOrFail($id);
         $role->update($request->all());
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Role berhasil diperbarui.']);
+        }
+
         return redirect()->route('role.index')->with('success', 'Role berhasil diperbarui.');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $role = Role::findOrFail($id);
-        $role->delete();
+        $role = Role::find($id);
+
+        if ($role) {
+            $role->delete();
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Role berhasil dihapus.']);
+        }
 
         return redirect()->route('role.index')->with('success', 'Role berhasil dihapus.');
     }

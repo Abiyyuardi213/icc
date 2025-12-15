@@ -1,337 +1,393 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrasi Tim ICC 2026</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@extends('layouts.main')
 
-        * {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@section('title', 'Registrasi Tim - ICC 2026')
 
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #f0f4f8 100%);
-            padding: 40px 20px;
-            min-height: 100vh;
-        }
+@section('content')
+<div class="min-h-screen bg-gray-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto">
+        <!-- Back Button -->
+        <a href="{{ url('/list-event') }}" class="inline-flex items-center text-gray-500 hover:text-[#EC46A4] font-medium mb-6 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Kembali ke Daftar Event
+        </a>
 
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(233, 30, 140, 0.08);
-            overflow: hidden;
-        }
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row min-h-[600px]">
+            <!-- Sidebar / Progress -->
+            <div class="bg-[#EC46A4] md:w-1/3 p-8 text-white flex flex-col justify-between relative overflow-hidden">
+                <!-- Decorative Circles -->
+                <div class="absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 rounded-full bg-white opacity-10"></div>
+                <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 rounded-full bg-white opacity-10"></div>
 
-        .header {
-            background: linear-gradient(135deg, #E91E8C 0%, #D946A6 100%);
-            padding: 40px 20px;
-            text-align: center;
-            color: white;
-        }
+                <div>
+                    <h2 class="text-2xl font-bold mb-2">Registrasi Tim</h2>
+                    <p class="text-pink-100 text-sm mb-8">Lengkapi data tim Anda untuk mengikuti kompetisi.</p>
 
-        .header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
+                    <!-- Steps Component -->
+                    <div class="space-y-6 relative">
+                        <!-- Connecting Line -->
+                        <div class="absolute left-[15px] top-2 bottom-2 w-0.5 bg-pink-400 -z-0"></div>
 
-        .header p {
-            font-size: 14px;
-            opacity: 0.95;
-            font-weight: 500;
-        }
+                        <!-- Step 1 -->
+                        <div class="relative z-10 flex items-center gap-4 step-indicator active" data-step="1">
+                            <div class="w-8 h-8 rounded-full border-2 border-white bg-white text-[#EC46A4] flex items-center justify-center font-bold text-sm transition-all duration-300">1</div>
+                            <div>
+                                <h4 class="font-bold text-sm">Informasi Tim</h4>
+                                <p class="text-xs text-pink-200">Nama & Kategori</p>
+                            </div>
+                        </div>
 
-        .content {
-            padding: 40px;
-        }
+                        <!-- Step 2 -->
+                        <div class="relative z-10 flex items-center gap-4 step-indicator opacity-60" data-step="2">
+                            <div class="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center font-bold text-sm transition-all duration-300">2</div>
+                            <div>
+                                <h4 class="font-bold text-sm">Data Ketua</h4>
+                                <p class="text-xs text-pink-200">Identitas Ketua Tim</p>
+                            </div>
+                        </div>
 
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            font-size: 14px;
-            font-weight: 500;
-        }
+                        <!-- Step 3 -->
+                        <div class="relative z-10 flex items-center gap-4 step-indicator opacity-60" data-step="3">
+                            <div class="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center font-bold text-sm transition-all duration-300">3</div>
+                            <div>
+                                <h4 class="font-bold text-sm">Anggota Tim</h4>
+                                <p class="text-xs text-pink-200">Identitas Anggota</p>
+                            </div>
+                        </div>
 
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .step {
-            display: none;
-        }
-
-        .step.active {
-            display: block;
-        }
-
-        h3 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #E91E8C;
-            display: inline-block;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        select {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1.5px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
-            background-color: #fafafa;
-        }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        select:focus {
-            outline: none;
-            border-color: #E91E8C;
-            background-color: white;
-            box-shadow: 0 0 0 3px rgba(233, 30, 140, 0.1);
-        }
-
-        .error {
-            color: #E91E8C;
-            font-size: 12px;
-            margin-top: 6px;
-            display: block;
-            font-weight: 500;
-        }
-
-        .note {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 16px;
-            font-style: italic;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 40px;
-        }
-
-        button {
-            flex: 1;
-            background: linear-gradient(135deg, #E91E8C 0%, #D946A6 100%);
-            color: white;
-            padding: 14px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(233, 30, 140, 0.3);
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(233, 30, 140, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                border-radius: 8px;
-            }
-
-            .content {
-                padding: 24px;
-            }
-
-            .header h1 {
-                font-size: 24px;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Registrasi Tim ICC 2026</h1>
-            <p>Formulir pendaftaran kompetisi informatika</p>
-        </div>
-
-        <div class="content">
-            @if (session('success'))
-                <div class="alert-success">
-                    ✓ {{ session('success') }}
-                </div>
-            @endif
-
-            @error('npm_duplicate')
-                <div class="alert-error">
-                    ✕ {{ $message }}
-                </div>
-            @enderror
-
-            <form id="registrationForm" action="{{ url('/register') }}" method="POST">
-                @csrf
-
-                <!-- Step 1 -->
-                <div class="step active">
-                    <h3>Step 1: Detail Tim</h3>
-                    <div class="form-group">
-                        <label for="competition_type">Jenis Kompetisi</label>
-                        <select id="competition_type" name="competition_type" required>
-                            <option value="">-- Pilih Jenis Kompetisi --</option>
-                            <option value="Basis Data" {{ old('competition_type') == 'Basis Data' ? 'selected' : '' }}>Basis Data</option>
-                            <option value="Pemrograman Terstruktur" {{ old('competition_type') == 'Pemrograman Terstruktur' ? 'selected' : '' }}>Pemrograman Terstruktur</option>
-                        </select>
-                        @error('competition_type') <span class="error">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="team_name">Nama Tim</label>
-                        <input type="text" id="team_name" name="team_name" value="{{ old('team_name') }}" required>
-                        @error('team_name') <span class="error">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="button-group">
-                        <button type="button" onclick="nextStep()">Lanjut</button>
+                        <!-- Step 4 -->
+                        <div class="relative z-10 flex items-center gap-4 step-indicator opacity-60" data-step="4">
+                            <div class="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center font-bold text-sm transition-all duration-300">4</div>
+                            <div>
+                                <h4 class="font-bold text-sm">Konfirmasi</h4>
+                                <p class="text-xs text-pink-200">Review & Submit</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Step 2 -->
-                <div class="step">
-                    <h3>Step 2: Data Ketua Tim</h3>
-                    <div class="form-group">
-                        <label for="leader_name">Nama Lengkap Ketua</label>
-                        <input type="text" id="leader_name" name="leader_name" value="{{ old('leader_name') }}" required>
-                        @error('leader_name') <span class="error">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="leader_npm">NPM Ketua</label>
-                        <input type="text" id="leader_npm" name="leader_npm" value="{{ old('leader_npm') }}" required>
-                        @error('leader_npm') <span class="error">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="leader_email">Email Ketua</label>
-                        <input type="email" id="leader_email" name="leader_email" value="{{ old('leader_email') }}" required>
-                        @error('leader_email') <span class="error">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="leader_phone">Nomor Telepon Ketua</label>
-                        <input type="text" id="leader_phone" name="leader_phone" value="{{ old('leader_phone') }}" required>
-                        @error('leader_phone') <span class="error">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="button-group">
-                        <button type="button" onclick="prevStep()">Kembali</button>
-                        <button type="button" onclick="nextStep()">Lanjut</button>
-                    </div>
+                <div class="mt-8 text-xs text-pink-200 text-center md:text-left">
+                    <p>© 2026 ICC - ITATS Coding Competition</p>
                 </div>
+            </div>
 
-                <!-- Step 3 -->
-                <div class="step">
-                    <h3>Step 3: Data Anggota Tim 1</h3>
-                    <div class="form-group">
-                        <label for="member_1_name">Nama Lengkap Anggota 1</label>
-                        <input type="text" id="member_1_name" name="member_1_name" value="{{ old('member_1_name') }}" required>
-                        @error('member_1_name') <span class="error">{{ $message }}</span> @enderror
+            <!-- Form Area -->
+            <div class="bg-white md:w-2/3 p-8 flex flex-col relative w-full">
+                <!-- Alerts -->
+                @if ($errors->any())
+                    <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+                        <strong class="font-bold">Oops! Ada kesalahan:</strong>
+                        <ul class="mt-1 list-disc list-inside text-sm">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                    <div class="form-group">
-                        <label for="member_1_npm">NPM Anggota 1</label>
-                        <input type="text" id="member_1_npm" name="member_1_npm" value="{{ old('member_1_npm') }}" required>
-                        @error('member_1_npm') <span class="error">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="button-group">
-                        <button type="button" onclick="prevStep()">Kembali</button>
-                        <button type="button" onclick="nextStep()">Lanjut</button>
-                    </div>
-                </div>
+                @endif
+                
+                <form id="wizardForm" action="{{ route('team.register') }}" method="POST" class="flex-1 flex flex-col justify-between h-full">
+                    @csrf
+                    
+                    <!-- Step 1 Content: Informasi Tim -->
+                    <div class="step-content active" data-step="1">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Informasi Tim & Lomba</h3>
+                        
+                        <div class="space-y-5">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Kompetisi</label>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    @foreach($events as $event)
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="competition_id" value="{{ $event->id }}" class="peer sr-only" required 
+                                            {{ (old('competition_id') == $event->id || (isset($selected_event) && $selected_event->id == $event->id)) ? 'checked' : '' }}>
+                                        <div class="p-4 border-2 border-gray-200 rounded-xl hover:border-pink-300 peer-checked:border-[#EC46A4] peer-checked:bg-pink-50 transition-all text-center">
+                                            <div class="text-[#EC46A4] font-bold text-lg mb-1">{{ $event->name }}</div>
+                                            <p class="text-xs text-gray-500 line-clamp-2">{{ strip_tags($event->description) }}</p>
+                                        </div>
+                                    </label>
+                                    @endforeach
+                                </div>
+                            </div>
 
-                <!-- Step 4 -->
-                <div class="step">
-                    <h3>Step 4: Data Anggota Tim 2 (Opsional)</h3>
-                    <p class="note">Hanya diisi jika tim Anda terdiri dari 3 orang.</p>
-                    <div class="form-group">
-                        <label for="member_2_name">Nama Lengkap Anggota 2</label>
-                        <input type="text" id="member_2_name" name="member_2_name" value="{{ old('member_2_name') }}">
-                        @error('member_2_name') <span class="error">{{ $message }}</span> @enderror
+                            <div>
+                                <label for="team_name" class="block text-sm font-medium text-gray-700 mb-1">Nama Tim</label>
+                                <input type="text" name="team_name" id="team_name" value="{{ old('team_name') }}" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#EC46A4] focus:border-transparent outline-none transition placeholder-gray-400"
+                                    placeholder="Contoh: Garuda Cyber Team">
+                                <p class="text-xs text-gray-500 mt-1">Gunakan nama yang unik dan sopan.</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="member_2_npm">NPM Anggota 2</label>
-                        <input type="text" id="member_2_npm" name="member_2_npm" value="{{ old('member_2_npm') }}">
-                        @error('member_2_npm') <span class="error">{{ $message }}</span> @enderror
+
+                    <!-- Step 2 Content: Leader Data -->
+                    <div class="step-content hidden" data-step="2">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Data Ketua Tim</h3>
+                        
+                        <div class="space-y-4">
+                            <!-- Pre-filled from User Auth -->
+                            <div class="bg-blue-50 border border-blue-100 p-4 rounded-lg flex items-start gap-3 mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div>
+                                    <p class="text-sm text-blue-800 font-semibold">Data diambil dari akun login Anda.</p>
+                                    <p class="text-xs text-blue-600">Pastikan data ini benar sebelum melanjutkan.</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                                    <input type="text" name="leader_name" value="{{ old('leader_name', $user->name) }}" required readonly
+                                        class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-600 cursor-not-allowed">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" name="leader_email" value="{{ old('leader_email', $user->email) }}" required readonly
+                                        class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-600 cursor-not-allowed">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">NPM</label>
+                                    <input type="text" name="leader_npm" value="{{ old('leader_npm') }}" required
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#EC46A4] focus:border-transparent outline-none transition"
+                                        placeholder="Nomor Pokok Mahasiswa">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">No. WhatsApp</label>
+                                    <input type="text" name="leader_phone" value="{{ old('leader_phone') }}" required
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#EC46A4] focus:border-transparent outline-none transition"
+                                        placeholder="08xxxxxxxxxx">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="button-group">
-                        <button type="button" onclick="prevStep()">Kembali</button>
-                        <button type="submit">Daftarkan Tim</button>
+
+                    <!-- Step 3 Content: Members -->
+                    <div class="step-content hidden" data-step="3">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Anggota Tim</h3>
+                        
+                        <div class="space-y-6">
+                            <!-- Member 1 -->
+                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                <h4 class="font-bold text-gray-700 mb-3 flex items-center gap-2">
+                                    <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-xs">1</span>
+                                    Anggota Pertama (Wajib)
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-500 uppercase">Nama Lengkap</label>
+                                        <input type="text" name="member_1_name" value="{{ old('member_1_name') }}" required
+                                            class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-[#EC46A4] outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-500 uppercase">NPM</label>
+                                        <input type="text" name="member_1_npm" value="{{ old('member_1_npm') }}" required
+                                            class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-[#EC46A4] outline-none">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Member 2 -->
+                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                <h4 class="font-bold text-gray-700 mb-3 flex items-center gap-2">
+                                    <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-xs">2</span>
+                                    Anggota Kedua (Opsional)
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-500 uppercase">Nama Lengkap</label>
+                                        <input type="text" name="member_2_name" value="{{ old('member_2_name') }}"
+                                            class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-[#EC46A4] outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-500 uppercase">NPM</label>
+                                        <input type="text" name="member_2_npm" value="{{ old('member_2_npm') }}"
+                                            class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-[#EC46A4] outline-none">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </form>
+
+                    <!-- Step 4 Content: Review -->
+                    <div class="step-content hidden" data-step="4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Konfirmasi Pendaftaran</h3>
+                        
+                        <div class="bg-pink-50 border border-pink-100 rounded-xl p-6 text-center mb-6">
+                            <h4 class="text-lg font-bold text-pink-800 mb-2">Hampir Selesai!</h4>
+                            <p class="text-gray-600 text-sm">Pastikan semua data yang Anda masukkan sudah benar sebelum mendaftar.</p>
+                        </div>
+
+                        <div class="space-y-3 text-sm text-gray-700">
+                            <!-- Summaries (Filled by JS) -->
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="text-gray-500">Tim</span>
+                                <span class="font-bold" id="review_team_name">-</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="text-gray-500">Kompetisi</span>
+                                <span class="font-bold" id="review_competition">-</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="text-gray-500">Ketua</span>
+                                <span class="font-bold" id="review_leader">-</span>
+                            </div>
+                            <div class="flex justify-between pb-2">
+                                <span class="text-gray-500">Anggota</span>
+                                <span class="font-bold" id="review_members_count">- Orang</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex items-start gap-3">
+                            <input type="checkbox" required id="confirm_check" class="mt-1 w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                            <label for="confirm_check" class="text-sm text-gray-600">
+                                Saya menyatakan bahwa data yang diisi adalah benar dan saya bersedia mengikuti seluruh aturan yang berlaku di ICC 2026.
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="flex justify-between pt-8 border-t border-gray-100 mt-auto">
+                        <button type="button" id="prevBtn" onclick="prevStep()" class="hidden px-6 py-2.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-semibold transition">
+                            Kembali
+                        </button>
+                        <div class="ml-auto">
+                            <button type="button" id="nextBtn" onclick="nextStep()" class="px-8 py-2.5 rounded-lg bg-[#EC46A4] hover:bg-[#d63f93] text-white font-semibold shadow-lg shadow-pink-200 transition">
+                                Lanjut
+                            </button>
+                            <button type="submit" id="submitBtn" class="hidden px-8 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg shadow-green-200 transition">
+                                Daftar Sekarang
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
+</div>
+@endsection
 
-    <script>
-        let currentStep = 0;
-        const steps = document.querySelectorAll('.step');
+@section('scripts')
+<script>
+    let currentStep = 1;
+    const totalSteps = 4;
 
-        function showStep(step) {
-            steps.forEach((s, index) => {
-                s.classList.toggle('active', index === step);
-            });
+    function updateUI() {
+        // Hide all steps
+        document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+        document.querySelector(`.step-content[data-step="${currentStep}"]`).classList.remove('hidden');
+
+        // Update Indicators
+        document.querySelectorAll('.step-indicator').forEach(el => {
+            const step = parseInt(el.getAttribute('data-step'));
+            const circle = el.querySelector('div:first-child');
+            
+            if (step === currentStep) {
+                el.classList.remove('opacity-60');
+                el.classList.add('active');
+                circle.className = "w-8 h-8 rounded-full border-2 border-white bg-white text-[#EC46A4] flex items-center justify-center font-bold text-sm transition-all duration-300";
+            } else if (step < currentStep) {
+                el.classList.remove('opacity-60');
+                el.classList.remove('active');
+                circle.className = "w-8 h-8 rounded-full border-2 border-[#EC46A4] bg-[#EC46A4] text-white flex items-center justify-center font-bold text-sm transition-all duration-300";
+                circle.innerHTML = "✓";
+            } else {
+                el.classList.add('opacity-60');
+                el.classList.remove('active');
+                circle.className = "w-8 h-8 rounded-full border-2 border-white flex items-center justify-center font-bold text-sm transition-all duration-300";
+                circle.innerHTML = step;
+            }
+        });
+
+        // Buttons
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (currentStep === 1) {
+            prevBtn.classList.add('hidden');
+        } else {
+            prevBtn.classList.remove('hidden');
         }
 
-        function nextStep() {
-            if (currentStep < steps.length - 1) {
+        if (currentStep === totalSteps) {
+            nextBtn.classList.add('hidden');
+            submitBtn.classList.remove('hidden');
+            populateReview();
+        } else {
+            nextBtn.classList.remove('hidden');
+            submitBtn.classList.add('hidden');
+        }
+    }
+
+    function validateStep(step) {
+        let valid = true;
+        const currentContainer = document.querySelector(`.step-content[data-step="${step}"]`);
+        const inputs = currentContainer.querySelectorAll('input[required], select[required]');
+        
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                input.reportValidity();
+                valid = false;
+            }
+        });
+
+        // Custom validation logic if needed
+        return valid;
+    }
+
+    function nextStep() {
+        if (validateStep(currentStep)) {
+            if (currentStep < totalSteps) {
                 currentStep++;
-                showStep(currentStep);
+                updateUI();
             }
+        }
+    }
+
+    function prevStep() {
+        if (currentStep > 1) {
+            currentStep--;
+            updateUI();
+        }
+    }
+
+    function populateReview() {
+        // Team Name
+        document.getElementById('review_team_name').innerText = document.getElementById('team_name').value || '-';
+        
+        // Competition
+        const selectedComp = document.querySelector('input[name="competition_id"]:checked');
+        if (selectedComp) {
+            // Find sibling label text
+            const labelTitle = selectedComp.nextElementSibling.querySelector('.text-\\[\\#EC46A4\\]').innerText;
+            document.getElementById('review_competition').innerText = labelTitle;
         }
 
-        function prevStep() {
-            if (currentStep > 0) {
-                currentStep--;
-                showStep(currentStep);
-            }
+        // Leader
+        document.getElementById('review_leader').innerText = document.querySelector('input[name="leader_name"]').value;
+
+        // Count Members
+        let count = 1; // Member 1 always required
+        if (document.querySelector('input[name="member_2_name"]').value.trim() !== '') {
+            count++;
         }
-    </script>
-</body>
-</html>
+        document.getElementById('review_members_count').innerText = count + " Orang (termasuk ketua 1 + " + count + ")"; 
+        // Logic check: "Members" usually excludes leader in count? Previous logic: members exclude leader. 
+        // Form has Leader + Member 1 + Member 2. Total 3.
+        // Let's just say "Total Anggota: N"
+        let total = 1; // Leader
+        if(document.querySelector('input[name="member_1_name"]').value) total++;
+        if(document.querySelector('input[name="member_2_name"]').value) total++;
+        
+        document.getElementById('review_members_count').innerText = total + " Personil";
+    }
+
+    // Initialize
+    updateUI();
+</script>
+@endsection

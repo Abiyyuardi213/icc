@@ -1,98 +1,107 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Peran</title>
-    <link rel="icon" type="image/png" href="{{ asset('image/itats-1080.jpg') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
-</head>
-<body class="hold-transition sidebar-mini layout-fixed">
-<div class="wrapper">
+@extends('layouts.admin')
 
-    @include('include.navbarSistem')
-    @include('include.sidebar')
+@section('title', 'Tambah Peran')
 
-    <div class="content-wrapper">
-        <!-- Header -->
-        <div class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="m-0">Tambah Peran Baru</h1>
-                    </div>
-                </div>
+@section('content')
+{{-- Centering Container --}}
+<div class="min-h-[80vh] flex flex-col items-center justify-center">
+    <div class="w-full max-w-xl">
+        {{-- Breadcrumb & Title --}}
+        <div class="mb-6 text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Tambah Peran Baru</h1>
+            <div class="flex items-center justify-center gap-2 text-sm text-gray-500">
+                <a href="{{ route('role.index') }}" class="hover:text-[#EC46A4] transition">Manajemen Peran</a>
+                <span>/</span>
+                <span class="text-gray-900 font-medium">Tambah</span>
             </div>
         </div>
 
-        <!-- Main content -->
-        <section class="content">
-            <div class="container-fluid">
-                <div class="card card-primary">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-plus-circle"></i> Form Tambah Peran</h3>
-                    </div>
-                    <div class="card-body">
-                        @if(session('error'))
-                            <div class="alert alert-danger">{{ session('error') }}</div>
-                        @endif
+        {{-- Form Card --}}
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+            <form id="createRoleForm" action="{{ route('role.store') }}" method="POST" class="space-y-6">
+                @csrf
 
-                        <form action="{{ route('role.store') }}" method="POST">
-                            @csrf
-
-                            <div class="form-group">
-                                <label for="role_name">Nama Peran</label>
-                                <input type="text" class="form-control @error('role_name') is-invalid @enderror"
-                                       name="role_name" value="{{ old('role_name') }}" required placeholder="Masukkan nama peran" autocomplete="off">
-                                @error('role_name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group">
-                                <label for="role_description">Deskripsi</label>
-                                <textarea class="form-control @error('role_description') is-invalid @enderror"
-                                          name="role_description" required placeholder="Masukkan deskripsi peran">{{ old('role_description') }}</textarea>
-                                @error('role_description')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group">
-                                <label for="role_status">Status</label>
-                                <select class="form-control @error('role_status') is-invalid @enderror"
-                                        name="role_status" required>
-                                    <option value="1" {{ old('role_status') == '1' ? 'selected' : '' }}>Aktif</option>
-                                    <option value="0" {{ old('role_status') == '0' ? 'selected' : '' }}>Nonaktif</option>
-                                </select>
-                                @error('role_status')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mt-4">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Simpan
-                                </button>
-                                <a href="{{ route('role.index') }}" class="btn btn-secondary">Batal</a>
-                            </div>
-                        </form>
-                    </div>
+                {{-- Name Input --}}
+                <div class="space-y-2">
+                    <label for="name" class="block text-sm font-semibold text-gray-700">Nama Peran <span class="text-[#EC46A4]">*</span></label>
+                    <input type="text" name="name" id="name" 
+                        class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#EC46A4] focus:border-[#EC46A4] outline-none transition bg-gray-50 focus:bg-white"
+                        placeholder="Contoh: Administrator"
+                        value="{{ old('name') }}" required>
+                    <p class="text-xs text-gray-500">Nama peran harus unik.</p>
                 </div>
-            </div>
-        </section>
+
+                {{-- Description Input --}}
+                <div class="space-y-2">
+                    <label for="description" class="block text-sm font-semibold text-gray-700">Deskripsi</label>
+                    <textarea name="description" id="description" rows="3"
+                        class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#EC46A4] focus:border-[#EC46A4] outline-none transition bg-gray-50 focus:bg-white"
+                        placeholder="Jelaskan fungsionalitas peran ini">{{ old('description') }}</textarea>
+                </div>
+
+                {{-- Action Buttons --}}
+                <div class="flex items-center gap-4 pt-4">
+                    <button type="submit" id="submitBtn"
+                        class="flex-1 bg-[#EC46A4] hover:bg-[#d63f93] text-white font-bold py-3 px-6 rounded-xl transition shadow-md shadow-pink-200 transform active:scale-95">
+                        Simpan Peran
+                    </button>
+                    <a href="{{ route('role.index') }}" 
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-xl transition text-center">
+                        Batal
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
-
-    @include('include.footerSistem')
 </div>
+@endsection
 
-@include('services.LogoutModal')
+@section('scripts')
+<script>
+    document.getElementById('createRoleForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        let form = this;
+        let btn = document.getElementById('submitBtn');
+        let originalBtnText = btn.innerText;
 
-<!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-</body>
-</html>
+        // Disable button & loading state
+        btn.disabled = true;
+        btn.innerText = 'Menyimpan...';
+
+        let formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(({status, body}) => {
+            if (status === 200 || status === 201) {
+                Toast.fire({
+                    icon: 'success',
+                    title: body.message || 'Role berhasil ditambahkan.'
+                });
+                setTimeout(() => {
+                    window.location.href = "{{ route('role.index') }}";
+                }, 1000); // Redirect after 1s
+            } else {
+                throw new Error(body.message || Object.values(body.errors || {}).flat().join('\n'));
+            }
+        })
+        .catch(error => {
+            Toast.fire({
+                icon: 'error',
+                title: error.message || 'Gagal menyimpan data.'
+            });
+            btn.disabled = false;
+            btn.innerText = originalBtnText;
+        });
+    });
+</script>
+@endsection
