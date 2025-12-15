@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Event - ICC 2026</title>
 
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
         /* --- RESET & VARIABLES --- */
         :root {
@@ -482,49 +485,7 @@
 
 <body>
 
-    <nav class="navbar">
-        <div class="container-navbar">
-            <div class="logo">
-                <img src="{{ asset('image/logo1.png') }}" alt="Informatics Events">
-            </div>
-
-            <div class="nav-links desktop-only">
-                <a href="{{ url('/home') }}" >Beranda</a>
-                <a href="{{ route('event.list') }}">Event</a>
-                <a href="{{ url('/home#about') }}">About</a>
-                <a href="#footer">Contact</a>
-            </div>
-
-            <div class="nav-btn desktop-only">
-                @auth
-                    <a href="{{ url('/dashboard') }}" class="btn-register">Dashboard</a>
-                @else
-                    <a href="{{ route('login') }}" class="btn-register" style="background:transparent; color: var(--text-color); box-shadow:none;">Login</a>
-                    <a href="{{ route('register.account') }}" class="btn-register">Register</a>
-                @endauth
-            </div>
-
-            <button id="menuBtn" class="hamburger mobile-only" aria-label="Menu">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-        </div>
-
-        <div id="mobileMenu" class="mobile-menu">
-            <a href="{{ url('/home') }}" class="active">Beranda</a>
-            <a href="{{ route('event.list') }}">Event</a>
-            <a href="{{ url('/home#about') }}">About</a>
-            <a href="#footer">Contact</a>
-            @auth
-                <a href="{{ url('/dashboard') }}" class="btn-register full-width">Dashboard</a>
-            @else
-                <a href="{{ route('login') }}">Login</a>
-                <a href="{{ route('register.account') }}" class="btn-register full-width">Daftar Akun</a>
-            @endauth
-        </div>
-    </nav>
+    @include('include.navbar')
 
     <main class="main-content">
         <div class="event-container">
@@ -546,7 +507,7 @@
 
             <div class="event-body">
                 <h3>Deskripsi</h3>
-                <p>{!! $event->description !!}</p>
+                <p>{{ strip_tags($event->description) }}</p>
 
                 @if($event->max_members > 1)
                 <h3>Ketentuan Tim:</h3>

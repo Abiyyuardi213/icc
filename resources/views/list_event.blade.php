@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Event - Informatics Events</title>
 
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
         /* =========================================
    1. VARIABLES & RESET (Dasar)
@@ -593,7 +596,7 @@
                             {{ $event->name }}
                         </a>
                     </h3>
-                    <p class="card-description">{{ $event->description }}</p>
+                    <p class="card-description">{{ strip_tags($event->description) }}</p>
 
                     <div class="card-footer">
                         <span class="card-date">{{ $event->registration_end ? $event->registration_end->format('d-m-Y') : '-' }}</span>
