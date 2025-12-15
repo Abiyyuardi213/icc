@@ -561,8 +561,8 @@
 
                 <h3>Cara Daftar:</h3>
                 <p>Langsung kunjungi link berikut untuk mendaftarkan timmu:<br>
-                    <a href="https://icc-2026.sistemin.site" class="link-highlight">🔗
-                        https://icc-2026.sistemin.site</a>
+                    <a href="https://icc-2026.sistemin.site/register" class="link-highlight">🔗
+                        https://icc-2026.sistemin.site/register</a>
                 </p>
 
                 <h3>Contact Person (CP):</h3>
