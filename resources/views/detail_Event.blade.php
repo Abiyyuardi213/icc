@@ -541,7 +541,7 @@
                             <li>Pemrograman Terstruktur: 13 Januari 2026 | 08:00 - 15:00 WIB</li>
                         </ul>
                     </li>
-                    <li><strong>Lokasi Final:</strong> Student Center ITATS</li>
+                    <li><strong>Lokasi Final:</strong> Laboratorium of Computing and Simualtion Engineering (LCSE) ITATS</li>
                 </ul>
 
                 <h3>Ketentuan Peserta:</h3>
