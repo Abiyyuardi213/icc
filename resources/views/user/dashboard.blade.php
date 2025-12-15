@@ -10,7 +10,7 @@
 
 <!-- Stats Grid -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <!-- Stat 1: Teams Joined -->
+    <!-- Stat 1: Total Events Joined -->
     <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
         <div class="p-3 bg-pink-50 rounded-lg text-[#EC46A4]">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -18,8 +18,8 @@
             </svg>
         </div>
         <div>
-            <p class="text-gray-500 text-sm font-medium">Tim Saya</p>
-            <h3 class="text-2xl font-bold text-gray-800">{{ Auth::user()->team ? 1 : 0 }}</h3>
+            <p class="text-gray-500 text-sm font-medium">Event Saya</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{ $totalEventsJoined }}</h3>
         </div>
     </div>
 
@@ -32,11 +32,11 @@
         </div>
         <div>
             <p class="text-gray-500 text-sm font-medium">Notifikasi</p>
-            <h3 class="text-2xl font-bold text-gray-800">2</h3> 
+            <h3 class="text-2xl font-bold text-gray-800">{{ $unreadNotifications }}</h3> 
         </div>
     </div>
 
-    <!-- Stat 3: Event Status -->
+    <!-- Stat 3: Pending Tasks -->
     <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
         <div class="p-3 bg-yellow-50 rounded-lg text-yellow-600">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -44,42 +44,70 @@
             </svg>
         </div>
         <div>
-            <p class="text-gray-500 text-sm font-medium">Status Tim</p>
-            <h3 class="text-lg font-bold text-gray-800 capitalize">
-                {{ Auth::user()->team ? Auth::user()->team->status : 'Belum Daftar' }}
+            <p class="text-gray-500 text-sm font-medium">Tugas Belum Selesai</p>
+            <h3 class="text-lg font-bold text-gray-800">
+                {{ $pendingTasksCount }}
             </h3>
         </div>
     </div>
 </div>
 
-<!-- CTA Section -->
-@if(!Auth::user()->team)
-<div class="bg-gradient-to-r from-[#EC46A4] to-[#d63f93] rounded-2xl p-8 text-white relative overflow-hidden">
-    <div class="absolute top-0 right-0 -tr-16 opacity-10">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-64 w-64" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Upcoming/Active Events -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h3 class="font-bold text-gray-800 mb-4">Event Terdekat</h3>
+        @if($upcomingEvent)
+            <div class="border border-pink-100 bg-pink-50 rounded-lg p-5">
+                <div class="flex justify-between items-start mb-2">
+                    <h4 class="font-bold text-[#EC46A4] text-lg">{{ $upcomingEvent->name }}</h4>
+                    <span class="text-xs bg-white text-[#EC46A4] px-2 py-1 rounded border border-pink-100 font-medium">Segera Datang</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-3">{{ Str::limit(strip_tags($upcomingEvent->description), 100) }}</p>
+                <div class="flex items-center gap-4 text-sm text-gray-500">
+                    <div class="flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span>{{ $upcomingEvent->event_start ? $upcomingEvent->event_start->format('d M Y') : 'TBA' }}</span>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="{{ route('user.events.index') }}" class="text-sm font-semibold text-[#EC46A4] hover:underline">Lihat Detail Event &rarr;</a>
+                </div>
+            </div>
+        @else
+             <div class="text-center py-6 border-dashed border-2 border-gray-100 rounded-lg">
+                <p class="text-gray-500 text-sm">Tidak ada event terdekat atau Anda belum bergabung.</p>
+             </div>
+        @endif
     </div>
-    <div class="relative z-10 max-w-2xl">
-        <h2 class="text-2xl font-bold mb-2">Anda Belum Terdaftar di Kompetisi!</h2>
-        <p class="mb-6 opacity-90">Segera daftarkan tim Anda untuk mengikuti ICC 2026. Raih kesempatan memenangkan total hadiah jutaan rupiah!</p>
-        <a href="{{ route('event.list') }}" class="inline-block bg-white text-[#EC46A4] font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-gray-50 transition transform hover:-translate-y-1">
-            Lihat Daftar Event
-        </a>
-    </div>
-</div>
-@else
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div>
-            <h3 class="text-lg font-bold text-gray-800">Tim Anda: {{ Auth::user()->team->name }}</h3>
-            <p class="text-gray-600 text-sm">Event: <span class="font-medium text-[#EC46A4]">{{ Auth::user()->team->event->name ?? '-' }}</span></p>
-        </div>
-        <a href="{{ route('participants.edit') }}" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition">
-            Kelola Tim
-        </a>
-    </div>
-</div>
-@endif
 
+    <!-- My Teams List -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-gray-800">Status Tim Saya</h3>
+            <a href="{{ route('user.events.index') }}" class="text-sm text-[#EC46A4] hover:text-[#d63f93] font-medium">Lihat Semua</a>
+        </div>
+        <div class="space-y-4">
+            @forelse($teams->take(3) as $team)
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                    <p class="font-semibold text-gray-800 text-sm">{{ $team->name }}</p>
+                    <p class="text-xs text-gray-500">{{ $team->event->name }}</p>
+                </div>
+                <span class="px-2 py-1 rounded text-xs font-semibold
+                    {{ $team->status == 'verified' ? 'bg-green-100 text-green-700' : ($team->status == 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
+                    {{ ucfirst($team->status) }}
+                </span>
+            </div>
+            @empty
+            <div class="text-center py-4 text-gray-400 text-sm">Belum ada tim terdaftar.</div>
+            @endforelse
+            
+            @if($teams->count() == 0)
+                <a href="{{ route('event.list') }}" class="block text-center mt-4 w-full py-2 bg-[#EC46A4] text-white rounded-lg hover:bg-[#d63f93] text-sm font-medium transition">
+                    Cari Event & Daftar
+                </a>
+            @endif
+        </div>
+    </div>
+</div>
 @endsection

@@ -30,4 +30,14 @@ class Event extends Model
     {
         return $this->hasMany(Team::class);
     }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function submissions()
+    {
+        return $this->hasManyThrough(Submission::class, Team::class);
+    }
 }

@@ -10,7 +10,13 @@ class AdminEventController extends Controller
 {
     public function index()
     {
-        $events = Event::latest()->get();
+        $events = Event::withCount([
+            'tasks',
+            'submissions',
+            'teams as verified_teams_count' => function ($query) {
+                $query->where('status', 'verified');
+            }
+        ])->latest()->get();
         return view('admin.event.index', compact('events'));
     }
 

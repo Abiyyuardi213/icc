@@ -29,27 +29,56 @@
         <table id="eventTable" class="w-full text-left border-collapse display nowrap" style="width:100%">
             <thead>
                 <tr>
-                    <th>No</th>
-                    <th>Nama Event</th>
-                    <th>Jadwal Event</th>
-                    <th>Kuota</th>
-                    <th class="text-center">Status</th>
-                    <th class="text-center">Aksi</th>
+                    <th class="p-4 border-b border-gray-100 bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">No</th>
+                    <th class="p-4 border-b border-gray-100 bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Event</th>
+                    <th class="p-4 border-b border-gray-100 bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tanggal</th>
+                    <th class="p-4 border-b border-gray-100 bg-gray-50 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Partisipan</th>
+                    <th class="p-4 border-b border-gray-100 bg-gray-50 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Jumlah Tugas</th>
+                    <th class="p-4 border-b border-gray-100 bg-gray-50 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Progres Task</th>
+                    <th class="p-4 border-b border-gray-100 bg-gray-50 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="p-4 border-b border-gray-100 bg-gray-50 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach($events as $index => $event)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td class="font-medium text-gray-900">{{ $event->name }}</td>
-                        <td>
-                            <div class="text-sm">
-                                <span class="font-semibold text-gray-600">Mulai:</span> {{ $event->event_start->format('d M Y') }}<br>
-                                <span class="font-semibold text-gray-600">Selesai:</span> {{ $event->event_end->format('d M Y') }}
+            <tbody class="divide-y divide-gray-100">
+                @forelse($events as $index => $event)
+                <tr class="hover:bg-gray-50 transition duration-150">
+                    <td class="p-4 text-sm text-gray-500 text-center w-12">{{ $index + 1 }}</td>
+                    <td class="p-4 max-w-xs overflow-hidden">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-pink-100 flex-shrink-0 flex items-center justify-center text-[#EC46A4] font-bold">
+                                {{ substr($event->name, 0, 1) }}
                             </div>
-                        </td>
-                        <td>{{ $event->max_members }} Tim</td>
-                        <td class="text-center">
+                            <div class="min-w-0">
+                                <p class="font-semibold text-gray-800 truncate" title="{{ $event->name }}">{{ $event->name }}</p>
+                                <p class="text-xs text-gray-500 line-clamp-1">{{ Str::limit(strip_tags($event->description), 30) }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-sm text-gray-500">
+                        <div class="flex flex-col">
+                            <span class="font-medium">{{ $event->event_start ? $event->event_start->format('d M Y') : 'TBA' }}</span>
+                            <span class="text-xs text-gray-400">{{ $event->event_end ? 's/d ' . $event->event_end->format('d M Y') : '' }}</span>
+                        </div>
+                    </td>
+                    <td class="p-4 text-center">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                             {{ $event->verified_teams_count }} Tim
+                        </span>
+                    </td>
+                    <td class="p-4 text-center">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                             {{ $event->tasks_count }} Task
+                        </span>
+                    </td>
+                    <td class="p-4 text-center">
+                        <div class="flex flex-col items-center">
+                            <span class="text-sm font-bold text-gray-700">
+                                {{ $event->submissions_count }} / {{ $event->verified_teams_count }}
+                            </span>
+                            <span class="text-[10px] text-gray-400">Submisi / Team</span>
+                        </div>
+                    </td>
+                    <td class="p-4 text-center">
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" class="sr-only peer toggle-status" 
                                     data-event-id="{{ $event->id }}" 
@@ -59,6 +88,12 @@
                         </td>
                         <td class="text-center">
                             <div class="flex justify-center gap-2">
+                                <a href="{{ route('admin.event.tasks.index', $event->id) }}" class="text-purple-500 hover:text-purple-700 bg-purple-50 hover:bg-purple-100 p-2 rounded-lg transition" title="Kelola Tugas">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
+                                    </svg>
+                                </a>
                                 <button onclick="openEditModal({{ $event->id }})" class="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="Edit">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />

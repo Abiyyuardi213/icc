@@ -52,8 +52,26 @@ class User extends Authenticatable
         return $this->hasOne(Team::class);
     }
     
+    public function teams()
+    {
+        return $this->hasMany(Team::class);
+    }
+
+    // Helper to get team for specific event
+    public function teamForEvent($eventId)
+    {
+        return $this->teams()->where('event_id', $eventId)->first();
+    }
+    
+    // Alias for Dashboard single team access (if needed temporarily, but best to refactor usages)
+    // Deprecated: logic moving to support multiple teams
     public function team()
     {
-        return $this->hasOne(Team::class);
+        return $this->hasOne(Team::class)->latest(); // Fallback to latest team
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
     }
 }

@@ -15,6 +15,8 @@
         @media (max-width: 768px) {
             .user-content { margin-left: 0; }
         }
+
+        .user-content.full-width { margin-left: 0; }
     </style>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -40,6 +42,7 @@
     <script>
         const toggleBtnUser = document.getElementById('toggleSidebar');
         const sidebarUser = document.getElementById('userSidebar');
+        const userContent = document.getElementById('userContent');
         const sidebarOverlayUser = document.getElementById('sidebarOverlayUser');
         const profileBtnUser = document.getElementById('profileDropdownBtn');
         const profileDropdownUser = document.getElementById('profileDropdown');
@@ -53,8 +56,9 @@
                     if (isOpen) closeMobileSidebar();
                     else openMobileSidebar();
                 } else {
-                    // Desktop can implement collapse if needed, for now just static
-                    // sidebarUser.classList.toggle('closed');
+                    // Desktop
+                    sidebarUser.classList.toggle('closed');
+                    userContent.classList.toggle('full-width');
                 }
             });
         }

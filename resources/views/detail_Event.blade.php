@@ -556,7 +556,11 @@
                     juara di ICC 2026! 🚀</p>
 
                 <div class="cta-container">
-                    <a href="{{ route('team.register', ['event_id' => $event->id]) }}" class="btn-cta-large">Daftar Sekarang</a>
+                    @if(auth()->check() && auth()->user()->team && auth()->user()->team->event_id == $event->id)
+                        <button class="btn-cta-large" style="background-color: #9ca3af; cursor: not-allowed;" disabled>Sudah Terdaftar</button>
+                    @else
+                        <a href="{{ route('team.register', ['event_id' => $event->id]) }}" class="btn-cta-large">Daftar Sekarang</a>
+                    @endif
                     <button class="btn-notif">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">

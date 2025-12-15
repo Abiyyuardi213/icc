@@ -25,17 +25,28 @@ Route::post('/register-account', [AuthController::class, 'register']);
 // Dashboard (protected) - render dashboard view
 // Dashboard (protected) 
 Route::middleware(['auth', 'role:participant'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('user.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\UserDashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/user/events', function () {
-        return view('user.event.index', ['team' => auth()->user()->team]);
+        return view('user.event.index'); // View now handles fetching teams
     })->name('user.events.index');
 
-    Route::get('/user/inbox', function () {
-        return view('user.inbox.index');
-    })->name('user.inbox.index');
+    // Route::get('/user/inbox', function () {
+    //     return view('user.inbox.index');
+    // })->name('user.inbox.index'); // Legacy, merged into Notifications
+
+    // Notifications (serving as Inbox)
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('notifications.readAll');
+
+    // Profile Management
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+
+    // Event Tasks (User Side)
+    Route::get('/user/tasks/{id}', [App\Http\Controllers\UserTaskController::class, 'show'])->name('user.tasks.show');
+    Route::post('/user/tasks/{id}/submit', [App\Http\Controllers\UserTaskController::class, 'store'])->name('user.tasks.store');
 });
 
 Route::get('/register', [TeamController::class, 'create'])->name('team.register');
@@ -58,9 +69,7 @@ Route::get('/events/{slug}', [EventController::class, 'show'])->name('event.deta
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])->name('dashboard');
 
     // Manage Users
     Route::resource('user', UserController::class);
@@ -71,8 +80,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::resource('team', App\Http\Controllers\AdminTeamController::class);
 
-    // Placeholders for future admin management features
-    // Route::resource('users', AdminUserController::class);
-    // Route::resource('events', AdminEventController::class);
-    // Route::resource('teams', AdminTeamController::class);
+    // Event Tasks Management
+    Route::prefix('events/{event}')->name('event.')->group(function () {
+        Route::get('tasks', [App\Http\Controllers\AdminTaskController::class, 'index'])->name('tasks.index');
+        Route::get('tasks/create', [App\Http\Controllers\AdminTaskController::class, 'create'])->name('tasks.create');
+        Route::post('tasks', [App\Http\Controllers\AdminTaskController::class, 'store'])->name('tasks.store');
+        Route::get('tasks/{task}/edit', [App\Http\Controllers\AdminTaskController::class, 'edit'])->name('tasks.edit');
+        Route::put('tasks/{task}', [App\Http\Controllers\AdminTaskController::class, 'update'])->name('tasks.update');
+        Route::delete('tasks/{task}', [App\Http\Controllers\AdminTaskController::class, 'destroy'])->name('tasks.destroy');
+    });
 });

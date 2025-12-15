@@ -112,18 +112,38 @@
             Event Saya
         </a>
 
-        <a href="{{ route('user.inbox.index') }}" class="menu-item {{ request()->routeIs('user.inbox.*') ? 'active' : '' }}">
+        <a href="{{ route('notifications.index') }}" class="menu-item {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
             Kotak Masuk
-            <!-- Example Badge -->
-            <!-- <span class="badge">2</span> -->
+            @php
+                $unreadCount = auth()->user()->notifications()->where('is_read', false)->count();
+            @endphp
+            @if($unreadCount > 0)
+                <span class="badge">{{ $unreadCount }}</span>
+            @endif
         </a>
 
         <div class="mt-8">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 px-3">Lainnya</p>
-            <a href="{{ route('home') }}" class="menu-item">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 px-3">Akun</p>
+            <a href="{{ route('profile.edit') }}" class="menu-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Profil Saya
+            </a>
+            
+            <button type="button" id="logoutBtn" class="menu-item w-full text-left bg-transparent border-0 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-red-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Logout
+            </button>
+        </div>
+
+        <div class="mt-4 border-t pt-4">
+             <a href="{{ route('home') }}" class="menu-item text-sm text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
@@ -132,3 +152,29 @@
         </div>
     </nav>
 </aside>
+
+<!-- Hidden Logout Form for AJAX fallback or simple submission context -->
+<form id="logoutForm" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
+
+{{-- SweetAlert2 is already in layout, but let's assume specific script management here --}}
+<script>
+    document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        Swal.fire({
+            title: 'Yakin ingin keluar?',
+            text: "Anda harus login kembali untuk mengakses akun ini.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#EC46A4',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Logout!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit form directly for ease
+                document.getElementById('logoutForm').submit();
+            }
+        });
+    });
+</script>

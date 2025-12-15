@@ -17,14 +17,17 @@ class TeamController extends Controller
     {
         $user = \Illuminate\Support\Facades\Auth::user();
         
-        // Redirect if already has a team
-        if($user->team) {
-            return redirect()->route('participants.edit')->with('info', 'Anda sudah terdaftar. Silakan edit data tim Anda di sini.');
-        }
-
-        $events = \App\Models\Event::where('is_active', true)->get();
         $selected_event_id = $request->query('event_id');
+        $events = \App\Models\Event::where('is_active', true)->get();
         $selected_event = $events->find($selected_event_id);
+
+        // Check if user already has a team FOR THIS SPECIFIC EVENT
+        if ($selected_event) {
+            $existingTeam = $user->teams()->where('event_id', $selected_event->id)->first();
+            if ($existingTeam) {
+                return redirect()->route('user.events.index')->with('info', 'Anda sudah terdaftar untuk event ini.');
+            }
+        }
 
         return view('registration', compact('events', 'selected_event', 'user'));
     }
@@ -52,9 +55,13 @@ class TeamController extends Controller
         
         $request->validate($rules);
 
-        // Check Duplicate Team for User
-        if (\Illuminate\Support\Facades\Auth::user()->team) {
-             return back()->withErrors(['team_name' => 'Anda sudah terdaftar di satu tim.'])->withInput();
+        // Check Duplicate Team for User AND Event
+        $existingTeam = \Illuminate\Support\Facades\Auth::user()->teams()
+            ->where('event_id', $request->competition_id)
+            ->first();
+
+        if ($existingTeam) {
+             return back()->withErrors(['team_name' => 'Anda sudah terdaftar di event ini.'])->withInput();
         }
 
         \Illuminate\Support\Facades\DB::beginTransaction();
@@ -92,7 +99,16 @@ class TeamController extends Controller
             }
 
             \Illuminate\Support\Facades\DB::commit();
-            return redirect('/home')->with('success', 'Registrasi Tim Berhasil!');
+
+            // Create Notification
+            \App\Models\Notification::create([
+                'user_id' => \Illuminate\Support\Facades\Auth::id(),
+                'title' => 'Pendaftaran Berhasil',
+                'message' => 'Anda berhasil mendaftar untuk event ' . $team->event->name . '. Silakan tunggu verifikasi admin.',
+                'type' => 'info' 
+            ]);
+
+            return redirect()->route('user.events.index')->with('success', 'Registrasi Berhasil! Silakan tunggu verifikasi admin.');
 
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollback();

@@ -25,18 +25,13 @@
             <p class="text-gray-500 text-sm mt-1">Silakan masuk untuk mengakses akun Anda</p>
         </div>
 
-        <form action="{{ route('login') }}" method="POST" class="space-y-6">
+        <form id="loginForm" action="{{ route('login') }}" method="POST" class="space-y-6">
             @csrf
-
-            @if ($errors->any())
-                <div class="bg-red-50 text-red-600 p-3 rounded text-sm mb-4">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+            
+            <!-- Removed Server-side Error Display (handled by generic Toast or client-side) 
+                 but keeping it hidden just in case of non-js fallback? 
+                 Actually, simpler to just remove if we go full AJAX or keep empty container. -->
+            <div id="errorContainer" class="hidden bg-red-50 text-red-600 p-3 rounded text-sm mb-4"></div>
 
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
@@ -68,8 +63,8 @@
                 </div>
             </div>
 
-            <button type="submit"
-                class="w-full bg-[#EC46A4] hover:bg-[#d63f93] text-white font-semibold py-2.5 rounded-lg transition duration-200 shadow-md transform hover:-translate-y-0.5">
+            <button type="submit" id="loginBtn"
+                class="w-full bg-[#EC46A4] hover:bg-[#d63f93] text-white font-semibold py-2.5 rounded-lg transition duration-200 shadow-md transform hover:-translate-y-0.5 flex justify-center items-center gap-2">
                 Masuk
             </button>
         </form>
@@ -80,4 +75,98 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const form = this;
+        const btn = document.getElementById('loginBtn');
+        const originalBtnText = btn.innerHTML;
+        const formData = new FormData(form);
+
+        // Reset errors
+        document.getElementById('errorContainer').classList.add('hidden');
+        document.getElementById('errorContainer').innerHTML = '';
+
+        // Loading State
+        btn.disabled = true;
+        btn.innerHTML = '<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...';
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(({status, body}) => {
+            if (status === 200 && body.success) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
+
+                Toast.fire({
+                    icon: 'success',
+                    title: body.message || 'Login Berhasil'
+                });
+
+                setTimeout(() => {
+                    window.location.href = body.redirect_url;
+                }, 1000);
+            } else {
+                throw body; // Trigger catch block with response body
+            }
+        })
+        .catch(error => {
+            btn.disabled = false;
+            btn.innerHTML = originalBtnText;
+
+            // Handle Validation Errors
+            if (error.errors) {
+                let errorHtml = '<ul class="list-disc pl-5">';
+                for (const [key, messages] of Object.entries(error.errors)) {
+                    messages.forEach(msg => errorHtml += `<li>${msg}</li>`);
+                }
+                errorHtml += '</ul>';
+                
+                // Show inline error for better UX or just Toast? 
+                // User asked for "sweet alert toast"
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+                
+                Toast.fire({
+                    icon: 'error',
+                    title: error.message || 'Login Gagal'
+                });
+
+                // Also show in container if critical
+                const errContainer = document.getElementById('errorContainer');
+                errContainer.innerHTML = errorHtml;
+                errContainer.classList.remove('hidden');
+            } else {
+                 Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message || 'Terjadi kesalahan sistem',
+                });
+            }
+        });
+    });
+</script>
 @endsection

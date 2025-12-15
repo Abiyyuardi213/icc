@@ -27,7 +27,7 @@ class AdminTeamController extends Controller
         
         if (request()->expectsJson()) {
             // Append accessors or map data for easier JS handling
-            $team->setAppends(['leader_name', 'member_count']);
+            // $team->setAppends(['leader_name', 'member_count']); 
             return response()->json($team);
         }
         
@@ -45,6 +45,28 @@ class AdminTeamController extends Controller
 
         $team = Team::findOrFail($id);
         $team->update(['status' => $request->status]);
+
+        // Send Notification
+        $title = 'Update Status Tim';
+        $message = 'Status tim Anda untuk event ' . $team->event->name . ' telah diperbarui menjadi ' . ucfirst($request->status) . '.';
+        $type = 'info';
+
+        if ($request->status == 'verified') {
+            $title = 'Tim Terverifikasi';
+            $message = 'Selamat! Tim Anda (' . $team->name . ') telah diverifikasi. Anda sekarang dapat mengakses tugas event.';
+            $type = 'success';
+        } elseif ($request->status == 'rejected') {
+            $title = 'Tim Ditolak';
+            $message = 'Maaf, tim Anda (' . $team->name . ') ditolak. Silakan hubungi admin untuk info lebih lanjut.';
+            $type = 'error';
+        }
+
+        \App\Models\Notification::create([
+            'user_id' => $team->user_id,
+            'title' => $title,
+            'message' => $message,
+            'type' => $type
+        ]);
 
         return response()->json([
             'success' => true,

@@ -28,11 +28,28 @@ class AuthController extends Controller
             /** @var \App\Models\User $user */
             $user = Auth::user();
 
+            $redirectUrl = route('dashboard');
             if ($user->role && strtolower($user->role->name) === 'admin') {
-                return redirect()->route('admin.dashboard');
+                $redirectUrl = route('admin.dashboard');
             }
 
-            return redirect()->route('dashboard');
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Login berhasil!',
+                    'redirect_url' => $redirectUrl
+                ]);
+            }
+
+            return redirect()->to($redirectUrl);
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email atau password salah.',
+                'errors' => ['email' => ['Email atau password salah.']]
+            ], 422);
         }
 
         return back()->withErrors([
@@ -64,6 +81,14 @@ class AuthController extends Controller
         
 
         Auth::login($user);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Registrasi berhasil! Selamat datang.',
+                'redirect_url' => route('dashboard')
+            ]);
+        }
 
         return redirect()->route('dashboard');
     }
