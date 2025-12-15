@@ -578,7 +578,7 @@
                     juara di ICC 2026! 🚀</p>
 
                 <div class="cta-container">
-                    <a href="#" class="btn-cta-large">Daftar Sekarang</a>
+                    <a href="{{ route('team.register') }}" class="btn-cta-large">Daftar Sekarang</a>
                     <button class="btn-notif">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
