@@ -85,21 +85,26 @@
                         </ul>
                     </div>
                 @endif
-                
+
                 <form id="wizardForm" action="{{ route('team.register') }}" method="POST" class="flex-1 flex flex-col justify-between h-full">
                     @csrf
-                    
+
                     <!-- Step 1 Content: Informasi Tim -->
                     <div class="step-content active" data-step="1">
                         <h3 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Informasi Tim & Lomba</h3>
-                        
+
                         <div class="space-y-5">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Kompetisi</label>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     @foreach($events as $event)
                                     <label class="cursor-pointer">
-                                        <input type="radio" name="competition_id" value="{{ $event->id }}" class="peer sr-only" required 
+                                       <input type="radio"
+                                            name="competition_id"
+                                            value="{{ $event->id }}"
+                                            data-max-member="{{ $event->max_members }}"
+                                            class="peer sr-only"
+                                            required
                                             {{ (old('competition_id') == $event->id || (isset($selected_event) && $selected_event->id == $event->id)) ? 'checked' : '' }}>
                                         <div class="p-4 border-2 border-gray-200 rounded-xl hover:border-pink-300 peer-checked:border-[#EC46A4] peer-checked:bg-pink-50 transition-all text-center">
                                             <div class="text-[#EC46A4] font-bold text-lg mb-1">{{ $event->name }}</div>
@@ -123,7 +128,7 @@
                     <!-- Step 2 Content: Leader Data -->
                     <div class="step-content hidden" data-step="2">
                         <h3 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Data Ketua Tim</h3>
-                        
+
                         <div class="space-y-4">
                             <!-- Pre-filled from User Auth -->
                             <div class="bg-blue-50 border border-blue-100 p-4 rounded-lg flex items-start gap-3 mb-4">
@@ -167,9 +172,9 @@
                     </div>
 
                     <!-- Step 3 Content: Members -->
-                    <div class="step-content hidden" data-step="3">
+                    {{-- <div class="step-content hidden" data-step="3">
                         <h3 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Anggota Tim</h3>
-                        
+
                         <div class="space-y-6">
                             <!-- Member 1 -->
                             <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
@@ -211,12 +216,28 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
+
+                    <!-- Step 3 Content: Members -->
+<div class="step-content hidden" data-step="3">
+    <h3 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">
+        Anggota Tim
+    </h3>
+
+    <p class="text-sm text-gray-500 mb-4">
+        Jumlah anggota menyesuaikan dengan maksimal anggota kompetisi (ketua sudah dihitung).
+    </p>
+
+    <div id="membersContainer" class="space-y-6">
+        <!-- Dynamic members injected by JS -->
+    </div>
+</div>
+
 
                     <!-- Step 4 Content: Review -->
                     <div class="step-content hidden" data-step="4">
                         <h3 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Konfirmasi Pendaftaran</h3>
-                        
+
                         <div class="bg-pink-50 border border-pink-100 rounded-xl p-6 text-center mb-6">
                             <h4 class="text-lg font-bold text-pink-800 mb-2">Hampir Selesai!</h4>
                             <p class="text-gray-600 text-sm">Pastikan semua data yang Anda masukkan sudah benar sebelum mendaftar.</p>
@@ -273,121 +294,154 @@
 
 @section('scripts')
 <script>
-    let currentStep = 1;
-    const totalSteps = 4;
+let currentStep = 1;
+const totalSteps = 4;
+let maxMember = 0;
 
-    function updateUI() {
-        // Hide all steps
-        document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
-        document.querySelector(`.step-content[data-step="${currentStep}"]`).classList.remove('hidden');
+/* =========================
+   Generate Member Inputs
+========================= */
+function generateMembers() {
+    const container = document.getElementById('membersContainer');
+    if (!container) return;
 
-        // Update Indicators
-        document.querySelectorAll('.step-indicator').forEach(el => {
-            const step = parseInt(el.getAttribute('data-step'));
-            const circle = el.querySelector('div:first-child');
-            
-            if (step === currentStep) {
-                el.classList.remove('opacity-60');
-                el.classList.add('active');
-                circle.className = "w-8 h-8 rounded-full border-2 border-white bg-white text-[#EC46A4] flex items-center justify-center font-bold text-sm transition-all duration-300";
-            } else if (step < currentStep) {
-                el.classList.remove('opacity-60');
-                el.classList.remove('active');
-                circle.className = "w-8 h-8 rounded-full border-2 border-[#EC46A4] bg-[#EC46A4] text-white flex items-center justify-center font-bold text-sm transition-all duration-300";
-                circle.innerHTML = "✓";
-            } else {
-                el.classList.add('opacity-60');
-                el.classList.remove('active');
-                circle.className = "w-8 h-8 rounded-full border-2 border-white flex items-center justify-center font-bold text-sm transition-all duration-300";
-                circle.innerHTML = step;
-            }
-        });
+    container.innerHTML = '';
 
-        // Buttons
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const submitBtn = document.getElementById('submitBtn');
+    if (maxMember <= 1) return;
 
-        if (currentStep === 1) {
-            prevBtn.classList.add('hidden');
+    const memberCount = maxMember - 1; // ketua sudah dihitung
+
+    for (let i = 1; i <= memberCount; i++) {
+        container.insertAdjacentHTML('beforeend', `
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <h4 class="font-bold text-gray-700 mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-xs">${i}</span>
+                    Anggota ${i} ${i === 1 ? '(Wajib)' : '(Opsional)'}
+                </h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase">Nama Lengkap</label>
+                        <input type="text"
+                               name="members[${i}][name]"
+                               ${i === 1 ? 'required' : ''}
+                               class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-[#EC46A4] outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase">NPM</label>
+                        <input type="text"
+                               name="members[${i}][npm]"
+                               ${i === 1 ? 'required' : ''}
+                               class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-[#EC46A4] outline-none">
+                    </div>
+                </div>
+            </div>
+        `);
+    }
+}
+
+/* =========================
+   UI Update
+========================= */
+function updateUI() {
+    document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+    document.querySelector(`.step-content[data-step="${currentStep}"]`).classList.remove('hidden');
+
+    document.querySelectorAll('.step-indicator').forEach(el => {
+        const step = parseInt(el.dataset.step);
+        const circle = el.querySelector('div:first-child');
+
+        if (step === currentStep) {
+            el.classList.remove('opacity-60');
+            circle.className = "w-8 h-8 rounded-full border-2 border-white bg-white text-[#EC46A4] flex items-center justify-center font-bold text-sm";
+        } else if (step < currentStep) {
+            el.classList.remove('opacity-60');
+            circle.className = "w-8 h-8 rounded-full border-2 border-[#EC46A4] bg-[#EC46A4] text-white flex items-center justify-center font-bold text-sm";
+            circle.innerHTML = "✓";
         } else {
-            prevBtn.classList.remove('hidden');
+            el.classList.add('opacity-60');
+            circle.className = "w-8 h-8 rounded-full border-2 border-white flex items-center justify-center font-bold text-sm";
+            circle.innerHTML = step;
         }
+    });
 
-        if (currentStep === totalSteps) {
-            nextBtn.classList.add('hidden');
-            submitBtn.classList.remove('hidden');
-            populateReview();
-        } else {
-            nextBtn.classList.remove('hidden');
-            submitBtn.classList.add('hidden');
+    document.getElementById('prevBtn').classList.toggle('hidden', currentStep === 1);
+    document.getElementById('nextBtn').classList.toggle('hidden', currentStep === totalSteps);
+    document.getElementById('submitBtn').classList.toggle('hidden', currentStep !== totalSteps);
+
+    if (currentStep === 3) generateMembers();
+    if (currentStep === totalSteps) populateReview();
+}
+
+/* =========================
+   Validation
+========================= */
+function validateStep(step) {
+    let valid = true;
+    const inputs = document.querySelector(`.step-content[data-step="${step}"]`)
+        .querySelectorAll('input[required], select[required]');
+
+    inputs.forEach(input => {
+        if (!input.checkValidity()) {
+            input.reportValidity();
+            valid = false;
         }
+    });
+    return valid;
+}
+
+function nextStep() {
+    if (validateStep(currentStep) && currentStep < totalSteps) {
+        currentStep++;
+        updateUI();
+    }
+}
+
+function prevStep() {
+    if (currentStep > 1) {
+        currentStep--;
+        updateUI();
+    }
+}
+
+/* =========================
+   Review Step
+========================= */
+function populateReview() {
+    document.getElementById('review_team_name').innerText =
+        document.getElementById('team_name').value || '-';
+
+    const selectedComp = document.querySelector('input[name="competition_id"]:checked');
+    if (selectedComp) {
+        const title = selectedComp.nextElementSibling.querySelector('.text-\\[\\#EC46A4\\]').innerText;
+        document.getElementById('review_competition').innerText = title;
     }
 
-    function validateStep(step) {
-        let valid = true;
-        const currentContainer = document.querySelector(`.step-content[data-step="${step}"]`);
-        const inputs = currentContainer.querySelectorAll('input[required], select[required]');
-        
-        inputs.forEach(input => {
-            if (!input.checkValidity()) {
-                input.reportValidity();
-                valid = false;
-            }
-        });
+    document.getElementById('review_leader').innerText =
+        document.querySelector('input[name="leader_name"]').value;
 
-        // Custom validation logic if needed
-        return valid;
-    }
+    let total = 1; // ketua
+    document.querySelectorAll('#membersContainer input[name$="[name]"]').forEach(input => {
+        if (input.value.trim() !== '') total++;
+    });
 
-    function nextStep() {
-        if (validateStep(currentStep)) {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateUI();
-            }
-        }
-    }
+    document.getElementById('review_members_count').innerText = total + " Personil";
+}
 
-    function prevStep() {
-        if (currentStep > 1) {
-            currentStep--;
-            updateUI();
-        }
-    }
+/* =========================
+   Event Selection
+========================= */
+document.querySelectorAll('input[name="competition_id"]').forEach(radio => {
+    radio.addEventListener('change', function () {
+         console.log('Max member:', this.dataset.maxMember);
+        maxMember = parseInt(this.dataset.maxMember);
+        if (currentStep === 3) generateMembers();
+    });
+});
 
-    function populateReview() {
-        // Team Name
-        document.getElementById('review_team_name').innerText = document.getElementById('team_name').value || '-';
-        
-        // Competition
-        const selectedComp = document.querySelector('input[name="competition_id"]:checked');
-        if (selectedComp) {
-            // Find sibling label text
-            const labelTitle = selectedComp.nextElementSibling.querySelector('.text-\\[\\#EC46A4\\]').innerText;
-            document.getElementById('review_competition').innerText = labelTitle;
-        }
-
-        // Leader
-        document.getElementById('review_leader').innerText = document.querySelector('input[name="leader_name"]').value;
-
-        // Count Members
-        let count = 1; // Member 1 always required
-        if (document.querySelector('input[name="member_2_name"]').value.trim() !== '') {
-            count++;
-        }
-        document.getElementById('review_members_count').innerText = count + " Orang (termasuk ketua 1 + " + count + ")"; 
-        // Logic check: "Members" usually excludes leader in count? Previous logic: members exclude leader. 
-        // Form has Leader + Member 1 + Member 2. Total 3.
-        // Let's just say "Total Anggota: N"
-        let total = 1; // Leader
-        if(document.querySelector('input[name="member_1_name"]').value) total++;
-        if(document.querySelector('input[name="member_2_name"]').value) total++;
-        
-        document.getElementById('review_members_count').innerText = total + " Personil";
-    }
-
-    // Initialize
-    updateUI();
+/* Init */
+updateUI();
 </script>
+
 @endsection

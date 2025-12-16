@@ -16,7 +16,7 @@ class TeamController extends Controller
     public function create(Request $request)
     {
         $user = \Illuminate\Support\Facades\Auth::user();
-        
+
         $selected_event_id = $request->query('event_id');
         $events = \App\Models\Event::where('is_active', true)->get();
         $selected_event = $events->find($selected_event_id);
@@ -29,6 +29,7 @@ class TeamController extends Controller
             }
         }
 
+
         return view('registration', compact('events', 'selected_event', 'user'));
     }
 
@@ -38,10 +39,10 @@ class TeamController extends Controller
         $rules = [
             'competition_id' => ['required', 'exists:events,id'], // Changed from competition_type string
             'team_name' => 'required|string|max:255|unique:teams,name',
-            
+
             // Leader
             'leader_name' => 'required|string|max:255',
-            'leader_npm' => 'required|string|max:255', 
+            'leader_npm' => 'required|string|max:255',
             'leader_email' => 'required|email|max:255',
             'leader_phone' => 'required|string|max:15',
 
@@ -52,7 +53,7 @@ class TeamController extends Controller
             'member_2_name' => 'nullable|string|max:255',
             'member_2_npm' => 'nullable|string|max:255|required_with:member_2_name',
         ];
-        
+
         $request->validate($rules);
 
         // Check Duplicate Team for User AND Event
@@ -105,7 +106,7 @@ class TeamController extends Controller
                 'user_id' => \Illuminate\Support\Facades\Auth::id(),
                 'title' => 'Pendaftaran Berhasil',
                 'message' => 'Anda berhasil mendaftar untuk event ' . $team->event->name . '. Silakan tunggu verifikasi admin.',
-                'type' => 'info' 
+                'type' => 'info'
             ]);
 
             return redirect()->route('user.events.index')->with('success', 'Registrasi Berhasil! Silakan tunggu verifikasi admin.');
@@ -120,7 +121,7 @@ class TeamController extends Controller
     {
         $team = \Illuminate\Support\Facades\Auth::user()->team;
         if(!$team) return redirect('/register');
-        
+
         $events = \App\Models\Event::where('is_active', true)->get();
         return view('user.team.edit', compact('team', 'events'));
     }
@@ -132,10 +133,10 @@ class TeamController extends Controller
 
         $rules = [
             'team_name' => 'required|string|max:255|unique:teams,name,' . $team->id,
-            
+
             // Leader
             'leader_name' => 'required|string|max:255',
-            'leader_npm' => 'required|string|max:255', 
+            'leader_npm' => 'required|string|max:255',
             'leader_phone' => 'required|string|max:15',
 
             // Members
@@ -145,7 +146,7 @@ class TeamController extends Controller
             'member_2_name' => 'nullable|string|max:255',
             'member_2_npm' => 'nullable|string|max:255|required_with:member_2_name',
         ];
-        
+
         $request->validate($rules);
 
         \Illuminate\Support\Facades\DB::beginTransaction();
