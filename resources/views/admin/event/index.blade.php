@@ -3,11 +3,7 @@
 @section('title', 'Manajemen Event')
 
 @section('styles')
-<style>
-    .ck-editor__editable_inline {
-        min-height: 250px;
-    }
-</style>
+<link rel="stylesheet" href="https://unpkg.com/jodit@4.0.1/es2021/jodit.min.css"/>
 @endsection
 
 @section('content')
@@ -33,8 +29,7 @@
                     <th class="p-4 border-b border-gray-100 bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Event</th>
                     <th class="p-4 border-b border-gray-100 bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tanggal</th>
                     <th class="p-4 border-b border-gray-100 bg-gray-50 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Partisipan</th>
-                    <th class="p-4 border-b border-gray-100 bg-gray-50 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Jumlah Tugas</th>
-                    <th class="p-4 border-b border-gray-100 bg-gray-50 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Progres Task</th>
+                    <th class="p-4 border-b border-gray-100 bg-gray-50 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Tugas / Progress</th>
                     <th class="p-4 border-b border-gray-100 bg-gray-50 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                     <th class="p-4 border-b border-gray-100 bg-gray-50 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
@@ -66,16 +61,16 @@
                         </span>
                     </td>
                     <td class="p-4 text-center">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                             {{ $event->tasks_count }} Task
-                        </span>
-                    </td>
-                    <td class="p-4 text-center">
-                        <div class="flex flex-col items-center">
-                            <span class="text-sm font-bold text-gray-700">
-                                {{ $event->submissions_count }} / {{ $event->verified_teams_count }}
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                {{ $event->tasks_count }} Task
                             </span>
-                            <span class="text-[10px] text-gray-400">Submisi / Team</span>
+                            <div class="flex flex-col items-center mt-1">
+                                <span class="text-xs font-bold text-gray-700">
+                                    {{ $event->submissions_count }} / {{ $event->verified_teams_count }}
+                                </span>
+                                <span class="text-[10px] text-gray-400">Submisi / Team</span>
+                            </div>
                         </div>
                     </td>
                     <td class="p-4 text-center">
@@ -255,8 +250,8 @@
 @endsection
 
 @section('scripts')
-<!-- CKEditor 5 HTML Support (Using a build regarding Classic editor) -->
-<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<!-- Jodit Editor -->
+<script src="https://unpkg.com/jodit@4.0.1/es2021/jodit.min.js"></script>
 
 <script>
     let createEditor;
@@ -276,29 +271,19 @@
             }
         });
 
-        // Initialize CKEditor for Create
-        ClassicEditor
-            .create(document.querySelector('#createDescription'), {
-                toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo' ]
-            })
-            .then(editor => {
-                createEditor = editor;
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        // Initialize Jodit for Create
+        createEditor = Jodit.make('#createDescription', {
+            minHeight: 250,
+            toolbarAdaptive: false,
+            buttons: "bold,italic,underline,strikethrough,|,ul,ol,|,font,fontsize,paragraph,|,link,|,align,|,undo,redo,|,hr,symbol,fullsize",
+        });
 
-        // Initialize CKEditor for Edit
-        ClassicEditor
-            .create(document.querySelector('#editDescription'), {
-                toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo' ]
-            })
-            .then(editor => {
-                editEditor = editor;
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        // Initialize Jodit for Edit
+        editEditor = Jodit.make('#editDescription', {
+            minHeight: 250,
+            toolbarAdaptive: false,
+            buttons: "bold,italic,underline,strikethrough,|,ul,ol,|,font,fontsize,paragraph,|,link,|,align,|,undo,redo,|,hr,symbol,fullsize",
+        });
     });
 
     // Modal Logic
@@ -333,7 +318,7 @@
             
             // Set Description to Editor
             if(editEditor) {
-                editEditor.setData(event.description || '');
+                editEditor.value = event.description || '';
             }
 
             // Set Form Action
@@ -366,7 +351,7 @@
             
             // Reset forms
             document.getElementById('createForm').reset();
-            if(createEditor) createEditor.setData('');
+            if(createEditor) createEditor.value = '';
             // Don't modify edit form excessively
         }, 200);
     }
@@ -406,14 +391,7 @@
     document.getElementById('createForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Sync Data from CKEditor
-        /* Note: CKEditor might auto-sync on submit but for AJAX we often need manual or updateSourceElement */
-        /* However, FormData usually grabs the textarea value if updated. 
-           ClassicEditor does NOT auto update textarea on simple input, need manual sync */
-        /* Let's manually setData back to textarea before FormData? Or just grab data from editor */
-        
-        // NO, we don't need manual sync if we manually append, but easier is just getting data
-        const descriptionData = createEditor.getData();
+        const descriptionData = createEditor.value;
         
         const btn = document.getElementById('createBtn');
         const formData = new FormData(this);
@@ -451,7 +429,7 @@
     document.getElementById('editForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const descriptionData = editEditor.getData();
+        const descriptionData = editEditor.value;
 
         const btn = document.getElementById('editBtn');
         const formData = new FormData(this);

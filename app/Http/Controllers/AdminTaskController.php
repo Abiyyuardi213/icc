@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\Event;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class AdminTaskController extends Controller
@@ -31,8 +32,19 @@ class AdminTaskController extends Controller
 
         $event->tasks()->create($request->all());
 
+        // Notify all team leaders (users) of this event
+        $teams = $event->teams;
+        foreach ($teams as $team) {
+            Notification::create([
+                'user_id' => $team->user_id,
+                'title' => 'Tugas Baru',
+                'message' => "Tugas baru '{$request->title}' telah ditambahkan di event {$event->name}. Cek detail tugas sekarang!",
+                'type' => 'info'
+            ]);
+        }
+
         return redirect()->route('admin.event.tasks.index', $event->id)
-            ->with('success', 'Task berhasil dibuat.');
+            ->with('success', 'Task berhasil dibuat dan notifikasi dikirim.');
     }
 
     public function edit(Event $event, Task $task)
@@ -51,8 +63,19 @@ class AdminTaskController extends Controller
 
         $task->update($request->all());
 
+        // Notify all team leaders
+        $teams = $event->teams;
+        foreach ($teams as $team) {
+            Notification::create([
+                'user_id' => $team->user_id,
+                'title' => 'Update Tugas',
+                'message' => "Tugas '{$task->title}' di event {$event->name} telah diperbarui.",
+                'type' => 'info'
+            ]);
+        }
+
         return redirect()->route('admin.event.tasks.index', $event->id)
-            ->with('success', 'Task berhasil diperbarui.');
+            ->with('success', 'Task berhasil diperbarui dan notifikasi dikirim.');
     }
 
     public function destroy(Event $event, Task $task)

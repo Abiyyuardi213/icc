@@ -207,21 +207,26 @@
         const profileDropdown = document.getElementById('profileDropdown');
 
         // Sidebar Toggle
-        toggleBtn.addEventListener('click', () => {
-            if (window.innerWidth >= 1024) { // Changed breakpoint to lg (1024px) for better desktop handling or keep 768 default? Tailwind md is 768. Let's stick to 768 consistent with CSS.
-                // Desktop
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                console.log('Hamburger clicked!'); // Debugging
+                console.log('Window width:', window.innerWidth); // Debugging
+
+                if (window.innerWidth >= 1024) {
+                    // Desktop
                 sidebar.classList.toggle('closed');
                 content.classList.toggle('full-width');
-            } else {
-                // Mobile
-                const isOpen = sidebar.classList.contains('open');
-                if (isOpen) {
-                    closeMobileSidebar();
                 } else {
-                    openMobileSidebar();
+                    // Mobile
+                    const isOpen = sidebar.classList.contains('open');
+                    if (isOpen) {
+                        closeMobileSidebar();
+                    } else {
+                        openMobileSidebar();
+                    }
                 }
-            }
-        });
+            });
+        }
 
         function openMobileSidebar() {
             sidebar.classList.add('open');

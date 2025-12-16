@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -78,6 +79,17 @@ class AdminEventController extends Controller
             'event_end' => $request->event_end,
         ]);
 
+        // Notify all team leaders
+        $teams = $event->teams;
+        foreach ($teams as $team) {
+            Notification::create([
+                'user_id' => $team->user_id,
+                'title' => 'Update Event',
+                'message' => "Informasi event '{$event->name}' telah diperbarui.",
+                'type' => 'info'
+            ]);
+        }
+
         return response()->json(['success' => true, 'message' => 'Event berhasil diperbarui.']);
     }
 
@@ -95,6 +107,18 @@ class AdminEventController extends Controller
         $event = Event::findOrFail($id);
         $event->is_active = !$event->is_active;
         $event->save();
+
+        // Notify all team leaders
+        $statusText = $event->is_active ? 'diaktifkan' : 'dinonaktifkan';
+        $teams = $event->teams;
+        foreach ($teams as $team) {
+            Notification::create([
+                'user_id' => $team->user_id,
+                'title' => 'Status Event Berubah',
+                'message' => "Event '{$event->name}' telah {$statusText}.",
+                'type' => $event->is_active ? 'success' : 'warning'
+            ]);
+        }
 
         return response()->json([
             'success' => true, 

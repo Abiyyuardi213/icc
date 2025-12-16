@@ -88,5 +88,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('tasks/{task}/edit', [App\Http\Controllers\AdminTaskController::class, 'edit'])->name('tasks.edit');
         Route::put('tasks/{task}', [App\Http\Controllers\AdminTaskController::class, 'update'])->name('tasks.update');
         Route::delete('tasks/{task}', [App\Http\Controllers\AdminTaskController::class, 'destroy'])->name('tasks.destroy');
+        Route::delete('tasks/{task}', [App\Http\Controllers\AdminTaskController::class, 'destroy'])->name('tasks.destroy');
     });
+
+    // Admin Profile
+    Route::get('/profile', [App\Http\Controllers\AdminProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\AdminProfileController::class, 'update'])->name('profile.update');
 });
