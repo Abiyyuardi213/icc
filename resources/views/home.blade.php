@@ -14,38 +14,46 @@
             --bg-white: #ffffff;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         body {
             font-family: "Inter", sans-serif;
         }
+
         /* EVENT CARD */
         .sticky-nav {
             transition: all 0.3s ease;
         }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
         }
+
         .header {
             text-align: center;
             margin-bottom: 50px;
             margin-top: 50px;
         }
+
         .header h1 {
             font-size: 2rem;
             color: #333;
             margin-bottom: 10px;
             font-weight: 600;
         }
+
         .header p {
             color: #888;
             font-size: 1rem;
         }
+
         .events-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
             margin-bottom: 40px;
         }
+
         .event-card {
             background: white;
             border-radius: 16px;
@@ -54,19 +62,23 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
         }
+
         .event-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 8px 24px rgba(236, 70, 164, 0.15);
         }
+
         .card-image {
             width: 100%;
             height: 350px;
             object-fit: cover;
             background-color: #f0f0f0;
         }
+
         .card-content {
             padding: 24px;
         }
+
         .card-badge {
             display: inline-block;
             padding: 4px 8px;
@@ -78,6 +90,7 @@
             color: #ec46a4;
             background-color: white;
         }
+
         .card-title {
             font-size: 1.25rem;
             color: #333;
@@ -86,6 +99,7 @@
             line-height: 1.4;
             min-height: 60px;
         }
+
         .card-description {
             color: #666;
             font-size: 0.9rem;
@@ -93,6 +107,7 @@
             margin-bottom: 20px;
             min-height: 75px;
         }
+
         .card-footer {
             display: flex;
             justify-content: space-between;
@@ -100,15 +115,18 @@
             padding-top: 16px;
             border-top: 1px solid #f0f0f0;
         }
+
         .card-date {
             color: #888;
             font-size: 0.85rem;
         }
+
         .card-days {
             color: #ec46a4;
             font-weight: 600;
             font-size: 0.85rem;
         }
+
         .view-all-btn {
             display: block;
             width: fit-content;
@@ -124,24 +142,29 @@
             transition: all 0.3s ease;
             text-decoration: none;
         }
+
         .view-all-btn:hover {
             background-color: #ec46a4;
             color: white;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(236, 70, 164, 0.3);
         }
+
         .card-image-link {
             display: block;
             text-decoration: none;
         }
+
         .card-title a {
             text-decoration: none;
             color: inherit;
             transition: color 0.3s ease;
         }
+
         .card-title a:hover {
             color: #ec46a4;
         }
+
         @media (max-width: 768px) {
             .header {
                 margin-top: 32px;
@@ -149,61 +172,74 @@
                 padding: 0 1rem;
                 text-align: center;
             }
+
             .header h1 {
                 font-size: 1.6rem;
                 line-height: 1.3;
                 margin-bottom: 0.5rem;
             }
+
             .header p {
                 font-size: 0.9rem;
                 line-height: 1.6;
             }
+
             .events-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
                 padding: 0 1rem;
             }
+
             .event-card {
                 border-radius: 14px;
             }
+
             .card-image {
                 height: 220px;
             }
+
             .card-content {
                 padding: 16px;
             }
+
             .card-badge {
                 font-size: 0.65rem;
                 margin-bottom: 8px;
             }
+
             .card-title {
                 font-size: 1rem;
                 line-height: 1.4;
                 margin-bottom: 8px;
                 min-height: auto;
             }
+
             .card-description {
                 font-size: 0.85rem;
                 line-height: 1.6;
                 margin-bottom: 14px;
                 min-height: auto;
             }
+
             .card-footer {
                 padding-top: 12px;
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 4px;
             }
+
             .card-date,
             .card-days {
                 font-size: 0.8rem;
             }
+
             .view-all-btn {
                 margin-top: 24px;
                 padding: 8px 18px;
                 font-size: 0.75rem;
             }
         }
+
         .card-container {
             display: flex;
             flex-direction: column;
@@ -216,11 +252,13 @@
             margin: auto;
             padding-top: 50px;
         }
+
         @media (min-width: 1024px) {
             .card-container {
                 flex-direction: row;
             }
         }
+
         .form-section {
             flex: 1;
             padding: 3rem;
@@ -229,6 +267,7 @@
             justify-content: center;
             width: 100%;
         }
+
         .form-group {
             margin-bottom: 2rem;
         }
@@ -238,11 +277,13 @@
             grid-template-columns: 1fr;
             gap: 1.5rem;
         }
+
         @media (min-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr 1fr;
             }
         }
+
         label {
             display: block;
             font-size: 0.875rem;
@@ -250,9 +291,11 @@
             color: #4b5563;
             margin-bottom: 0.75rem;
         }
+
         .required {
             color: #ef4444;
         }
+
         input,
         textarea {
             width: 100%;
@@ -264,19 +307,23 @@
             outline: none;
             transition: all 0.2s;
         }
+
         input:focus,
         textarea:focus {
             border-color: transparent;
             box-shadow: 0 0 0 2px #ec46a4;
         }
+
         textarea {
             resize: none;
         }
+
         .button-wrapper {
             display: flex;
             justify-content: flex-end;
             padding-top: 0.5rem;
         }
+
         .submit-btn {
             padding: 0.5rem 4rem;
             border: none;
@@ -289,16 +336,19 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s, box-shadow 0.2s;
         }
+
         .submit-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
+
         .image-section {
             flex: 1;
             position: relative;
             min-height: 400px;
             border-radius: 100px;
         }
+
         .image-section img {
             width: 100%;
             height: 100%;
@@ -313,42 +363,52 @@
                 padding-top: 24px;
                 box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
             }
+
             .form-section {
                 padding: 1.5rem;
             }
+
             label {
                 font-size: 0.8rem;
                 margin-bottom: 0.5rem;
             }
+
             input,
             textarea {
                 font-size: 0.85rem;
                 padding: 0.65rem 0.9rem;
             }
+
             .form-group {
                 margin-bottom: 1.25rem;
             }
+
             .button-wrapper {
                 justify-content: center;
             }
+
             .submit-btn {
                 width: 100%;
                 padding: 0.75rem 0;
                 font-size: 0.9rem;
             }
+
             .image-section {
                 min-height: 220px;
                 border-radius: 0;
             }
+
             .image-section img {
                 border-radius: 0;
             }
         }
+
         .event-hero {
             width: 100%;
             background-color: #ffffff;
             padding: 64px 0;
         }
+
         .event-hero__container {
             max-width: 1280px;
             margin: 0 auto;
@@ -358,45 +418,54 @@
             gap: 40px;
             align-items: center;
         }
+
         .event-hero__photo-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 16px;
         }
+
         .event-hero__photo {
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+
         .event-hero__photo img {
             width: 100%;
             height: 160px;
             object-fit: cover;
             display: block;
         }
+
         .event-hero__photo--large {
             grid-column: span 2;
         }
+
         .event-hero__photo--large img {
             height: 256px;
         }
+
         .event-hero__title {
             font-size: 36px;
             font-weight: 700;
             color: #111827;
             line-height: 1.25;
         }
+
         .event-hero__description {
             margin-top: 16px;
             color: #4b5563;
             line-height: 1.7;
         }
+
         .event-hero__features {
             margin-top: 24px;
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
+
         .event-hero__feature-item {
             display: flex;
             align-items: center;
@@ -404,6 +473,7 @@
             color: #374151;
             font-weight: 500;
         }
+
         .event-hero__icon {
             padding: 12px;
             background-color: #EC46A4;
@@ -413,6 +483,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .event-hero__btn {
             margin-top: 32px;
             padding: 8px 24px;
@@ -424,15 +495,18 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+
         .event-hero__btn:hover {
             background-color: #EC46A4;
             color: #ffffff;
         }
+
         @media (max-width: 768px) {
             .event-hero__container {
                 grid-template-columns: 1fr;
             }
         }
+
         .event-search {
             width: 90%;
             background-color: #F8F9FA;
@@ -443,11 +517,13 @@
             border: 1px solid #f1f3f5;
             margin: 0 auto;
         }
+
         .event-search__inner {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
+
         .event-search__input {
             flex-grow: 1;
             height: 48px;
@@ -459,14 +535,17 @@
             font-size: 14px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
+
         .event-search__input::placeholder {
             color: #9ca3af;
         }
+
         .event-search__input:focus {
             outline: none;
             border-color: transparent;
             box-shadow: 0 0 0 2px rgba(236, 70, 164, 0.2);
         }
+
         .event-search__button {
             height: 48px;
             padding: 0 40px;
@@ -485,40 +564,51 @@
             box-shadow: 0 6px 14px rgba(236, 70, 164, 0.35);
             transition: background-color 0.3s ease;
         }
+
         .event-search__button:hover {
             background-color: #c53b95;
         }
+
         .event-search__icon {
             width: 20px;
             height: 20px;
         }
+
         @media (min-width: 768px) {
             .event-search__inner {
                 flex-direction: row;
             }
         }
+
         .indicator {
             width: 8px;
             height: 8px;
-            background-color: #d1d5db;            /* gray-300 */
+            background-color: #d1d5db;
+            /* gray-300 */
             border-radius: 9999px;
             transition: all 0.3s ease;
             cursor: pointer;
             z-index: 1000;
         }
+
         .indicator.active {
             width: 24px;
             background-color: #EC46A4;
         }
+
         #carousel {
             display: flex;
+            width: 100%;
             transition: transform 0.7s ease;
         }
+
         .carousel-slide {
+            flex: 0 0 100%;
             min-width: 100%;
             display: flex;
             justify-content: center;
         }
+
         .carousel-slide img {
             width: 95%;
             height: 500px;
@@ -527,10 +617,12 @@
             border-radius: 1.5rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
+
         .carousel-wrapper {
-            position: relative;
+            overflow: hidden;
             width: 100%;
         }
+
         #indicators {
             position: absolute;
             bottom: -5px;
@@ -538,38 +630,31 @@
             transform: translateX(-50%);
             display: flex;
             gap: 8px;
-            background: rgb(255, 255, 255, );
+            background: rgb(255, 255, 255);
             padding: 6px 12px;
             border-top-left-radius: 7px;
             border-top-right-radius: 7px;
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
         }
-        #indicators .dot {
-            width: 8px;
-            height: 8px;
-            background: #d1d5db;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        #indicators .dot.active {
-            width: 22px;
-            border-radius: 999px;
-            background: #ec46a4;
-        }
+
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
+
         .animate-fade-in {
             animation: fadeIn 0.3s ease-out;
         }
+
         .navbar {
             position: fixed;
             top: 0;
@@ -582,6 +667,7 @@
             box-shadow: var(--shadow);
             z-index: 1000;
         }
+
         .container-navbar {
             display: flex;
             justify-content: space-between;
@@ -589,24 +675,29 @@
             max-width: 1200px;
             margin: 0 auto;
         }
+
         .logo img {
             height: 50px;
             display: block;
         }
+
         .nav-links {
             display: flex;
             gap: 2.5rem;
         }
+
         .nav-links a {
             text-decoration: none;
             color: var(--text-color);
             font-weight: 500;
             transition: color 0.3s;
         }
+
         .nav-links a:hover,
         .nav-links a.active {
             color: var(--primary-color);
         }
+
         .btn-register {
             background-color: var(--primary-color);
             color: white;
@@ -618,15 +709,18 @@
             transition: transform 0.2s, background-color 0.2s;
             display: inline-block;
         }
+
         .btn-register:hover {
             transform: scale(1.05);
         }
+
         .hamburger {
             background: none;
             border: none;
             cursor: pointer;
             color: var(--text-color);
         }
+
         .mobile-menu {
             display: none;
             flex-direction: column;
@@ -635,45 +729,61 @@
             padding-top: 1rem;
             border-top: 1px solid #f3f4f6;
         }
+
         .mobile-menu.open {
             display: flex;
         }
+
         .mobile-menu a {
             text-decoration: none;
             color: var(--text-color);
             padding: 0.5rem 0;
             font-weight: 500;
         }
+
         .mobile-menu a:hover,
         .mobile-menu a.active {
             color: var(--primary-color);
         }
+
         .btn-register.full-width {
             text-align: center;
             width: 100%;
             margin-top: 0.5rem;
             color: white
         }
+
         .desktop-only {
             display: none;
         }
+
         .mobile-only {
             display: block;
         }
+
+        .indicator.active {
+            width: 24px;
+            background-color: #EC46A4;
+        }
+
         @media (min-width: 768px) {
             .desktop-only {
                 display: flex;
             }
+
             .nav-btn.desktop-only {
                 display: block;
             }
+
             .mobile-only {
                 display: none;
             }
+
             .mobile-menu {
                 display: none !important;
             }
         }
+
         html {
             scroll-behavior: smooth;
         }
@@ -688,7 +798,7 @@
     <section class="pt-24 pb-14 text-center">
         <div class="w-full flex justify-center">
             <div class="relative w-[92%] overflow-hidden">
-                <div class="craousel-wrapper">
+                <div class="carousel-wrapper">
                     <div id="carousel" class="carousel">
                         <div class="carousel-slide">
                             <img src="image/banner2.png" alt="">
@@ -721,14 +831,14 @@
 
                 <!-- Arrows -->
                 <button id="prev"
-                    class="absolute left-2 top-1/2 -translate-y-1/2 bg-white size-14 rounded-full shadow flex justify-center items-center text-xl">
+                    class="absolute left-2 top-1/2 -translate-y-1/2 bg-white size-14 rounded-full shadow flex justify-center items-center text-xl z-1000">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
                 <button id="next"
-                    class="absolute right-2 top-1/2 -translate-y-1/2 bg-white size-14 rounded-full shadow flex justify-center items-center text-xl">
+                    class="absolute right-2 top-1/2 -translate-y-1/2 bg-white size-14 rounded-full shadow flex justify-center items-center text-xl z-1000">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -789,8 +899,7 @@
                     <div class="event-hero__feature-item">
                         <div class="event-hero__icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M13 2 L3 14 h7 l-1 8 10-12 h-7 z" />
                             </svg>
                         </div>
@@ -800,8 +909,7 @@
                     <div class="event-hero__feature-item">
                         <div class="event-hero__icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="9" y="2" width="6" height="4" rx="1" />
                                 <path d="M5 6 h14 v14 H5 z" />
                             </svg>
@@ -1043,12 +1151,14 @@
             updateCarousel();
             startCarousel();
         });
-        const menuBtn = document.getElementById('menuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
+        // const menuBtn = document.getElementById('menuBtn');
+        // const mobileMenu = document.getElementById('mobileMenu');
 
-        menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('open');
-        });
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('open');
+            });
+        }
     </script>
 
 
