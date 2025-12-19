@@ -557,28 +557,30 @@
     <main class="main-content-list">
 
         <div class="container-search">
-            <div class="search-wrapper">
-                <input type="text" placeholder="Mau cari event apa hari ini ?" class="search-input">
-                <button class="btn-search">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    Cari Event
-                </button>
-            </div>
-
-            <div class="filter-wrapper">
-                <label for="sort" class="filter-label">Urut berdasarkan :</label>
-                <div class="select-container">
-                    <select id="sort" class="filter-select">
-                        <option>Event Terbaru</option>
-                        <option>Event Terlama</option>
-                        <option>Segera Berakhir</option>
-                    </select>
+            <form action="{{ route('event.list') }}" method="GET" class="w-full">
+                <div class="search-wrapper">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Mau cari event apa hari ini ?" class="search-input">
+                    <button type="submit" class="btn-search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        Cari Event
+                    </button>
                 </div>
-            </div>
+
+                <div class="filter-wrapper">
+                    <label for="sort" class="filter-label">Urut berdasarkan :</label>
+                    <div class="select-container">
+                        <select id="sort" name="sort" class="filter-select" onchange="this.form.submit()">
+                            <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Event Terbaru</option>
+                            <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Event Terlama</option>
+                            <option value="ending_soon" {{ request('sort') == 'ending_soon' ? 'selected' : '' }}>Segera Berakhir</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <div class="container-grid">
@@ -586,11 +588,14 @@
         @forelse($events as $event)
             <div class="event-card">
                 <a href="{{ route('event.detail', $event->slug) }}" class="card-image-link">
-                    <!-- Placeholder image logic -->
-                    <img src="{{ asset('image/poster1.png') }}" alt="{{ $event->name }}" class="card-image">
+                    @if($event->photo)
+                        <img src="{{ asset('storage/' . $event->photo) }}" alt="{{ $event->name }}" class="card-image">
+                    @else
+                        <img src="{{ asset('image/poster' . rand(1,3) . '.png') }}" alt="{{ $event->name }}" class="card-image">
+                    @endif
                 </a>
                 <div class="card-content">
-                    <span class="card-badge badge-lomba">Lomba</span>
+                    <span class="card-badge badge-lomba">Event</span>
                     <h3 class="card-title">
                         <a href="{{ route('event.detail', $event->slug) }}">
                             {{ $event->name }}
@@ -599,15 +604,40 @@
                     <p class="card-description">{{ strip_tags($event->description) }}</p>
 
                     <div class="card-footer">
-                        <span class="card-date">{{ $event->registration_end ? $event->registration_end->format('d-m-Y') : '-' }}</span>
-                        <span class="card-days">
-                            @if($event->registration_end)
-                                {{ ceil($event->registration_end->diffInDays(now())) }} Hari Lagi
-                            @else
-                                -
-                            @endif
+                        @php
+                            $now = now();
+                            $regStart = $event->registration_start;
+                            $regEnd = $event->registration_end;
+                            $eventStart = $event->event_start;
+                            
+                            $statusText = '';
+                            $statusColor = 'text-gray-500';
+
+                            if ($now < $regStart) {
+                                $diff = $now->diff($regStart);
+                                $statusText = "Buka dalam " . $diff->days . " hari " . $diff->h . " jam";
+                                $statusColor = 'text-blue-500';
+                            } elseif ($now >= $regStart && $now <= $regEnd) {
+                                $diff = $now->diff($regEnd);
+                                $statusText = "Sisa waktu daftar: " . $diff->days . " hari";
+                                $statusColor = 'text-green-500';
+                            } elseif ($now > $regEnd && $now < $eventStart) {
+                                $statusText = "Pendaftaran Ditutup";
+                                $statusColor = 'text-red-500';
+                            } else {
+                                $statusText = "Event Telah Dimulai/Selesai";
+                                $statusColor = 'text-gray-500';
+                            }
+                        @endphp
+
+                        <span class="card-date">{{ $regEnd ? $regEnd->format('d-m-Y') : '-' }}</span>
+                        <span class="card-days {{ $statusColor }}">
+                            {{ $statusText }}
                         </span>
                     </div>
+                    
+                    <!-- Optional: Button logic if needed directly on card, but usually details page handles it. 
+                         The user asked for text/status on list page. -->
                 </div>
             </div>
         @empty

@@ -16,6 +16,7 @@ class Event extends Model
         'event_end',
         'max_members',
         'is_active',
+        'photo',
     ];
 
     protected $casts = [

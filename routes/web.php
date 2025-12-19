@@ -8,9 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-});
+Route::get('/', [HomeController::class, 'home'])->name('root');
 
 
 Route::get('/home', [HomeController::class, 'home'])->name('home');
@@ -61,6 +59,7 @@ Route::get('/participants/create', [TeamController::class, 'create'])
 
 Route::get('/list-event', [EventController::class, 'index'])->name('event.list');
 Route::get('/events/{slug}', [EventController::class, 'show'])->name('event.detail');
+Route::post('/aspirations', [App\Http\Controllers\AspirationController::class, 'store'])->name('aspiration.store');
 
     Route::post('role/{id}/toggle-status', [RoleController::class, 'toggleStatus'])->name('role.toggleStatus');
     Route::resource('role', RoleController::class);

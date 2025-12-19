@@ -19,6 +19,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Carbon\Carbon::setLocale('id');
+        config(['app.locale' => 'id']);
+
+        \Illuminate\Support\Facades\View::composer('include.navbar', function ($view) {
+            $unreadNotificationsCount = auth()->check() 
+                ? auth()->user()->notifications()->where('is_read', false)->count() 
+                : 0;
+            $view->with('unreadNotificationsCount', $unreadNotificationsCount);
+        });
     }
 }
