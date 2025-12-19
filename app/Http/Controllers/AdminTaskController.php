@@ -6,6 +6,7 @@ use App\Models\Task;
 use App\Models\Event;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdminTaskController extends Controller
 {
@@ -28,9 +29,18 @@ class AdminTaskController extends Controller
             'description' => 'nullable|string',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
+            'file' => 'nullable|file|mimes:pdf,zip,rar,doc,docx|max:10240', // 10MB Max
         ]);
 
-        $event->tasks()->create($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename = time() . '_task_' . $file->getClientOriginalName();
+            $data['file_path'] = $file->storeAs('tasks', $filename, 'public');
+        }
+
+        $event->tasks()->create($data);
 
         // Notify all team leaders (users) of this event
         $teams = $event->teams;
@@ -41,6 +51,10 @@ class AdminTaskController extends Controller
                 'message' => "Tugas baru '{$request->title}' telah ditambahkan di event {$event->name}. Cek detail tugas sekarang!",
                 'type' => 'info'
             ]);
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Task berhasil dibuat dan notifikasi dikirim.']);
         }
 
         return redirect()->route('admin.event.tasks.index', $event->id)
@@ -59,9 +73,23 @@ class AdminTaskController extends Controller
             'description' => 'nullable|string',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
+            'file' => 'nullable|file|mimes:pdf,zip,rar,doc,docx|max:10240',
         ]);
 
-        $task->update($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('file')) {
+            // Delete old file
+            if ($task->file_path && Storage::disk('public')->exists($task->file_path)) {
+                Storage::disk('public')->delete($task->file_path);
+            }
+
+            $file = $request->file('file');
+            $filename = time() . '_task_' . $file->getClientOriginalName();
+            $data['file_path'] = $file->storeAs('tasks', $filename, 'public');
+        }
+
+        $task->update($data);
 
         // Notify all team leaders
         $teams = $event->teams;
@@ -74,14 +102,27 @@ class AdminTaskController extends Controller
             ]);
         }
 
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Task berhasil diperbarui dan notifikasi dikirim.']);
+        }
+
         return redirect()->route('admin.event.tasks.index', $event->id)
             ->with('success', 'Task berhasil diperbarui dan notifikasi dikirim.');
     }
 
     public function destroy(Event $event, Task $task)
     {
+        if ($task->file_path && Storage::disk('public')->exists($task->file_path)) {
+            Storage::disk('public')->delete($task->file_path);
+        }
         $task->delete();
         return redirect()->route('admin.event.tasks.index', $event->id)
             ->with('success', 'Task berhasil dihapus.');
+    }
+
+    public function submissions(Event $event, Task $task)
+    {
+        $submissions = $task->submissions()->with('team.leader')->orderByDesc('updated_at')->get();
+        return view('admin.task.submissions', compact('event', 'task', 'submissions'));
     }
 }

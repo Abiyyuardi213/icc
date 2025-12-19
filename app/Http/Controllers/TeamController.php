@@ -35,9 +35,16 @@ class TeamController extends Controller
 
     public function store(Request $request)
     {
-        // ... (Validation Logic same as before, but ensure competition_type matches event id)
+        // Filter empty members (remove if both name and npm are empty)
+        if ($request->has('members') && is_array($request->members)) {
+            $filteredMembers = array_filter($request->members, function ($member) {
+                return !empty($member['name']) || !empty($member['npm']);
+            });
+            $request->merge(['members' => $filteredMembers]);
+        }
+
         $rules = [
-            'competition_id' => ['required', 'exists:events,id'], // Changed from competition_type string
+            'competition_id' => ['required', 'exists:events,id'],
             'team_name' => 'required|string|max:255|unique:teams,name',
 
             // Leader
@@ -46,12 +53,10 @@ class TeamController extends Controller
             'leader_email' => 'required|email|max:255',
             'leader_phone' => 'required|string|max:15',
 
-            // Members
-            'member_1_name' => 'required|string|max:255',
-            'member_1_npm' => 'required|string|max:255',
-
-            'member_2_name' => 'nullable|string|max:255',
-            'member_2_npm' => 'nullable|string|max:255|required_with:member_2_name',
+            // Members (Dynamic)
+            'members' => 'nullable|array',
+            'members.*.name' => 'required|string|max:255',
+            'members.*.npm' => 'required|string|max:255',
         ];
 
         $request->validate($rules);
@@ -83,20 +88,15 @@ class TeamController extends Controller
                 'role' => 'leader',
             ]);
 
-            // Member 1
-            $team->members()->create([
-                'name' => $request->member_1_name,
-                'npm' => $request->member_1_npm,
-                'role' => 'member',
-            ]);
-
-            // Member 2
-            if ($request->member_2_name) {
-                $team->members()->create([
-                    'name' => $request->member_2_name,
-                    'npm' => $request->member_2_npm,
-                    'role' => 'member',
-                ]);
+            // Members (Dynamic)
+            if ($request->has('members')) {
+                foreach ($request->members as $memberData) {
+                    $team->members()->create([
+                        'name' => $memberData['name'],
+                        'npm' => $memberData['npm'],
+                        'role' => 'member',
+                    ]);
+                }
             }
 
             \Illuminate\Support\Facades\DB::commit();

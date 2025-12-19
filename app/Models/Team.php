@@ -37,9 +37,9 @@ class Team extends Model
     }
     
     // Helpers
-    public function getLeaderAttribute()
+    public function leader()
     {
-        return $this->members->where('role', 'leader')->first();
+        return $this->hasOne(TeamMember::class)->where('role', 'leader');
     }
     
     public function getMember1Attribute()

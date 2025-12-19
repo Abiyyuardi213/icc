@@ -32,7 +32,7 @@ class AdminEventController extends Controller
             'registration_end' => 'required|date|after_or_equal:registration_start',
             'event_start' => 'required|date|after_or_equal:registration_end',
             'event_end' => 'required|date|after_or_equal:event_start',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
         $photoPath = null;
@@ -74,7 +74,7 @@ class AdminEventController extends Controller
             'registration_end' => 'required|date|after_or_equal:registration_start',
             'event_start' => 'required|date|after_or_equal:registration_end',
             'event_end' => 'required|date|after_or_equal:event_start',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
         $photoPath = $event->photo;

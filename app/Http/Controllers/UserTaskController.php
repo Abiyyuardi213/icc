@@ -34,8 +34,10 @@ class UserTaskController extends Controller
 
         // Check deadline
         if (now()->greaterThan($task->end_time)) {
-             // Optional: allow late submission but mark it? User request didn't specify.
-             // For now, let's allow it but the UI shows "Terlambat".
+             if ($request->expectsJson()) {
+                 return response()->json(['success' => false, 'message' => 'Waktu pengumpulan telah habis. Tidak bisa mengirim atau mengupdate tugas.'], 403);
+             }
+             return redirect()->back()->with('error', 'Waktu pengumpulan telah habis.');
         }
 
         $request->validate([
@@ -53,23 +55,6 @@ class UserTaskController extends Controller
             $filePath = $file->storeAs('submissions', $filename, 'public');
         }
 
-        Submission::updateOrCreate(
-            [
-                'task_id' => $task->id,
-                'team_id' => $userTeam->id,
-            ],
-            [
-                'event_id' => $task->event_id,
-                'title' => $request->title ?? 'Submission for ' . $task->title,
-                'link_repository' => $request->link_repository,
-                'notes' => $request->notes,
-                'file_path' => $filePath, // Update file only if new one uploaded? 
-                // Logic: if new file, use it. if not, keep old? updateOrCreate replaces.
-                // We should handle file persistence if not uploading new one.
-                // But simplified: assume re-upload required if editing? 
-                // Or better check if file exists in request.
-            ]
-        );
         
         // Fix file path persistence logic
         $submissionData = [
@@ -84,10 +69,21 @@ class UserTaskController extends Controller
             $submissionData['file_path'] = $filePath;
         }
         
-        Submission::updateOrCreate(
+        $submission = Submission::updateOrCreate(
             ['task_id' => $task->id, 'team_id' => $userTeam->id],
             $submissionData
         );
+
+        // Record History
+        \App\Models\SubmissionHistory::create([
+            'submission_id' => $submission->id,
+            'user_id' => auth()->id(),
+            'action' => $submission->wasRecentlyCreated ? 'created' : 'updated',
+        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Tugas berhasil dikirim.']);
+        }
 
         return redirect()->back()->with('success', 'Tugas berhasil dikirim.');
     }
