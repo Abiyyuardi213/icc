@@ -441,6 +441,10 @@ document.querySelectorAll('input[name="competition_id"]').forEach(radio => {
 });
 
 /* Init */
+const checkedRadio = document.querySelector('input[name="competition_id"]:checked');
+if (checkedRadio) {
+    maxMember = parseInt(checkedRadio.dataset.maxMember);
+}
 updateUI();
 </script>
 

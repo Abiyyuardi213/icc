@@ -1068,36 +1068,161 @@
     </div>
 
     <!-- ASPIRATION FEED -->
-    <div class="container my-16 pb-16 pt-10">
-        <h2 class="text-3xl font-bold mb-10 text-center text-gray-800">Suara Mahasiswa</h2>
+    <div class="container my-16 pb-16 pt-10" id="forum">
+        <div class="text-center mb-12">
+            <span class="text-pink-500 font-bold tracking-wider text-sm uppercase mb-2 block">Komunitas</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800">Forum Diskusi Mahasiswa</h2>
+            <p class="text-gray-500 mt-4 max-w-xl mx-auto">Ruang terbuka untuk berbagi ide, aspirasi, dan diskusi konstruktif demi kemajuan bersama.</p>
+        </div>
         
-        <div class="grid grid-cols-1 gap-6 max-w-4xl mx-auto">
+        <div class="max-w-4xl mx-auto space-y-8">
             @forelse($aspirations as $aspiration)
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 font-bold">
-                                {{ strtoupper(substr($aspiration->name, 0, 1)) }}
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 group">
+                    <!-- Main Post -->
+                    <div class="p-6 md:p-8">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md transform group-hover:scale-110 transition-transform duration-300">
+                                    {{ strtoupper(substr($aspiration->name, 0, 1)) }}
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900 text-lg">{{ $aspiration->name }}</h4>
+                                    <div class="flex items-center gap-3 text-xs text-gray-500 mt-1">
+                                        <span class="flex items-center gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            {{ $aspiration->created_at->diffForHumans() }}
+                                        </span>
+                                        <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                                        <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-medium">Public</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <h4 class="font-bold text-gray-800">{{ $aspiration->name }}</h4>
-                                <span class="text-xs text-gray-500">{{ $aspiration->created_at->diffForHumans() }}</span>
+                        </div>
+                        
+                        <div class="md:pl-16">
+                            <p class="text-gray-700 leading-relaxed text-base md:text-lg mb-6">{{ $aspiration->description }}</p>
+                            
+                            <div class="flex items-center gap-4 pt-6 border-t border-gray-50">
+                                <button onclick="toggleReply('{{ $aspiration->id }}')" 
+                                    class="group/btn flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition-all duration-300 text-sm font-semibold border border-yellow-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-300 group-hover/btn:-rotate-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                    Balas Diskusi
+                                    <span class="ml-1 bg-white px-2 py-0.5 rounded-full text-xs shadow-sm text-yellow-600 border border-yellow-100">{{ $aspiration->replies->count() }}</span>
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <p class="text-gray-600 leading-relaxed">{{ $aspiration->description }}</p>
+
+                    <!-- Replies Section with Smooth Transition -->
+                    <div id="wrapper-{{ $aspiration->id }}" class="grid grid-rows-[0fr] transition-all duration-500 ease-in-out">
+                        <div class="overflow-hidden">
+                            <div class="bg-gray-50/50 border-t border-gray-100 p-6 md:p-8 md:pl-24 space-y-6">
+                                <!-- Existing Replies -->
+                                @foreach($aspiration->replies as $reply)
+                                    <div class="flex gap-4 group/reply animate-fade-in">
+                                        <div class="w-8 h-8 rounded-full bg-white border border-gray-200 flex flex-shrink-0 items-center justify-center text-gray-600 font-bold text-xs shadow-sm mt-1">
+                                            {{ strtoupper(substr($reply->user->name ?? $reply->name, 0, 1)) }}
+                                        </div>
+                                        <div class="bg-white p-4 rounded-2xl rounded-tl-none border border-gray-200 shadow-sm flex-1 hover:shadow-md transition-shadow">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <span class="font-bold text-sm text-gray-900">{{ $reply->user->name ?? $reply->name }}</span>
+                                                <span class="text-xs text-gray-400">{{ $reply->created_at->diffForHumans() }}</span>
+                                            </div>
+                                            <p class="text-gray-600 text-sm leading-relaxed">{{ $reply->description }}</p>
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                                <!-- Reply Form -->
+                                <div id="reply-form-{{ $aspiration->id }}" class="mt-6 pt-6 border-t border-gray-200/60 hidden">
+                                    @if(auth()->check())
+                                        <form action="{{ route('aspiration.reply', $aspiration->id) }}" method="POST" class="flex gap-4">
+                                            @csrf
+                                            <div class="w-10 h-10 rounded-full bg-pink-100 border border-pink-200 flex flex-shrink-0 items-center justify-center text-pink-600 font-bold text-sm">
+                                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                            </div>
+                                            <div class="flex-1">
+                                                <div class="relative">
+                                                    <textarea name="description" rows="3" 
+                                                        class="w-full bg-white border-gray-200 rounded-xl focus:border-pink-500 focus:ring-pink-500 text-sm p-4 shadow-sm transition-all" 
+                                                        placeholder="Tulis balasan Anda yang sopan dan membangun..." required></textarea>
+                                                </div>
+                                                <div class="flex justify-end gap-3 mt-3">
+                                                    <button type="button" onclick="cancelReply('{{ $aspiration->id }}')" class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors">
+                                                        Batal
+                                                    </button>
+                                                    <button type="submit" 
+                                                        style="background-color: #EC46A4; color: white;"
+                                                        class="px-6 py-2 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                                                        Kirim Balasan
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    @else
+                                        <div class="flex flex-col items-center justify-center py-8 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                                            <p class="text-gray-600 font-medium mb-3">Yuk, ikut berdiskusi!</p>
+                                            <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-pink-500 text-white font-semibold text-sm hover:bg-pink-600 transition-colors shadow-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                                </svg>
+                                                Login untuk Membalas
+                                            </a>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             @empty
-                <div class="text-center text-gray-400 py-10">
-                    <p>Belum ada aspirasi publik yang ditampilkan.</p>
+                <div class="text-center py-16 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Belum ada diskusi</h3>
+                    <p class="text-gray-500">Jadilah yang pertama menyuarakan aspirasi!</p>
                 </div>
             @endforelse
 
-            <div class="mt-8 flex justify-center">
+            <div class="mt-12 flex justify-center">
                 {{ $aspirations->links() }}
             </div>
         </div>
     </div>
+
+    <script>
+        function toggleReply(id) {
+            const wrapper = document.getElementById(`wrapper-${id}`);
+            const form = document.getElementById(`reply-form-${id}`);
+            
+            // Toggle grid-rows between 0fr and 1fr for smooth height transition
+            if (wrapper.classList.contains('grid-rows-[0fr]')) {
+                wrapper.classList.remove('grid-rows-[0fr]');
+                wrapper.classList.add('grid-rows-[1fr]');
+                // Show form automatically when opening
+                form.classList.remove('hidden');
+                // Auto focus textarea if logged in
+                const textarea = form.querySelector('textarea');
+                if(textarea) setTimeout(() => textarea.focus(), 300);
+            } else {
+                wrapper.classList.add('grid-rows-[0fr]');
+                wrapper.classList.remove('grid-rows-[1fr]');
+            }
+        }
+
+        function cancelReply(id) {
+            const wrapper = document.getElementById(`wrapper-${id}`);
+            wrapper.classList.add('grid-rows-[0fr]');
+            wrapper.classList.remove('grid-rows-[1fr]');
+        }
+    </script>
 
     @if(!auth()->check())
     <!-- FLOATING CHAT ICON FOR GUESTS -->

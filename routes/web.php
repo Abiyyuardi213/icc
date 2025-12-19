@@ -65,6 +65,7 @@ Route::get('/participants/create', [TeamController::class, 'create'])
 Route::get('/list-event', [EventController::class, 'index'])->name('event.list');
 Route::get('/events/{slug}', [EventController::class, 'show'])->name('event.detail');
 Route::post('/aspirations', [App\Http\Controllers\AspirationController::class, 'store'])->name('aspiration.store');
+Route::post('/aspirations/{id}/reply', [App\Http\Controllers\AspirationController::class, 'reply'])->name('aspiration.reply');
 
     Route::post('role/{id}/toggle-status', [RoleController::class, 'toggleStatus'])->name('role.toggleStatus');
     Route::resource('role', RoleController::class);
@@ -92,8 +93,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('tasks/{task}/edit', [App\Http\Controllers\AdminTaskController::class, 'edit'])->name('tasks.edit');
         Route::put('tasks/{task}', [App\Http\Controllers\AdminTaskController::class, 'update'])->name('tasks.update');
         Route::delete('tasks/{task}', [App\Http\Controllers\AdminTaskController::class, 'destroy'])->name('tasks.destroy');
+        Route::get('tasks/{task}/submissions', [App\Http\Controllers\AdminTaskController::class, 'submissions'])->name('tasks.submissions');
         Route::delete('tasks/{task}', [App\Http\Controllers\AdminTaskController::class, 'destroy'])->name('tasks.destroy');
     });
+
+    // Admin Chat / Aspiration Management
+    Route::get('/chat', [App\Http\Controllers\AdminChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{id}', [App\Http\Controllers\AdminChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{id}/reply', [App\Http\Controllers\AdminChatController::class, 'storeReply'])->name('chat.reply');
 
     // Admin Profile
     Route::get('/profile', [App\Http\Controllers\AdminProfileController::class, 'edit'])->name('profile.edit');

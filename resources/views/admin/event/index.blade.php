@@ -4,6 +4,26 @@
 
 @section('styles')
 <link rel="stylesheet" href="https://unpkg.com/jodit@4.0.1/es2021/jodit.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
+<style>
+    .dropify-wrapper .dropify-message p {
+        font-size: 14px !important;
+        color: #6b7280 !important;
+    }
+    .dropify-wrapper .dropify-message .file-icon {
+        font-size: 24px !important;
+        color: #EC46A4 !important;
+    }
+    .dropify-wrapper {
+        border: 2px dashed #e5e7eb !important;
+        border-radius: 0.5rem !important;
+        background-color: #f9fafb !important;
+    }
+    .dropify-wrapper:hover {
+        border-color: #EC46A4 !important;
+        background-color: #fdf2f8 !important;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -124,7 +144,7 @@
             </button>
         </div>
         <div class="p-6 overflow-y-auto max-h-[80vh]">
-            <form id="createForm" method="POST">
+            <form id="createForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Kolom Kiri -->
@@ -156,6 +176,11 @@
                                 <label class="block text-sm font-semibold text-gray-700 mb-1">Event Selesai <span class="text-[#EC46A4]">*</span></label>
                                 <input type="date" name="event_end" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#EC46A4] outline-none transition" required>
                             </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Banner Event</label>
+                            <input type="file" name="photo" accept="image/*" class="dropify" data-height="150" data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M">
+                            <p class="text-xs text-gray-400 mt-1">Format: JPG, JPEG, PNG, GIF. Maks: 5MB.</p>
                         </div>
                     </div>
 
@@ -189,7 +214,7 @@
             </button>
         </div>
         <div class="p-6 overflow-y-auto max-h-[80vh]">
-            <form id="editForm" method="POST">
+            <form id="editForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <input type="hidden" id="editEventId" name="id">
@@ -223,7 +248,12 @@
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1">Event Selesai <span class="text-[#EC46A4]">*</span></label>
                                 <input type="date" id="editEventEnd" name="event_end" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#EC46A4] outline-none transition" required>
-                            </div>
+                        </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Banner Event</label>
+                            <input type="file" id="editPhotoInput" name="photo" accept="image/*" class="dropify" data-height="150" data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M">
+                            <p class="text-xs text-gray-400 mt-1">Upload baru untuk mengganti. Format: JPG, JPEG, PNG, GIF. Maks: 5MB.</p>
                         </div>
                     </div>
 
@@ -243,7 +273,7 @@
                     <button type="submit" id="editBtn" class="px-5 py-2.5 bg-[#EC46A4] hover:bg-[#d63f93] text-white font-semibold rounded-lg shadow-md transition transform active:scale-95">Simpan Perubahan</button>
                 </div>
             </form>
-        </div>
+        </div>  
     </div>
 </div>
 
@@ -252,6 +282,7 @@
 @section('scripts')
 <!-- Jodit Editor -->
 <script src="https://unpkg.com/jodit@4.0.1/es2021/jodit.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
 
 <script>
     let createEditor;
@@ -271,6 +302,17 @@
             }
         });
 
+        // Initialize Dropify
+        $('.dropify').dropify({
+            messages: {
+                'default': 'Drag and drop a file here or click',
+                'replace': 'Drag and drop or click to replace',
+                'remove':  'Remove',
+                'error':   'Ooops, something wrong happened.'
+            }
+        });
+    });
+
         // Initialize Jodit for Create
         createEditor = Jodit.make('#createDescription', {
             minHeight: 250,
@@ -284,7 +326,7 @@
             toolbarAdaptive: false,
             buttons: "bold,italic,underline,strikethrough,|,ul,ol,|,font,fontsize,paragraph,|,link,|,align,|,undo,redo,|,hr,symbol,fullsize",
         });
-    });
+
 
     // Modal Logic
     const overlay = document.getElementById('modalOverlay');
@@ -321,15 +363,30 @@
                 editEditor.value = event.description || '';
             }
 
-            // Set Form Action
+            // Handle Dropify Logic - AFTER showing modal to ensure dimensions are correct
             document.getElementById('editForm').action = `{{ url('admin/event') }}/${eventId}`;
 
-            // Show Modal
+            // Show Modal first
             overlay.classList.remove('hidden');
             editModal.classList.remove('hidden');
+            
+            // Wait slightly for transition/rendering
             setTimeout(() => {
                 editModal.classList.remove('scale-95', 'opacity-0');
                 editModal.classList.add('scale-100', 'opacity-100');
+                
+                // Initialize/Refresh Dropify when visible
+                const dropifyInput = $('#editPhotoInput').dropify();
+                const dropifyEvent = dropifyInput.data('dropify');
+                dropifyEvent.resetPreview();
+                dropifyEvent.clearElement();
+
+                if (event.photo) {
+                    const imageUrl = `{{ asset('storage') }}/${event.photo}`;
+                    dropifyEvent.settings.defaultFile = imageUrl;
+                    dropifyEvent.destroy();
+                    dropifyEvent.init();
+                }
             }, 10);
         })
         .catch(err => {

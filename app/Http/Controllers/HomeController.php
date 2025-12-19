@@ -14,6 +14,8 @@ class HomeController extends Controller
                     ->get();
         
         $aspirations = \App\Models\Aspiration::where('is_private', false)
+                        ->whereNull('parent_id') // Only show main threads
+                        ->with(['user', 'replies.user'])
                         ->orderBy('created_at', 'desc')
                         ->simplePaginate(5);
 

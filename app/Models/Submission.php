@@ -8,6 +8,7 @@ class Submission extends Model
 {
     protected $fillable = [
         'event_id',
+        'task_id',
         'team_id',
         'title',
         'file_path',
@@ -28,5 +29,10 @@ class Submission extends Model
     public function event()
     {
         return $this->belongsTo(Event::class);
+    }
+
+    public function histories()
+    {
+        return $this->hasMany(SubmissionHistory::class)->orderByDesc('created_at');
     }
 }
