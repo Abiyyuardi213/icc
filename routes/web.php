@@ -45,6 +45,11 @@ Route::middleware(['auth', 'role:participant'])->group(function () {
     // Event Tasks (User Side)
     Route::get('/user/tasks/{id}', [App\Http\Controllers\UserTaskController::class, 'show'])->name('user.tasks.show');
     Route::post('/user/tasks/{id}/submit', [App\Http\Controllers\UserTaskController::class, 'store'])->name('user.tasks.store');
+
+    // Chat / Private Aspiration
+    Route::get('/user/chat', [App\Http\Controllers\UserChatController::class, 'index'])->name('user.chat.index');
+    Route::get('/user/chat/{id}', [App\Http\Controllers\UserChatController::class, 'show'])->name('user.chat.show');
+    Route::post('/user/chat/{id}/reply', [App\Http\Controllers\UserChatController::class, 'storeReply'])->name('user.chat.reply');
 });
 
 Route::get('/register', [TeamController::class, 'create'])->name('team.register');
