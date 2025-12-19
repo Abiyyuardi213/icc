@@ -25,4 +25,27 @@ class AspirationController extends Controller
 
         return redirect()->back()->with('success', 'Aspirasi Anda berhasil dikirim!');
     }
+    public function reply(Request $request, $id)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'Silakan login untuk membalas.');
+        }
+
+        $request->validate([
+            'description' => 'required|string',
+        ]);
+
+        $parent = Aspiration::findOrFail($id);
+
+        Aspiration::create([
+            'user_id' => auth()->id(),
+            'name' => auth()->user()->name,
+            'email' => auth()->user()->email,
+            'description' => $request->description,
+            'is_private' => false,
+            'parent_id' => $parent->id
+        ]);
+
+        return redirect()->back()->with('success', 'Balasan Anda berhasil dikirim!');
+    }
 }
