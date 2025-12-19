@@ -11,16 +11,14 @@ class AspirationController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
             'description' => 'required|string',
         ]);
 
         Aspiration::create([
             'user_id' => auth()->id(),
             'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
+            'email' => auth()->check() ? auth()->user()->email : null, // Email optional for guests now, handled by DB default or nullable
+            'phone' => null,
             'description' => $request->description,
             'is_private' => $request->has('is_private'),
         ]);
