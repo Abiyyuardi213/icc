@@ -848,10 +848,10 @@
         </div>
         <!-- SEARCH BAR -->
         <div class="event-search">
-            <div class="event-search__inner">
-                <input type="text" placeholder="Mau cari event apa hari ini?" class="event-search__input">
+            <form action="{{ route('event.list') }}" method="GET" class="event-search__inner">
+                <input type="text" name="search" placeholder="Mau cari event apa hari ini?" class="event-search__input">
 
-                <button class="event-search__button">
+                <button type="submit" class="event-search__button">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="event-search__icon">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -859,7 +859,7 @@
                     </svg>
                     Cari Event
                 </button>
-            </div>
+            </form>
         </div>
 
     </section>
@@ -933,7 +933,7 @@
 
                 </div>
 
-                <button class="event-hero__btn">Explore Event</button>
+                <a href="{{ route('event.list') }}" class="event-hero__btn text-decoration-none">Explore Event</a>
             </div>
 
         </div>
@@ -982,71 +982,45 @@
         </div>
 
         <div class="events-grid">
-            <!-- Event Card 1 -->
+            @forelse($events as $event)
             <div class="event-card">
-                <a href="{{ url('/detail-event') }}" class="card-image-link">
-                    <img src="image/poster1.png" alt="Informatic Coding Competition" class="card-image">
+                <a href="{{ route('event.detail', $event->slug) }}" class="card-image-link">
+                    @if($event->photo)
+                        <img src="{{ asset('storage/' . $event->photo) }}" alt="{{ $event->name }}" class="card-image">
+                    @else
+                        <!-- Random Placeholder Logic if no photo -->
+                        <img src="{{ asset('image/poster' . rand(1,3) . '.png') }}" alt="{{ $event->name }}" class="card-image">
+                    @endif
                 </a>
                 <div class="card-content">
-                    <span class="card-badge">Lomba</span>
+                    <span class="card-badge">Event</span>
                     <h3 class="card-title">
-                        <a href="{{ url('/detail-event') }}">
-                            Informatic Coding Competition - 2026: Show Your Skill, Prove...
+                        <a href="{{ route('event.detail', $event->slug) }}">
+                            {{ Str::limit($event->name, 50) }}
                         </a>
                     </h3>
-                    <p class="card-description">Lomba Coding Basis Data dan Pemrograman Terstruktur adalah kompetisi
-                        yang menguji kemampuan yang ingin menguji kemampuan logika, analisis, dan keterampilan
-                        pemrograman</p>
+                    <p class="card-description">{{ Str::limit(strip_tags($event->description), 100) }}</p>
                     <div class="card-footer">
-                        <span class="card-date">19-09-2026</span>
-                        <span class="card-days">9 Hari Lagi</span>
+                        <span class="card-date">{{ $event->registration_end ? $event->registration_end->format('d-m-Y') : '-' }}</span>
+                        <span class="card-days">
+                            @if($event->registration_end && now() <= $event->registration_end)
+                                {{ ceil(now()->diffInDays($event->registration_end)) }} Hari Lagi
+                            @elseif($event->registration_end && now() > $event->registration_end)
+                                Ditutup
+                            @else
+                                -
+                            @endif
+                        </span>
                     </div>
                 </div>
             </div>
-
-            <!-- Event Card 2 -->
-            <div class="event-card">
-                <a href="{{ url('/detail-event') }}" class="card-image-link">
-                    <img src="image/poster2.png" alt="Teknik Informatika" class="card-image">
-                </a>
-                <div class="card-content">
-                    <span class="card-badge">Sosialisasi</span>
-                    <h3 class="card-title">
-                        <a href="{{ url('/detail-event') }}">
-                            Mengenal Lebih Dekat Teknik Informatika: Membangun Ponda...
-                        </a>
-                    </h3>
-                    <p class="card-description">Teknik Informatika adalah bidang yang mempelajari cara merancang,
-                        mengembangkan, dan mengimplementasikan teknologi yang dapat hadir di setiap aspek hidup modern
-                    </p>
-                    <div class="card-footer">
-                        <span class="card-date">09-11-2026</span>
-                        <span class="card-days">20 Hari Lagi</span>
-                    </div>
-                </div>
+            @empty
+            <div class="col-span-3 text-center p-10">
+                <p>Belum ada event yang ditampilkan.</p>
             </div>
-            <!-- Event Card 3 -->
-            <div class="event-card">
-                <a href="{{ url('/detail-event') }}" class="card-image-link">
-                    <img src="image/poster3.png" alt="PDH Teknik Informatika" class="card-image">
-                </a>
-                <div class="card-content">
-                    <span class="card-badge">Penjualan</span>
-                    <h3 class="card-title">
-                        <a href="{{ url('/detail-event') }}">
-                            Pre-Order PDH Teknik Informatika ITATS - 2025
-                        </a>
-                    </h3>
-                    <p class="card-description">Pre-order PDH Teknik Informatika iTATS 2025 dibuka untuk seluruh
-                        mahasiswa yang ingin mendapatkan pakaian dinas harian resmi dengan desain terbaru.</p>
-                    <div class="card-footer">
-                        <span class="card-date">10-07-2026</span>
-                        <span class="card-days">12 Hari Lagi</span>
-                    </div>
-                </div>
-            </div>
+            @endforelse
         </div>
-        <a href="#" class="view-all-btn">Lihat Semua Event</a>
+        <a href="{{ route('event.list') }}" class="view-all-btn">Lihat Semua Event</a>
     </div>
     {{-- PESAN --}}
     <div class="header">
@@ -1054,36 +1028,87 @@
     </div>
     <div class="card-container">
         <div class="form-section">
-            <form>
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">Sukses!</strong>
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            <form action="{{ route('aspiration.store') }}" method="POST">
+                @csrf
                 <div class="form-group">
-                    <label>Your name <span class="required">*</span></label>
-                    <input type="text" placeholder="Input Here . . .">
+                    <label>Nama Anda <span class="required">*</span></label>
+                    <input type="text" name="name" placeholder="Input Here . . ." 
+                        value="{{ auth()->check() ? auth()->user()->name : old('name') }}" 
+                        {{ auth()->check() ? 'readonly' : '' }}>
                 </div>
 
                 <div class="form-group form-row">
                     <div>
                         <label>Email <span class="required">*</span></label>
-                        <input type="email" placeholder="@example.com">
+                        <input type="email" name="email" placeholder="@example.com"
+                            value="{{ auth()->check() ? auth()->user()->email : old('email') }}"
+                            {{ auth()->check() ? 'readonly' : '' }}>
                     </div>
                     <div>
-                        <label>Phone Number <span class="required">*</span></label>
-                        <input type="tel" placeholder="Enter Phone Number">
+                        <label>Nomor HP (Opsional)</label>
+                        <input type="text" name="phone" placeholder="Enter Phone Number" value="{{ old('phone') }}">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Description <span class="required">*</span></label>
-                    <textarea rows="6" placeholder="Enter here . . ."></textarea>
+                    <label>Aspirasi / Kritik / Saran <span class="required">*</span></label>
+                    <textarea name="description" rows="5" placeholder="Tuliskan aspirasi Anda di sini..." required>{{ old('description') }}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="is_private" value="1">
+                        <span class="text-sm text-gray-600">Kirim secara Privat (Hanya admin yang bisa melihat)</span>
+                    </label>
                 </div>
 
                 <div class="button-wrapper">
-                    <button type="submit" class="submit-btn">Kirim</button>
+                    <button type="submit" class="submit-btn">Kirim Aspirasi</button>
                 </div>
             </form>
         </div>
 
         <div class="image-section">
             <img src="image/about.png" alt="ITATS Graduation">
+        </div>
+    </div>
+
+    <!-- ASPIRATION FEED -->
+    <div class="container my-5 pb-5">
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Suara Mahasiswa</h2>
+        
+        <div class="grid grid-cols-1 gap-6 max-w-4xl mx-auto">
+            @forelse($aspirations as $aspiration)
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 font-bold">
+                                {{ strtoupper(substr($aspiration->name, 0, 1)) }}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">{{ $aspiration->name }}</h4>
+                                <span class="text-xs text-gray-500">{{ $aspiration->created_at->diffForHumans() }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">{{ $aspiration->description }}</p>
+                </div>
+            @empty
+                <div class="text-center text-gray-400 py-10">
+                    <p>Belum ada aspirasi publik yang ditampilkan.</p>
+                </div>
+            @endforelse
+
+            <div class="mt-4">
+                {{ $aspirations->links() }}
+            </div>
         </div>
     </div>
     <!-- FOOTER -->

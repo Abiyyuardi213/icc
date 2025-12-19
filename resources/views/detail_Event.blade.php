@@ -556,7 +556,22 @@
                     juara di ICC 2026! 🚀</p>
 
                 <div class="cta-container">
-                    @if(auth()->check() && auth()->user()->team && auth()->user()->team->event_id == $event->id)
+                    @php
+                        $now = now();
+                        $regStart = $event->registration_start;
+                        $regEnd = $event->registration_end;
+                        $eventStart = $event->event_start;
+                    @endphp
+
+                    @if($now < $regStart)
+                        <button class="btn-cta-large" style="background-color: #9ca3af; cursor: not-allowed;" disabled>
+                            Pendaftaran Dibuka {{ $regStart->diffForHumans() }}
+                        </button>
+                    @elseif($now > $regEnd)
+                        <button class="btn-cta-large" style="background-color: #ef4444; cursor: not-allowed;" disabled>
+                            Pendaftaran Ditutup
+                        </button>
+                    @elseif(auth()->check() && auth()->user()->team && auth()->user()->team->event_id == $event->id)
                         <button class="btn-cta-large" style="background-color: #9ca3af; cursor: not-allowed;" disabled>Sudah Terdaftar</button>
                     @else
                         <a href="{{ route('team.register', ['event_id' => $event->id]) }}" class="btn-cta-large">Daftar Sekarang</a>
