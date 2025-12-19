@@ -434,15 +434,20 @@
             flex-direction: column;
         }
 
+        /* Badges Container */
+        .card-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
         /* Badges */
         .card-badge {
-            align-self: flex-start;
-            /* Agar badge tidak melebar full */
             padding: 4px 12px;
             border-radius: 99px;
             font-size: 0.7rem;
             font-weight: 600;
-            margin-bottom: 0.75rem;
             border: 1px solid;
         }
 
@@ -464,6 +469,32 @@
             /* Warna Hijau */
             border-color: #10B981;
             background-color: #ecfdf5;
+        }
+
+        /* Badge NEW - Styling khusus untuk event baru */
+        .badge-new {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+            border: none;
+            animation: pulse-badge 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 3px 10px rgba(255, 107, 107, 0.6);
+            }
         }
 
         .card-title {
@@ -587,6 +618,11 @@
 
         @forelse($events as $event)
             <div class="event-card">
+                @php
+                    // Cek apakah event baru (dibuat dalam 7 hari terakhir)
+                    $isNewEvent = $event->created_at && $event->created_at->diffInDays(now()) <= 7;
+                @endphp
+
                 <a href="{{ route('event.detail', $event->slug) }}" class="card-image-link">
                     @if($event->photo)
                         <img src="{{ asset('storage/' . $event->photo) }}" alt="{{ $event->name }}" class="card-image">
@@ -595,7 +631,12 @@
                     @endif
                 </a>
                 <div class="card-content">
-                    <span class="card-badge badge-lomba">Event</span>
+                    <div class="card-badges">
+                        <span class="card-badge badge-lomba">Event</span>
+                        @if($isNewEvent)
+                            <span class="card-badge badge-new">🔥 BARU</span>
+                        @endif
+                    </div>
                     <h3 class="card-title">
                         <a href="{{ route('event.detail', $event->slug) }}">
                             {{ $event->name }}
@@ -609,7 +650,7 @@
                             $regStart = $event->registration_start;
                             $regEnd = $event->registration_end;
                             $eventStart = $event->event_start;
-                            
+
                             $statusText = '';
                             $statusColor = 'text-gray-500';
 
@@ -635,8 +676,8 @@
                             {{ $statusText }}
                         </span>
                     </div>
-                    
-                    <!-- Optional: Button logic if needed directly on card, but usually details page handles it. 
+
+                    <!-- Optional: Button logic if needed directly on card, but usually details page handles it.
                          The user asked for text/status on list page. -->
                 </div>
             </div>

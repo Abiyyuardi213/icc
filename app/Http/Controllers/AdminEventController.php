@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class AdminEventController extends Controller
@@ -31,7 +32,13 @@ class AdminEventController extends Controller
             'registration_end' => 'required|date|after_or_equal:registration_start',
             'event_start' => 'required|date|after_or_equal:registration_end',
             'event_end' => 'required|date|after_or_equal:event_start',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('events', 'public');
+        }
 
         Event::create([
             'name' => $request->name,
@@ -42,6 +49,7 @@ class AdminEventController extends Controller
             'registration_end' => $request->registration_end,
             'event_start' => $request->event_start,
             'event_end' => $request->event_end,
+            'photo' => $photoPath,
             'is_active' => true, // Default active
         ]);
 
@@ -66,7 +74,17 @@ class AdminEventController extends Controller
             'registration_end' => 'required|date|after_or_equal:registration_start',
             'event_start' => 'required|date|after_or_equal:registration_end',
             'event_end' => 'required|date|after_or_equal:event_start',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        $photoPath = $event->photo;
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($photoPath && Storage::disk('public')->exists($photoPath)) {
+                Storage::disk('public')->delete($photoPath);
+            }
+            $photoPath = $request->file('photo')->store('events', 'public');
+        }
 
         $event->update([
             'name' => $request->name,
@@ -77,6 +95,7 @@ class AdminEventController extends Controller
             'registration_end' => $request->registration_end,
             'event_start' => $request->event_start,
             'event_end' => $request->event_end,
+            'photo' => $photoPath,
         ]);
 
         // Notify all team leaders
@@ -121,7 +140,7 @@ class AdminEventController extends Controller
         }
 
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'message' => 'Status event berhasil diperbarui.'
         ]);
     }

@@ -330,7 +330,7 @@
         .btn-notif:hover {
             background-color: #fff0f7;
         }
-        
+
         /* Badges for Event Detail */
         .badge-lomba {
             display: inline-block;
@@ -344,7 +344,7 @@
             border-color: #EC46A4;
             background-color: #fff0f7;
         }
-        
+
         .event-title {
             font-size: 1.5rem;
             font-weight: 800;
@@ -352,12 +352,12 @@
             margin-bottom: 0.5rem;
             color: #111827;
         }
-        
+
         .event-meta {
             font-size: 0.9rem;
             color: #6b7280;
         }
-        
+
         .fw-bold {
             font-weight: 700;
             color: #374151;
@@ -492,7 +492,11 @@
             <div class="event-top-section">
 
                 <div class="event-poster">
-                    <img src="{{ asset('image/poster1.png') }}" alt="{{ $event->name }}">
+                    @if($event->photo)
+                        <img src="{{ asset('storage/' . $event->photo) }}" alt="{{ $event->name }}">
+                    @else
+                        <img src="{{ asset('image/poster1.png') }}" alt="{{ $event->name }}">
+                    @endif
                 </div>
 
                 <div class="event-header">
@@ -507,7 +511,7 @@
 
             <div class="event-body">
                 <h3>Deskripsi</h3>
-                <p>{{ strip_tags($event->description) }}</p>
+                <div>{!! $event->description !!}</div>
 
                 @if($event->max_members > 1)
                 <h3>Ketentuan Tim:</h3>
