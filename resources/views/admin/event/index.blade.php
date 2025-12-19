@@ -75,8 +75,8 @@
                     </td>
                     <td class="p-4 text-center">
                             <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer toggle-status" 
-                                    data-event-id="{{ $event->id }}" 
+                                <input type="checkbox" class="sr-only peer toggle-status"
+                                    data-event-id="{{ $event->id }}"
                                     {{ $event->is_active ? 'checked' : '' }}>
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#EC46A4] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
                             </label>
@@ -94,8 +94,8 @@
                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
                                 </button>
-                                <button type="button" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition delete-event-btn" 
-                                    data-event-id="{{ $event->id }}" 
+                                <button type="button" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition delete-event-btn"
+                                    data-event-id="{{ $event->id }}"
                                     title="Hapus">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
@@ -112,7 +112,7 @@
 
 <!-- Modal Overlay -->
 <div id="modalOverlay" class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-50 transition-opacity flex items-center justify-center overflow-y-auto">
-    
+
     <!-- Create Event Modal -->
     <div id="createModal" class="bg-white rounded-2xl shadow-xl w-full max-w-4xl hidden transform transition-all scale-95 opacity-0 m-4 relative">
         <div class="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10 rounded-t-2xl">
@@ -158,7 +158,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Kolom Kanan (Deskripsi) -->
                     <div class="space-y-4">
                         <div>
@@ -193,7 +193,7 @@
                 @csrf
                 @method('PUT')
                 <input type="hidden" id="editEventId" name="id">
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Kolom Kiri -->
                     <div class="space-y-4">
@@ -226,7 +226,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Kolom Kanan (Deskripsi) -->
                     <div class="space-y-4">
                         <div>
@@ -315,7 +315,7 @@
             document.getElementById('editRegEnd').value = event.registration_end.split('T')[0];
             document.getElementById('editEventStart').value = event.event_start.split('T')[0];
             document.getElementById('editEventEnd').value = event.event_end.split('T')[0];
-            
+
             // Set Description to Editor
             if(editEditor) {
                 editEditor.value = event.description || '';
@@ -343,12 +343,12 @@
         createModal.classList.remove('scale-100', 'opacity-100');
         editModal.classList.add('scale-95', 'opacity-0');
         editModal.classList.remove('scale-100', 'opacity-100');
-        
+
         setTimeout(() => {
             overlay.classList.add('hidden');
             createModal.classList.add('hidden');
             editModal.classList.add('hidden');
-            
+
             // Reset forms
             document.getElementById('createForm').reset();
             if(createEditor) createEditor.value = '';
@@ -361,7 +361,7 @@
         if(e.target.classList.contains('toggle-status')) {
             const eventId = e.target.getAttribute('data-event-id');
             const status = e.target.checked;
-            
+
             fetch(`{{ url('admin/event') }}/${eventId}/toggle-status`, {
                 method: 'POST',
                 headers: {
@@ -390,9 +390,9 @@
     // AJAX Create
     document.getElementById('createForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         const descriptionData = createEditor.value;
-        
+
         const btn = document.getElementById('createBtn');
         const formData = new FormData(this);
         formData.set('description', descriptionData); // Override with editor data
@@ -428,7 +428,7 @@
     // AJAX Edit
     document.getElementById('editForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         const descriptionData = editEditor.value;
 
         const btn = document.getElementById('editBtn');
@@ -468,7 +468,7 @@
         if (e.target.closest('.delete-event-btn')) {
             const button = e.target.closest('.delete-event-btn');
             const eventId = button.getAttribute('data-event-id');
-            
+
             Swal.fire({
                 title: 'Apakah Anda yakin?',
                 text: "Event akan dihapus permanen!",
