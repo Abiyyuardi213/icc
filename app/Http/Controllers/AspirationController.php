@@ -23,7 +23,7 @@ class AspirationController extends Controller
             'is_private' => $request->has('is_private'),
         ]);
 
-        return redirect()->back()->with('success', 'Aspirasi Anda berhasil dikirim!');
+        return redirect()->to(url()->previous() . '#forum')->with('success', 'Aspirasi Anda berhasil dikirim!');
     }
     public function reply(Request $request, $id)
     {
@@ -46,6 +46,6 @@ class AspirationController extends Controller
             'parent_id' => $parent->id
         ]);
 
-        return redirect()->back()->with('success', 'Balasan Anda berhasil dikirim!');
+        return redirect()->to(url()->previous() . '#forum')->with('success', 'Balasan Anda berhasil dikirim!');
     }
 }

@@ -989,7 +989,7 @@
                         <img src="{{ asset('storage/' . $event->photo) }}" alt="{{ $event->name }}" class="card-image">
                     @else
                         <!-- Random Placeholder Logic if no photo -->
-                        <img src="{{ asset('image/poster' . rand(1,3) . '.png') }}" alt="{{ $event->name }}" class="card-image">
+                        <img src="{{ asset('image/poster1.png') }}" alt="{{ $event->name }}" class="card-image">
                     @endif
                 </a>
                 <div class="card-content">
@@ -1039,7 +1039,7 @@
                 @csrf
                 <div class="form-group">
                     <label>Nama Anda <span class="required">*</span></label>
-                    <input type="text" name="name" placeholder="Input Here . . ." 
+                    <input type="text" name="name" placeholder="Masukkan nama..." 
                         value="{{ auth()->check() ? auth()->user()->name : old('name') }}" 
                         {{ auth()->check() ? 'readonly' : '' }}>
                 </div>
