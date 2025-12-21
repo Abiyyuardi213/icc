@@ -801,19 +801,19 @@
                 <div class="carousel-wrapper">
                     <div id="carousel" class="carousel">
                         <div class="carousel-slide">
-                            <img src="image/banner2.png" alt="">
+                            <img src="image/banner1_8.png" alt="">
                         </div>
 
                         <div class="carousel-slide">
-                            <img src="image/banner6.png" alt="">
+                            <img src="image/banner1_1.png" alt="">
                         </div>
 
                         <div class="carousel-slide">
-                            <img src="image/banner3.png" alt="">
+                            <img src="image/banner1_5.png" alt="">
                         </div>
 
                         <div class="carousel-slide">
-                            <img src="image/banner1.png" alt="">
+                            <img src="image/banner14.png" alt="">
                         </div>
                     </div>
                 </div>
