@@ -12,7 +12,7 @@
             --primary-color: #EC46A4;
             --text-color: #374151;
             --bg-white: #ffffff;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow: 0 4px 6px rgba(0, 0,s 0, 0.1);
         }
 
         body {
