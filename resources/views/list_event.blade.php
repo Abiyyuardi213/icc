@@ -627,7 +627,7 @@
                     @if($event->photo)
                         <img src="{{ asset('storage/' . $event->photo) }}" alt="{{ $event->name }}" class="card-image">
                     @else
-                        <img src="{{ asset('image/poster' . rand(1,3) . '.png') }}" alt="{{ $event->name }}" class="card-image">
+                        <img src="{{ asset('image/poster1.png') }}" alt="{{ $event->name }}" class="card-image">
                     @endif
                 </a>
                 <div class="card-content">

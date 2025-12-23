@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Informatika</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="icon" type="image/png" href="{{ asset('image/icon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -802,19 +801,19 @@
                 <div class="carousel-wrapper">
                     <div id="carousel" class="carousel">
                         <div class="carousel-slide">
-                            <img src="image/banner2.png" alt="">
+                            <img src="image/banner1_8.png" alt="">
                         </div>
 
                         <div class="carousel-slide">
-                            <img src="image/banner6.png" alt="">
+                            <img src="image/banner1_1.png" alt="">
                         </div>
 
                         <div class="carousel-slide">
-                            <img src="image/banner3.png" alt="">
+                            <img src="image/banner1_5.png" alt="">
                         </div>
 
                         <div class="carousel-slide">
-                            <img src="image/banner1.png" alt="">
+                            <img src="image/banner14.png" alt="">
                         </div>
                     </div>
                 </div>
@@ -990,7 +989,7 @@
                         <img src="{{ asset('storage/' . $event->photo) }}" alt="{{ $event->name }}" class="card-image">
                     @else
                         <!-- Random Placeholder Logic if no photo -->
-                        <img src="{{ asset('image/poster' . rand(1,3) . '.png') }}" alt="{{ $event->name }}" class="card-image">
+                        <img src="{{ asset('image/poster1.png') }}" alt="{{ $event->name }}" class="card-image">
                     @endif
                 </a>
                 <div class="card-content">
@@ -1040,8 +1039,13 @@
                 @csrf
                 <div class="form-group">
                     <label>Nama Anda <span class="required">*</span></label>
+<<<<<<< HEAD
                     <input type="text" name="name" placeholder="Input Here . . ."
                         value="{{ auth()->check() ? auth()->user()->name : old('name') }}"
+=======
+                    <input type="text" name="name" placeholder="Masukkan nama..."
+                        value="{{ auth()->check() ? auth()->user()->name : old('name') }}"
+>>>>>>> 12401b8f580263176aa522e15940c3addfe3133c
                         {{ auth()->check() ? 'readonly' : '' }}>
                 </div>
 
