@@ -1039,13 +1039,8 @@
                 @csrf
                 <div class="form-group">
                     <label>Nama Anda <span class="required">*</span></label>
-<<<<<<< HEAD
-                    <input type="text" name="name" placeholder="Input Here . . ."
-                        value="{{ auth()->check() ? auth()->user()->name : old('name') }}"
-=======
                     <input type="text" name="name" placeholder="Masukkan nama..."
                         value="{{ auth()->check() ? auth()->user()->name : old('name') }}"
->>>>>>> 12401b8f580263176aa522e15940c3addfe3133c
                         {{ auth()->check() ? 'readonly' : '' }}>
                 </div>
 
