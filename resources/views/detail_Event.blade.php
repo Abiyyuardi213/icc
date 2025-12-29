@@ -501,6 +501,8 @@
 
                 <div class="event-header">
                     <span class="badge-lomba">Lomba</span>
+                    <span class="badge-lomba" style="background-color: #ecfdf5; color: #059669; border-color: #059669;">Gratis</span>
+
                     <h1 class="event-title">{{ $event->name }}</h1>
                     <p class="event-meta">Terbuka Hingga : <span class="fw-bold">
                         {{ $event->registration_end ? $event->registration_end->format('d-m-Y') : '-' }}
@@ -524,21 +526,6 @@
                 <ul>
                     <li><strong>Pendaftaran:</strong> {{ $event->registration_start ? $event->registration_start->format('d M Y') : '-' }} s/d {{ $event->registration_end ? $event->registration_end->format('d M Y') : '-' }}</li>
                     <li><strong>Pelaksanaan Event:</strong> {{ $event->event_start ? $event->event_start->format('d M Y') : '-' }} s/d {{ $event->event_end ? $event->event_end->format('d M Y') : '-' }}</li>
-                </ul>
-
-                <h3>Ketentuan Peserta:</h3>
-                <ol>
-                    <li>Status Peserta: Wajib mahasiswa aktif ITATS angkatan 2024 atau 2025.</li>
-                    <li>Komposisi Tim: Setiap tim wajib terdiri dari tiga (3) orang anggota.</li>
-                    <li>Biaya Pendaftaran: GRATIS! (Free Registration)</li>
-                </ol>
-
-                <h3>Hadiah & Benefit:</h3>
-                <ul class="no-bullet">
-                    <li>Total Pool Prize: 2 JUTA RUPIAH</li>
-                    <li>• Uang Pembinaan</li>
-                    <li>• Plakat & Sertifikat Resmi</li>
-                    <li>• Pengalaman kompetisi yang berharga</li>
                 </ul>
 
                 <h3>Cara Daftar:</h3>
