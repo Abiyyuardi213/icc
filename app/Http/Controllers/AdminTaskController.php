@@ -14,7 +14,8 @@ class AdminTaskController extends Controller
     public function index(Event $event)
     {
         $tasks = $event->tasks()->orderBy('start_time')->get();
-        return view('admin.task.index', compact('event', 'tasks'));
+        $teams = $event->teams()->with(['user', 'members', 'leader'])->get();
+        return view('admin.task.index', compact('event', 'tasks', 'teams'));
     }
 
     public function create(Event $event)
