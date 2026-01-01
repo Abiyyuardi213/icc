@@ -487,10 +487,13 @@
         }
 
         @keyframes pulse-badge {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
                 box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
             }
+
             50% {
                 transform: scale(1.05);
                 box-shadow: 0 3px 10px rgba(255, 107, 107, 0.6);
@@ -590,7 +593,8 @@
         <div class="container-search">
             <form action="{{ route('event.list') }}" method="GET" class="w-full">
                 <div class="search-wrapper">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Mau cari event apa hari ini ?" class="search-input">
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Mau cari event apa hari ini ?" class="search-input">
                     <button type="submit" class="btn-search">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -605,9 +609,12 @@
                     <label for="sort" class="filter-label">Urut berdasarkan :</label>
                     <div class="select-container">
                         <select id="sort" name="sort" class="filter-select" onchange="this.form.submit()">
-                            <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Event Terbaru</option>
-                            <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Event Terlama</option>
-                            <option value="ending_soon" {{ request('sort') == 'ending_soon' ? 'selected' : '' }}>Segera Berakhir</option>
+                            <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Event Terbaru
+                            </option>
+                            <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Event Terlama
+                            </option>
+                            <option value="ending_soon" {{ request('sort') == 'ending_soon' ? 'selected' : '' }}>Segera
+                                Berakhir</option>
                         </select>
                     </div>
                 </div>
@@ -616,76 +623,78 @@
 
         <div class="container-grid">
 
-        @forelse($events as $event)
-            <div class="event-card">
-                @php
-                    // Cek apakah event baru (dibuat dalam 7 hari terakhir)
-                    $isNewEvent = $event->created_at && $event->created_at->diffInDays(now()) <= 7;
-                @endphp
+            @forelse($events as $event)
+                <div class="event-card">
+                    @php
+                        // Cek apakah event baru (dibuat dalam 7 hari terakhir)
+                        $isNewEvent = $event->created_at && $event->created_at->diffInDays(now()) <= 7;
+                    @endphp
 
-                <a href="{{ route('event.detail', $event->slug) }}" class="card-image-link">
-                    @if($event->photo)
-                        <img src="{{ asset('storage/' . $event->photo) }}" alt="{{ $event->name }}" class="card-image">
-                    @else
-                        <img src="{{ asset('image/poster1.png') }}" alt="{{ $event->name }}" class="card-image">
-                    @endif
-                </a>
-                <div class="card-content">
-                    <div class="card-badges">
-                        <span class="card-badge badge-lomba">Event</span>
-                        @if($isNewEvent)
-                            <span class="card-badge badge-new">🔥 BARU</span>
+                    <a href="{{ route('event.detail', $event->slug ?: 'event-' . $event->id) }}"
+                        class="card-image-link">
+                        @if ($event->photo)
+                            <img src="{{ asset('storage/' . $event->photo) }}" alt="{{ $event->name }}"
+                                class="card-image">
+                        @else
+                            <img src="{{ asset('image/poster1.png') }}" alt="{{ $event->name }}" class="card-image">
                         @endif
-                    </div>
-                    <h3 class="card-title">
-                        <a href="{{ route('event.detail', $event->slug) }}">
-                            {{ $event->name }}
-                        </a>
-                    </h3>
-                    <p class="card-description">{{ strip_tags($event->description) }}</p>
+                    </a>
+                    <div class="card-content">
+                        <div class="card-badges">
+                            <span class="card-badge badge-lomba">Event</span>
+                            @if ($isNewEvent)
+                                <span class="card-badge badge-new">🔥 BARU</span>
+                            @endif
+                        </div>
+                        <h3 class="card-title">
+                            <a href="{{ route('event.detail', $event->slug ?: 'event-' . $event->id) }}">
+                                {{ $event->name }}
+                            </a>
+                        </h3>
+                        <p class="card-description">{{ strip_tags($event->description) }}</p>
 
-                    <div class="card-footer">
-                        @php
-                            $now = now();
-                            $regStart = $event->registration_start;
-                            $regEnd = $event->registration_end;
-                            $eventStart = $event->event_start;
+                        <div class="card-footer">
+                            @php
+                                $now = now();
+                                $regStart = $event->registration_start;
+                                $regEnd = $event->registration_end;
+                                $eventStart = $event->event_start;
 
-                            $statusText = '';
-                            $statusColor = 'text-gray-500';
-
-                            if ($now < $regStart) {
-                                $diff = $now->diff($regStart);
-                                $statusText = "Buka dalam " . $diff->days . " hari " . $diff->h . " jam";
-                                $statusColor = 'text-blue-500';
-                            } elseif ($now >= $regStart && $now <= $regEnd) {
-                                $diff = $now->diff($regEnd);
-                                $statusText = "Sisa waktu daftar: " . $diff->days . " hari";
-                                $statusColor = 'text-green-500';
-                            } elseif ($now > $regEnd && $now < $eventStart) {
-                                $statusText = "Pendaftaran Ditutup";
-                                $statusColor = 'text-red-500';
-                            } else {
-                                $statusText = "Event Telah Dimulai/Selesai";
+                                $statusText = '';
                                 $statusColor = 'text-gray-500';
-                            }
-                        @endphp
 
-                        <span class="card-date">{{ $regEnd ? $regEnd->format('d-m-Y') : '-' }}</span>
-                        <span class="card-days {{ $statusColor }}">
-                            {{ $statusText }}
-                        </span>
-                    </div>
+                                if ($now < $regStart) {
+                                    $diff = $now->diff($regStart);
+                                    $statusText = 'Buka dalam ' . $diff->days . ' hari ' . $diff->h . ' jam';
+                                    $statusColor = 'text-blue-500';
+                                } elseif ($now >= $regStart && $now <= $regEnd) {
+                                    $diff = $now->diff($regEnd);
+                                    $statusText = 'Sisa waktu daftar: ' . $diff->days . ' hari';
+                                    $statusColor = 'text-green-500';
+                                } elseif ($now > $regEnd && $now < $eventStart) {
+                                    $statusText = 'Pendaftaran Ditutup';
+                                    $statusColor = 'text-red-500';
+                                } else {
+                                    $statusText = 'Event Telah Dimulai/Selesai';
+                                    $statusColor = 'text-gray-500';
+                                }
+                            @endphp
 
-                    <!-- Optional: Button logic if needed directly on card, but usually details page handles it.
+                            <span class="card-date">{{ $regEnd ? $regEnd->format('d-m-Y') : '-' }}</span>
+                            <span class="card-days {{ $statusColor }}">
+                                {{ $statusText }}
+                            </span>
+                        </div>
+
+                        <!-- Optional: Button logic if needed directly on card, but usually details page handles it.
                          The user asked for text/status on list page. -->
+                    </div>
                 </div>
-            </div>
-        @empty
-            <div class="col-span-3 text-center p-10">
-                <p>Belum ada event yang tersedia saat ini.</p>
-            </div>
-        @endforelse
+            @empty
+                <div class="col-span-3 text-center p-10">
+                    <p>Belum ada event yang tersedia saat ini.</p>
+                </div>
+            @endforelse
 
         </div>
     </main>

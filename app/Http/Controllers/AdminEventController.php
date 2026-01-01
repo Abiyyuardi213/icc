@@ -46,7 +46,7 @@ class AdminEventController extends Controller
 
         Event::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
+            'slug' => Str::slug($request->name) ?: 'event-' . time(),
             'description' => $request->description,
             'max_members' => $request->max_members,
             'registration_start' => $request->registration_start,
@@ -100,7 +100,7 @@ class AdminEventController extends Controller
 
         $event->update([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
+            'slug' => Str::slug($request->name) ?: 'event-' . time(),
             'description' => $request->description,
             'max_members' => $request->max_members,
             'registration_start' => $request->registration_start,

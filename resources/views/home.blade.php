@@ -12,7 +12,7 @@
             --primary-color: #EC46A4;
             --text-color: #374151;
             --bg-white: #ffffff;
-            --shadow: 0 4px 6px rgba(0, 0,s 0, 0.1);
+            --shadow: 0 4px 6px rgba(0, 0, s 0, 0.1);
         }
 
         body {
@@ -849,7 +849,8 @@
         <!-- SEARCH BAR -->
         <div class="event-search">
             <form action="{{ route('event.list') }}" method="GET" class="event-search__inner">
-                <input type="text" name="search" placeholder="Mau cari event apa hari ini?" class="event-search__input">
+                <input type="text" name="search" placeholder="Mau cari event apa hari ini?"
+                    class="event-search__input">
 
                 <button type="submit" class="event-search__button">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
@@ -909,7 +910,8 @@
                     <div class="event-hero__feature-item">
                         <div class="event-hero__icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
                                 <rect x="9" y="2" width="6" height="4" rx="1" />
                                 <path d="M5 6 h14 v14 H5 z" />
                             </svg>
@@ -983,41 +985,44 @@
 
         <div class="events-grid">
             @forelse($events as $event)
-            <div class="event-card">
-                <a href="{{ route('event.detail', $event->slug) }}" class="card-image-link">
-                    @if($event->photo)
-                        <img src="{{ asset('storage/' . $event->photo) }}" alt="{{ $event->name }}" class="card-image">
-                    @else
-                        <!-- Random Placeholder Logic if no photo -->
-                        <img src="{{ asset('image/poster1.png') }}" alt="{{ $event->name }}" class="card-image">
-                    @endif
-                </a>
-                <div class="card-content">
-                    <span class="card-badge">Event</span>
-                    <h3 class="card-title">
-                        <a href="{{ route('event.detail', $event->slug) }}">
-                            {{ Str::limit($event->name, 50) }}
-                        </a>
-                    </h3>
-                    <p class="card-description">{{ Str::limit(strip_tags($event->description), 100) }}</p>
-                    <div class="card-footer">
-                        <span class="card-date">{{ $event->registration_end ? $event->registration_end->format('d-m-Y') : '-' }}</span>
-                        <span class="card-days">
-                            @if($event->registration_end && now() <= $event->registration_end)
-                                {{ ceil(now()->diffInDays($event->registration_end)) }} Hari Lagi
-                            @elseif($event->registration_end && now() > $event->registration_end)
-                                Ditutup
-                            @else
-                                -
-                            @endif
-                        </span>
+                <div class="event-card">
+                    <a href="{{ route('event.detail', $event->slug ?: 'event-' . $event->id) }}"
+                        class="card-image-link">
+                        @if ($event->photo)
+                            <img src="{{ asset('storage/' . $event->photo) }}" alt="{{ $event->name }}"
+                                class="card-image">
+                        @else
+                            <!-- Random Placeholder Logic if no photo -->
+                            <img src="{{ asset('image/poster1.png') }}" alt="{{ $event->name }}" class="card-image">
+                        @endif
+                    </a>
+                    <div class="card-content">
+                        <span class="card-badge">Event</span>
+                        <h3 class="card-title">
+                            <a href="{{ route('event.detail', $event->slug ?: 'event-' . $event->id) }}">
+                                {{ Str::limit($event->name, 50) }}
+                            </a>
+                        </h3>
+                        <p class="card-description">{{ Str::limit(strip_tags($event->description), 100) }}</p>
+                        <div class="card-footer">
+                            <span
+                                class="card-date">{{ $event->registration_end ? $event->registration_end->format('d-m-Y') : '-' }}</span>
+                            <span class="card-days">
+                                @if ($event->registration_end && now() <= $event->registration_end)
+                                    {{ ceil(now()->diffInDays($event->registration_end)) }} Hari Lagi
+                                @elseif($event->registration_end && now() > $event->registration_end)
+                                    Ditutup
+                                @else
+                                    -
+                                @endif
+                            </span>
+                        </div>
                     </div>
                 </div>
-            </div>
             @empty
-            <div class="col-span-3 text-center p-10">
-                <p>Belum ada event yang ditampilkan.</p>
-            </div>
+                <div class="col-span-3 text-center p-10">
+                    <p>Belum ada event yang ditampilkan.</p>
+                </div>
             @endforelse
         </div>
         <a href="{{ route('event.list') }}" class="view-all-btn">Lihat Semua Event</a>
@@ -1028,8 +1033,9 @@
     </div>
     <div class="card-container">
         <div class="form-section">
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+            @if (session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+                    role="alert">
                     <strong class="font-bold">Sukses!</strong>
                     <span class="block sm:inline">{{ session('success') }}</span>
                 </div>
@@ -1072,77 +1078,97 @@
         <div class="text-center mb-12">
             <span class="text-pink-500 font-bold tracking-wider text-sm uppercase mb-2 block">Komunitas</span>
             <h2 class="text-3xl md:text-4xl font-bold text-gray-800">Forum Diskusi Mahasiswa</h2>
-            <p class="text-gray-500 mt-4 max-w-xl mx-auto">Ruang terbuka untuk berbagi ide, aspirasi, dan diskusi konstruktif demi kemajuan bersama.</p>
+            <p class="text-gray-500 mt-4 max-w-xl mx-auto">Ruang terbuka untuk berbagi ide, aspirasi, dan diskusi
+                konstruktif demi kemajuan bersama.</p>
         </div>
 
         <div class="max-w-4xl mx-auto space-y-8">
             @forelse($aspirations as $aspiration)
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 group">
+                <div
+                    class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 group">
                     <!-- Main Post -->
                     <div class="p-6 md:p-8">
                         <div class="flex items-start justify-between">
                             <div class="flex items-center gap-4 mb-6">
-                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md transform group-hover:scale-110 transition-transform duration-300">
+                                <div
+                                    class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md transform group-hover:scale-110 transition-transform duration-300">
                                     {{ strtoupper(substr($aspiration->name, 0, 1)) }}
                                 </div>
                                 <div>
                                     <h4 class="font-bold text-gray-900 text-lg">{{ $aspiration->name }}</h4>
                                     <div class="flex items-center gap-3 text-xs text-gray-500 mt-1">
                                         <span class="flex items-center gap-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
                                             {{ $aspiration->created_at->diffForHumans() }}
                                         </span>
                                         <span class="w-1 h-1 rounded-full bg-gray-300"></span>
-                                        <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-medium">Public</span>
+                                        <span
+                                            class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-medium">Public</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="md:pl-16">
-                            <p class="text-gray-700 leading-relaxed text-base md:text-lg mb-6">{{ $aspiration->description }}</p>
+                            <p class="text-gray-700 leading-relaxed text-base md:text-lg mb-6">
+                                {{ $aspiration->description }}</p>
 
                             <div class="flex items-center gap-4 pt-6 border-t border-gray-50">
                                 <button onclick="toggleReply('{{ $aspiration->id }}')"
                                     class="group/btn flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition-all duration-300 text-sm font-semibold border border-yellow-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-300 group-hover/btn:-rotate-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-4 w-4 transition-transform duration-300 group-hover/btn:-rotate-12"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                     </svg>
                                     Balas Diskusi
-                                    <span class="ml-1 bg-white px-2 py-0.5 rounded-full text-xs shadow-sm text-yellow-600 border border-yellow-100">{{ $aspiration->replies->count() }}</span>
+                                    <span
+                                        class="ml-1 bg-white px-2 py-0.5 rounded-full text-xs shadow-sm text-yellow-600 border border-yellow-100">{{ $aspiration->replies->count() }}</span>
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Replies Section with Smooth Transition -->
-                    <div id="wrapper-{{ $aspiration->id }}" class="grid grid-rows-[0fr] transition-all duration-500 ease-in-out">
+                    <div id="wrapper-{{ $aspiration->id }}"
+                        class="grid grid-rows-[0fr] transition-all duration-500 ease-in-out">
                         <div class="overflow-hidden">
                             <div class="bg-gray-50/50 border-t border-gray-100 p-6 md:p-8 md:pl-24 space-y-6">
                                 <!-- Existing Replies -->
-                                @foreach($aspiration->replies as $reply)
+                                @foreach ($aspiration->replies as $reply)
                                     <div class="flex gap-4 group/reply animate-fade-in">
-                                        <div class="w-8 h-8 rounded-full bg-white border border-gray-200 flex flex-shrink-0 items-center justify-center text-gray-600 font-bold text-xs shadow-sm mt-1">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-white border border-gray-200 flex flex-shrink-0 items-center justify-center text-gray-600 font-bold text-xs shadow-sm mt-1">
                                             {{ strtoupper(substr($reply->user->name ?? $reply->name, 0, 1)) }}
                                         </div>
-                                        <div class="bg-white p-4 rounded-2xl rounded-tl-none border border-gray-200 shadow-sm flex-1 hover:shadow-md transition-shadow">
+                                        <div
+                                            class="bg-white p-4 rounded-2xl rounded-tl-none border border-gray-200 shadow-sm flex-1 hover:shadow-md transition-shadow">
                                             <div class="flex justify-between items-center mb-2">
-                                                <span class="font-bold text-sm text-gray-900">{{ $reply->user->name ?? $reply->name }}</span>
-                                                <span class="text-xs text-gray-400">{{ $reply->created_at->diffForHumans() }}</span>
+                                                <span
+                                                    class="font-bold text-sm text-gray-900">{{ $reply->user->name ?? $reply->name }}</span>
+                                                <span
+                                                    class="text-xs text-gray-400">{{ $reply->created_at->diffForHumans() }}</span>
                                             </div>
-                                            <p class="text-gray-600 text-sm leading-relaxed">{{ $reply->description }}</p>
+                                            <p class="text-gray-600 text-sm leading-relaxed">{{ $reply->description }}
+                                            </p>
                                         </div>
                                     </div>
                                 @endforeach
 
                                 <!-- Reply Form -->
-                                <div id="reply-form-{{ $aspiration->id }}" class="mt-6 pt-6 border-t border-gray-200/60 hidden">
-                                    @if(auth()->check())
-                                        <form action="{{ route('aspiration.reply', $aspiration->id) }}" method="POST" class="flex gap-4">
+                                <div id="reply-form-{{ $aspiration->id }}"
+                                    class="mt-6 pt-6 border-t border-gray-200/60 hidden">
+                                    @if (auth()->check())
+                                        <form action="{{ route('aspiration.reply', $aspiration->id) }}"
+                                            method="POST" class="flex gap-4">
                                             @csrf
-                                            <div class="w-10 h-10 rounded-full bg-pink-100 border border-pink-200 flex flex-shrink-0 items-center justify-center text-pink-600 font-bold text-sm">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-pink-100 border border-pink-200 flex flex-shrink-0 items-center justify-center text-pink-600 font-bold text-sm">
                                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                             </div>
                                             <div class="flex-1">
@@ -1152,7 +1178,9 @@
                                                         placeholder="Tulis balasan Anda yang sopan dan membangun..." required></textarea>
                                                 </div>
                                                 <div class="flex justify-end gap-3 mt-3">
-                                                    <button type="button" onclick="cancelReply('{{ $aspiration->id }}')" class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors">
+                                                    <button type="button"
+                                                        onclick="cancelReply('{{ $aspiration->id }}')"
+                                                        class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors">
                                                         Batal
                                                     </button>
                                                     <button type="submit"
@@ -1164,11 +1192,16 @@
                                             </div>
                                         </form>
                                     @else
-                                        <div class="flex flex-col items-center justify-center py-8 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                                        <div
+                                            class="flex flex-col items-center justify-center py-8 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
                                             <p class="text-gray-600 font-medium mb-3">Yuk, ikut berdiskusi!</p>
-                                            <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-pink-500 text-white font-semibold text-sm hover:bg-pink-600 transition-colors shadow-sm">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                            <a href="{{ route('login') }}"
+                                                class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-pink-500 text-white font-semibold text-sm hover:bg-pink-600 transition-colors shadow-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                                                 </svg>
                                                 Login untuk Membalas
                                             </a>
@@ -1182,8 +1215,10 @@
             @empty
                 <div class="text-center py-16 bg-white rounded-3xl border border-gray-100 shadow-sm">
                     <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-gray-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
                         </svg>
                     </div>
                     <h3 class="text-xl font-bold text-gray-800 mb-2">Belum ada diskusi</h3>
@@ -1210,7 +1245,7 @@
                 form.classList.remove('hidden');
                 // Auto focus textarea if logged in
                 const textarea = form.querySelector('textarea');
-                if(textarea) setTimeout(() => textarea.focus(), 300);
+                if (textarea) setTimeout(() => textarea.focus(), 300);
             } else {
                 wrapper.classList.add('grid-rows-[0fr]');
                 wrapper.classList.remove('grid-rows-[1fr]');
@@ -1224,14 +1259,17 @@
         }
     </script>
 
-    @if(!auth()->check())
-    <!-- FLOATING CHAT ICON FOR GUESTS -->
-    <a href="https://wa.me/6281234567890" target="_blank" class="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all z-50 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-        </svg>
-        Chat Admin
-    </a>
+    @if (!auth()->check())
+        <!-- FLOATING CHAT ICON FOR GUESTS -->
+        <a href="https://wa.me/6281234567890" target="_blank"
+            class="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all z-50 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                viewBox="0 0 16 16">
+                <path
+                    d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
+            </svg>
+            Chat Admin
+        </a>
     @endif
     <!-- FOOTER -->
     @include('include.footer')
