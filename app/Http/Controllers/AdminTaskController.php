@@ -30,10 +30,11 @@ class AdminTaskController extends Controller
             'description' => 'nullable|string',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
-            'file' => 'nullable|file|mimes:pdf,zip,rar,doc,docx|max:10240', // 10MB Max
+            'file' => 'nullable|file|mimes:pdf,zip,rar,doc,docx|max:10240',
+            'type' => 'required|string|in:submission,quiz',
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['questions', 'file']);
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
@@ -41,7 +42,26 @@ class AdminTaskController extends Controller
             $data['file_path'] = $file->storeAs('tasks', $filename, 'public');
         }
 
-        $event->tasks()->create($data);
+        $task = $event->tasks()->create($data);
+
+        // Handle Quiz Data
+        if ($request->type === 'quiz' && $request->has('questions')) {
+            foreach ($request->questions as $qData) {
+                $question = $task->questions()->create([
+                    'question_text' => $qData['text'],
+                    'time_limit' => $qData['time_limit'] ?? 60,
+                ]);
+
+                if (isset($qData['options']) && is_array($qData['options'])) {
+                    foreach ($qData['options'] as $index => $optText) {
+                        $question->options()->create([
+                            'option_text' => $optText,
+                            'is_correct' => isset($qData['correct']) && (int)$qData['correct'] === $index,
+                        ]);
+                    }
+                }
+            }
+        }
 
         // Notify all team leaders (users) of this event
         $teams = $event->teams;
@@ -64,6 +84,7 @@ class AdminTaskController extends Controller
 
     public function edit(Event $event, Task $task)
     {
+        $task->load('questions.options');
         return view('admin.task.edit', compact('event', 'task'));
     }
 
@@ -75,9 +96,10 @@ class AdminTaskController extends Controller
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'file' => 'nullable|file|mimes:pdf,zip,rar,doc,docx|max:10240',
+            'type' => 'required|string|in:submission,quiz',
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['questions', 'file']);
 
         if ($request->hasFile('file')) {
             // Delete old file
@@ -91,6 +113,31 @@ class AdminTaskController extends Controller
         }
 
         $task->update($data);
+
+        // Handle Quiz Data Update
+        if ($request->type === 'quiz') {
+            // Simple approach: Delete all existing questions and recreate
+            // In a production app with submissions, this would require soft deletes or versioning
+            $task->questions()->delete();
+
+            if ($request->has('questions')) {
+                foreach ($request->questions as $qData) {
+                    $question = $task->questions()->create([
+                        'question_text' => $qData['text'],
+                        'time_limit' => $qData['time_limit'] ?? 60,
+                    ]);
+
+                    if (isset($qData['options']) && is_array($qData['options'])) {
+                        foreach ($qData['options'] as $index => $optText) {
+                            $question->options()->create([
+                                'option_text' => $optText,
+                                'is_correct' => isset($qData['correct']) && (int)$qData['correct'] === $index,
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
 
         // Notify all team leaders
         $teams = $event->teams;

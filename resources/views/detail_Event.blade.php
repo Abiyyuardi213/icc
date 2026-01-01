@@ -190,42 +190,55 @@
             max-width: 900px;
             margin: 0 auto;
         }
+
         .event-top-section {
-    display: flex; /* Kunci agar berdampingan */
-    gap: 2.5rem;   /* Jarak antara gambar dan teks */
-    align-items: flex-start; /* Agar teks mulai dari atas, sejajar dengan atas gambar */
-    margin-bottom: 2rem;
-}
+            display: flex;
+            /* Kunci agar berdampingan */
+            gap: 2.5rem;
+            /* Jarak antara gambar dan teks */
+            align-items: flex-start;
+            /* Agar teks mulai dari atas, sejajar dengan atas gambar */
+            margin-bottom: 2rem;
+        }
+
         /* Poster Image */
         .event-poster {
-    flex: 0 0 350px; /* Kunci lebar poster agar tetap 350px, tidak mengecil/membesar */
-    max-width: 350px;
-}
+            flex: 0 0 350px;
+            /* Kunci lebar poster agar tetap 350px, tidak mengecil/membesar */
+            max-width: 350px;
+        }
 
-.event-poster img {
-    width: 100%;
-    height: auto;
-    border-radius: 12px;
-    display: block;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Opsional: tambah bayangan agar cantik */
-}
+        .event-poster img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            /* Opsional: tambah bayangan agar cantik */
+        }
 
         /* Header Section */
         .event-header {
-    flex: 1; /* Mengambil sisa ruang kosong di sebelah kanan */
-    padding-top: 0.5rem; /* Sedikit padding atas agar sejajar visual dengan gambar */
-}
-@media (max-width: 768px) {
-    .event-top-section {
-        flex-direction: column; /* Jadi tumpuk lagi */
-    }
+            flex: 1;
+            /* Mengambil sisa ruang kosong di sebelah kanan */
+            padding-top: 0.5rem;
+            /* Sedikit padding atas agar sejajar visual dengan gambar */
+        }
 
-    .event-poster {
-        flex: none;
-        width: 100%;
-        max-width: 100%; /* Poster jadi lebar penuh di HP */
-    }
-}
+        @media (max-width: 768px) {
+            .event-top-section {
+                flex-direction: column;
+                /* Jadi tumpuk lagi */
+            }
+
+            .event-poster {
+                flex: none;
+                width: 100%;
+                max-width: 100%;
+                /* Poster jadi lebar penuh di HP */
+            }
+        }
+
         /* Body Content */
         .event-body h3 {
             font-size: 1.125rem;
@@ -492,7 +505,7 @@
             <div class="event-top-section">
 
                 <div class="event-poster">
-                    @if($event->photo)
+                    @if ($event->photo)
                         <img src="{{ asset('storage/' . $event->photo) }}" alt="{{ $event->name }}">
                     @else
                         <img src="{{ asset('image/poster1.png') }}" alt="{{ $event->name }}">
@@ -501,12 +514,13 @@
 
                 <div class="event-header">
                     <span class="badge-lomba">Lomba</span>
-                    <span class="badge-lomba" style="background-color: #ecfdf5; color: #059669; border-color: #059669;">Gratis</span>
+                    <span class="badge-lomba"
+                        style="background-color: #ecfdf5; color: #059669; border-color: #059669;">Gratis</span>
 
                     <h1 class="event-title">{{ $event->name }}</h1>
                     <p class="event-meta">Terbuka Hingga : <span class="fw-bold">
-                        {{ $event->registration_end ? $event->registration_end->format('d-m-Y') : '-' }}
-                    </span></p>
+                            {{ $event->registration_end ? $event->registration_end->format('d-m-Y') : '-' }}
+                        </span></p>
                 </div>
 
             </div>
@@ -515,17 +529,26 @@
                 <h3>Deskripsi</h3>
                 <div>{!! $event->description !!}</div>
 
-                @if($event->max_members > 1)
-                <h3>Ketentuan Tim:</h3>
-                <ul>
-                    <li>Maksimal anggota: {{ $event->max_members }} orang</li>
-                </ul>
+                @if ($event->max_members > 1)
+                    <h3>Ketentuan Tim:</h3>
+                    <ul>
+                        <li>Maksimal anggota: {{ $event->max_members }} orang</li>
+                    </ul>
                 @endif
 
                 <h3>Jadwal Pelaksanaan:</h3>
                 <ul>
-                    <li><strong>Pendaftaran:</strong> {{ $event->registration_start ? $event->registration_start->format('d M Y') : '-' }} s/d {{ $event->registration_end ? $event->registration_end->format('d M Y') : '-' }}</li>
-                    <li><strong>Pelaksanaan Event:</strong> {{ $event->event_start ? $event->event_start->format('d M Y') : '-' }} s/d {{ $event->event_end ? $event->event_end->format('d M Y') : '-' }}</li>
+                    <li><strong>Pendaftaran:</strong>
+                        {{ $event->registration_start ? $event->registration_start->format('d M Y') : '-' }} s/d
+                        {{ $event->registration_end ? $event->registration_end->format('d M Y') : '-' }}</li>
+                    <li><strong>Penyisihan:</strong>
+                        {{ $event->preliminary_date ? $event->preliminary_date->format('d M Y') : '-' }}</li>
+                    <li><strong>Final:</strong> {{ $event->final_date ? $event->final_date->format('d M Y') : '-' }}
+                    </li>
+                    <li><strong>Pelaksanaan Event:</strong>
+                        {{ $event->event_start ? $event->event_start->format('d M Y') : '-' }} s/d
+                        {{ $event->event_end ? $event->event_end->format('d M Y') : '-' }}</li>
+                    <p class="text-xs text-gray-500 mt-1">* Jadwal dapat berubah sewaktu-waktu</p>
                 </ul>
 
                 <h3>Cara Daftar:</h3>
@@ -554,7 +577,7 @@
                         $eventStart = $event->event_start;
                     @endphp
 
-                    @if($now < $regStart)
+                    @if ($now < $regStart)
                         <button class="btn-cta-large" style="background-color: #9ca3af; cursor: not-allowed;" disabled>
                             Pendaftaran Dibuka {{ $regStart->diffForHumans() }}
                         </button>
@@ -563,9 +586,11 @@
                             Pendaftaran Ditutup
                         </button>
                     @elseif(auth()->check() && auth()->user()->team && auth()->user()->team->event_id == $event->id)
-                        <button class="btn-cta-large" style="background-color: #9ca3af; cursor: not-allowed;" disabled>Sudah Terdaftar</button>
+                        <button class="btn-cta-large" style="background-color: #9ca3af; cursor: not-allowed;"
+                            disabled>Sudah Terdaftar</button>
                     @else
-                        <a href="{{ route('team.register', ['event_id' => $event->id]) }}" class="btn-cta-large">Daftar Sekarang</a>
+                        <a href="{{ route('team.register', ['event_id' => $event->id]) }}" class="btn-cta-large">Daftar
+                            Sekarang</a>
                     @endif
                     <button class="btn-notif">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"

@@ -17,6 +17,10 @@ class Event extends Model
         'max_members',
         'is_active',
         'photo',
+        'preliminary_date',
+        'preliminary_type',
+        'final_date',
+        'final_type',
     ];
 
     protected $casts = [
@@ -24,6 +28,8 @@ class Event extends Model
         'registration_end' => 'datetime',
         'event_start' => 'datetime',
         'event_end' => 'datetime',
+        'preliminary_date' => 'datetime',
+        'final_date' => 'datetime',
         'is_active' => 'boolean',
     ];
 

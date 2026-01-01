@@ -32,6 +32,10 @@ class AdminEventController extends Controller
             'registration_end' => 'required|date|after_or_equal:registration_start',
             'event_start' => 'required|date|after_or_equal:registration_end',
             'event_end' => 'required|date|after_or_equal:event_start',
+            'preliminary_date' => 'nullable|date',
+            'preliminary_type' => 'nullable|string',
+            'final_date' => 'nullable|date',
+            'final_type' => 'nullable|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
@@ -49,6 +53,10 @@ class AdminEventController extends Controller
             'registration_end' => $request->registration_end,
             'event_start' => $request->event_start,
             'event_end' => $request->event_end,
+            'preliminary_date' => $request->preliminary_date,
+            'preliminary_type' => $request->preliminary_type,
+            'final_date' => $request->final_date,
+            'final_type' => $request->final_type,
             'photo' => $photoPath,
             'is_active' => true, // Default active
         ]);
@@ -74,6 +82,10 @@ class AdminEventController extends Controller
             'registration_end' => 'required|date|after_or_equal:registration_start',
             'event_start' => 'required|date|after_or_equal:registration_end',
             'event_end' => 'required|date|after_or_equal:event_start',
+            'preliminary_date' => 'nullable|date',
+            'preliminary_type' => 'nullable|string',
+            'final_date' => 'nullable|date',
+            'final_type' => 'nullable|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
@@ -95,6 +107,10 @@ class AdminEventController extends Controller
             'registration_end' => $request->registration_end,
             'event_start' => $request->event_start,
             'event_end' => $request->event_end,
+            'preliminary_date' => $request->preliminary_date,
+            'preliminary_type' => $request->preliminary_type,
+            'final_date' => $request->final_date,
+            'final_type' => $request->final_type,
             'photo' => $photoPath,
         ]);
 
