@@ -1,32 +1,54 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'User Dashboard - ICC')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
-        .user-layout { display: flex; min-height: 100vh; }
-        .user-content { flex: 1; display: flex; flex-direction: column; transition: margin-left 0.3s ease-in-out; margin-left: 260px; }
-        
-        @media (max-width: 768px) {
-            .user-content { margin-left: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
         }
 
-        .user-content.full-width { margin-left: 0; }
+        .user-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .user-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease-in-out;
+            margin-left: 260px;
+        }
+
+        @media (max-width: 768px) {
+            .user-content {
+                margin-left: 0;
+            }
+        }
+
+        .user-content.full-width {
+            margin-left: 0;
+        }
     </style>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @yield('styles')
 </head>
+
 <body>
 
     <div class="user-layout">
         <!-- Mobile Overlay -->
-        <div id="sidebarOverlayUser" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300 opacity-0 md:hidden"></div>
+        <div id="sidebarOverlayUser"
+            class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300 opacity-0 md:hidden">
+        </div>
 
         @include('include.user-sidebar')
 
@@ -48,7 +70,7 @@
         const profileDropdownUser = document.getElementById('profileDropdown');
 
         // Sidebar Toggle
-        if(toggleBtnUser){
+        if (toggleBtnUser) {
             toggleBtnUser.addEventListener('click', () => {
                 // Mobile check
                 if (window.innerWidth < 768) {
@@ -75,10 +97,10 @@
             setTimeout(() => sidebarOverlayUser.classList.add('hidden'), 300);
         }
 
-        if(sidebarOverlayUser) sidebarOverlayUser.addEventListener('click', closeMobileSidebar);
+        if (sidebarOverlayUser) sidebarOverlayUser.addEventListener('click', closeMobileSidebar);
 
         // Profile Dropdown
-        if(profileBtnUser){
+        if (profileBtnUser) {
             profileBtnUser.addEventListener('click', (e) => {
                 e.stopPropagation();
                 profileDropdownUser.classList.toggle('show');
@@ -91,6 +113,35 @@
             }
         });
     </script>
+    <!-- Global SweetAlert for Session Messages -->
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    confirmButtonColor: '#EC46A4',
+                    timer: 3000
+                });
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: "{{ session('error') }}",
+                    confirmButtonColor: '#EC46A4',
+                });
+            });
+        </script>
+    @endif
+
     @yield('scripts')
 </body>
+
 </html>

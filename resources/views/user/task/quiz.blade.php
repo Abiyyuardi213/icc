@@ -148,9 +148,12 @@
                         @if (now()->greaterThan($task->end_time))
                             <p class="font-bold text-red-500">Berakhir</p>
                         @else
-                            <p class="font-bold text-[#EC46A4]">
-                                {{ now()->diffForHumans($task->end_time, ['syntax' => \Carbon\CarbonInterface::DIFF_ABSOLUTE, 'parts' => 2]) }}
-                                lagi</p>
+                            <p id="timer-container" class="font-bold text-[#EC46A4]">
+                                <span id="quiz-timer">
+                                    {{ now()->diffForHumans($task->end_time, ['syntax' => \Carbon\CarbonInterface::DIFF_ABSOLUTE, 'parts' => 2]) }}
+                                    lagi
+                                </span>
+                            </p>
                         @endif
                     </div>
                 </div>
@@ -163,6 +166,81 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Timer Logic
+            const endTime = new Date("{{ $task->end_time->toIso8601String() }}").getTime();
+            const timerElement = document.getElementById('quiz-timer');
+            const timerContainer = document.getElementById('timer-container');
+
+            function updateTimer() {
+                const now = new Date().getTime();
+                const distance = endTime - now;
+
+                if (distance < 0) {
+                    clearInterval(timerInterval);
+                    if (timerElement) timerElement.innerHTML = "Waktu Habis";
+                    // Auto submit if not already submitted
+                    if (document.getElementById('quizForm')) {
+                        Swal.fire({
+                            title: 'Waktu Habis!',
+                            text: 'Jawaban Anda akan dikirim otomatis.',
+                            icon: 'info',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            submitForm();
+                            // Optional: wait a bit or let submitForm handle redirect/reload
+                        });
+                    }
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                if (timerElement) {
+                    timerElement.innerHTML = `${days > 0 ? days + 'h ' : ''}${hours}j ${minutes}m ${seconds}s`;
+
+                    // Add urgent styling if less than 5 minutes
+                    if (distance < 5 * 60 * 1000) {
+                        timerContainer.classList.add('text-red-600', 'font-bold', 'animate-pulse');
+                        timerContainer.classList.remove('text-gray-500');
+                    }
+                }
+            }
+
+            const timerInterval = setInterval(updateTimer, 1000);
+            updateTimer(); // Initial call
+
+
+            // Autosave Logic
+            const storageKey = `quiz_answers_{{ $task->id }}_{{ auth()->id() }}`;
+
+            // 1. Load saved answers
+            const savedAnswers = JSON.parse(localStorage.getItem(storageKey) || '{}');
+            Object.keys(savedAnswers).forEach(questionId => {
+                const optionId = savedAnswers[questionId];
+                const radio = document.querySelector(
+                    `input[name="answers[${questionId}]"][value="${optionId}"]`);
+                if (radio) radio.checked = true;
+            });
+
+            // 2. Save on change
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Get question ID from name="answers[123]"
+                    const match = this.name.match(/\[(\d+)\]/);
+                    if (match) {
+                        const questionId = match[1];
+                        savedAnswers[questionId] = this.value;
+                        localStorage.setItem(storageKey, JSON.stringify(savedAnswers));
+                    }
+                });
+            });
+
+            // Form Submission Logic
             const submitBtn = document.getElementById('submitQuizBtn');
             const form = document.getElementById('quizForm');
 
@@ -208,7 +286,6 @@
 
             function submitForm() {
                 const form = document.getElementById('quizForm');
-                const submitBtn = document.getElementById('submitQuizBtn');
 
                 // Show loading
                 Swal.fire({
@@ -234,6 +311,9 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
+                            // Clear autosave on success
+                            localStorage.removeItem(storageKey);
+
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil!',

@@ -19,6 +19,11 @@ class UserTaskController extends Controller
         }
 
         if ($task->type === 'quiz') {
+            // Check if quiz has started
+            if (now()->lessThan($task->start_time)) {
+                return redirect()->route('user.events.index')->with('error', 'Waktu pengerjaan quiz belum dimulai.');
+            }
+
             // QUIZ: Check individual submission
             $submission = Submission::where('task_id', $task->id)
                 ->where('user_id', auth()->id())
@@ -108,8 +113,13 @@ class UserTaskController extends Controller
             abort(403, 'Unauthorized.');
         }
 
-        if (now()->greaterThan($task->end_time)) {
+        // Allow 5 minutes grace period for network latency/auto-submit delays
+        if (now()->greaterThan($task->end_time->addMinutes(5))) {
             return response()->json(['success' => false, 'message' => 'Waktu pengerjaan quiz telah habis.'], 403);
+        }
+
+        if (now()->lessThan($task->start_time)) {
+            return response()->json(['success' => false, 'message' => 'Waktu pengerjaan quiz belum dimulai.'], 403);
         }
 
         // Check if individual already submitted
