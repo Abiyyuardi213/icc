@@ -32,9 +32,9 @@
                             <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $team->event->name }}</h3>
                         </div>
                         <!-- Assuming edit route needs context now or just edit latest? For now keeps same route but might need param if generic edit exists.
-                         However, TeamController@edit currently gets Auth::user()->team (latest).
-                         Ideally we update edit to accept team id or event id.
-                         For now, let's assume we need to fix TeamController@edit too. -->
+                                 However, TeamController@edit currently gets Auth::user()->team (latest).
+                                 Ideally we update edit to accept team id or event id.
+                                 For now, let's assume we need to fix TeamController@edit too. -->
                         <!-- Ideally: route('team.edit', $team->id) -->
                         <a href="{{ route('participants.edit') }}"
                             class="text-[#EC46A4] hover:text-[#d63f93] font-medium text-sm flex items-center gap-1 transition">
@@ -63,7 +63,7 @@
                                     <span
                                         class="font-medium text-gray-800">{{ $team->leader_name ?? auth()->user()->name }}</span>
                                     <!-- Assuming leader_name might be in related table or accessor. TeamController saves it in members table.
-                                     We need a helper or relation. Team hasMany Members. -->
+                                             We need a helper or relation. Team hasMany Members. -->
                                     @php
                                         // Quick fix to get leader name if not direct attribute, depending on model implementation
                                         // $leader = $team->members()->where('role', 'leader')->first();
@@ -121,21 +121,9 @@
                                     </div>
                                 @endif
 
-                                <div class="ml-6">
-                                    <span
-                                        class="absolute -left-2.5 flex items-center justify-center w-5 h-5 bg-green-100 rounded-full ring-4 ring-white">
-                                        <span class="w-2.5 h-2.5 bg-green-400 rounded-full"></span>
-                                    </span>
-                                    <h5 class="flex items-center mb-1 text-sm font-semibold text-gray-500">Pelaksanaan Lomba
-                                    </h5>
-                                    <time
-                                        class="block mb-2 text-xs font-normal leading-none text-gray-400">{{ $team->event->event_start ? $team->event->event_start->format('d M Y') : 'TBA' }}</time>
-                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Tasks Section -->
                     <div class="p-6 border-t border-gray-100">
                         <h4 class="font-semibold text-gray-700 mb-4 flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#EC46A4]" fill="none"

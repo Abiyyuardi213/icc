@@ -45,6 +45,7 @@ Route::middleware(['auth', 'role:participant'])->group(function () {
     // Event Tasks (User Side)
     Route::get('/user/tasks/{id}', [App\Http\Controllers\UserTaskController::class, 'show'])->name('user.tasks.show');
     Route::post('/user/tasks/{id}/submit', [App\Http\Controllers\UserTaskController::class, 'store'])->name('user.tasks.store');
+    Route::post('/user/tasks/{id}/quiz', [App\Http\Controllers\UserTaskController::class, 'storeQuiz'])->name('user.tasks.storeQuiz');
 
     // Chat / Private Aspiration
     Route::get('/user/chat', [App\Http\Controllers\UserChatController::class, 'index'])->name('user.chat.index');
@@ -67,10 +68,10 @@ Route::get('/events/{slug}', [EventController::class, 'show'])->name('event.deta
 Route::post('/aspirations', [App\Http\Controllers\AspirationController::class, 'store'])->name('aspiration.store');
 Route::post('/aspirations/{id}/reply', [App\Http\Controllers\AspirationController::class, 'reply'])->name('aspiration.reply');
 
-    Route::post('role/{id}/toggle-status', [RoleController::class, 'toggleStatus'])->name('role.toggleStatus');
-    Route::resource('role', RoleController::class);
-    
-    // User Routes moved to Admin Group
+Route::post('role/{id}/toggle-status', [RoleController::class, 'toggleStatus'])->name('role.toggleStatus');
+Route::resource('role', RoleController::class);
+
+// User Routes moved to Admin Group
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
