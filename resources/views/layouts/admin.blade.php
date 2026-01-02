@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,14 +13,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
-        .admin-layout { display: flex; min-height: 100vh; }
-        .admin-content { flex: 1; display: flex; flex-direction: column; transition: margin-left 0.3s ease-in-out; margin-left: 250px; }
-        
-        @media (max-width: 768px) {
-            .admin-content { margin-left: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
         }
-        
+
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease-in-out;
+            margin-left: 250px;
+        }
+
+        @media (max-width: 768px) {
+            .admin-content {
+                margin-left: 0;
+            }
+        }
+
         /* Adjust content when sidebar is closed on desktop */
         .admin-content.full-width {
             margin-left: 0;
@@ -33,7 +50,8 @@
         }
 
         /* Length & Filter */
-        .dataTables_length, .dataTables_filter {
+        .dataTables_length,
+        .dataTables_filter {
             margin-bottom: 2rem;
             font-family: 'Inter', sans-serif !important;
         }
@@ -84,12 +102,13 @@
             border-bottom: 1px solid #f3f4f6 !important;
             margin-bottom: 1.5rem !important;
         }
-        
+
         table.dataTable thead th {
             border-bottom: 2px solid #f3f4f6 !important;
             padding: 1rem 1.5rem !important;
             font-weight: 600 !important;
-            color: #6b7280 !important; /* Text-gray-500 */
+            color: #6b7280 !important;
+            /* Text-gray-500 */
             background-color: #fff !important;
             font-size: 0.75rem !important;
             text-transform: uppercase !important;
@@ -101,7 +120,8 @@
         table.dataTable tbody td {
             padding: 1rem 1.5rem !important;
             border-bottom: 1px solid #f9fafb !important;
-            color: #374151 !important; /* Text-gray-700 */
+            color: #374151 !important;
+            /* Text-gray-700 */
             font-size: 0.875rem !important;
             vertical-align: middle !important;
             font-family: 'Inter', sans-serif !important;
@@ -112,9 +132,10 @@
         }
 
         table.dataTable tbody tr:hover {
-            background-color: #fdf2f8 !important; /* Pink-50 */
+            background-color: #fdf2f8 !important;
+            /* Pink-50 */
         }
-        
+
         /* Remove default DataTables borders that might conflict */
         table.dataTable.no-footer {
             border-bottom: 1px solid #e5e7eb !important;
@@ -143,13 +164,13 @@
         }
 
         .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled) {
-            background: #fdf2f8 !important; 
+            background: #fdf2f8 !important;
             border-color: #EC46A4 !important;
             color: #EC46A4 !important;
             transform: translateY(-1px);
         }
 
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current, 
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
         .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
             background: linear-gradient(135deg, #EC46A4 0%, #d63f93 100%) !important;
             border-color: transparent !important;
@@ -166,7 +187,7 @@
             box-shadow: none;
             opacity: 0.7;
         }
-        
+
         .dataTables_info {
             color: #9ca3af !important;
             font-size: 0.85rem;
@@ -177,11 +198,14 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     @yield('styles')
 </head>
+
 <body>
 
     <div class="admin-layout">
         <!-- Mobile Overlay -->
-        <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300 opacity-0 lg:hidden"></div>
+        <div id="sidebarOverlay"
+            class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300 opacity-0 lg:hidden">
+        </div>
 
         @include('include.admin-sidebar')
 
@@ -214,8 +238,8 @@
 
                 if (window.innerWidth >= 1024) {
                     // Desktop
-                sidebar.classList.toggle('closed');
-                content.classList.toggle('full-width');
+                    sidebar.classList.toggle('closed');
+                    content.classList.toggle('full-width');
                 } else {
                     // Mobile
                     const isOpen = sidebar.classList.contains('open');
@@ -273,8 +297,10 @@
         .select2-container .select2-selection--multiple {
             height: auto !important;
             min-height: 42px !important;
-            border: 1px solid #e5e7eb !important; /* gray-200 */
-            border-radius: 0.5rem !important; /* rounded-lg */
+            border: 1px solid #e5e7eb !important;
+            /* gray-200 */
+            border-radius: 0.5rem !important;
+            /* rounded-lg */
             padding: 0.25rem 0.5rem !important;
             outline: none !important;
             transition: all 0.15s ease-in-out;
@@ -282,7 +308,8 @@
 
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             line-height: 32px !important;
-            color: #374151 !important; /* gray-700 */
+            color: #374151 !important;
+            /* gray-700 */
             padding-left: 4px !important;
         }
 
@@ -294,7 +321,8 @@
         /* Focus State */
         .select2-container--open .select2-selection--single,
         .select2-container--open .select2-selection--multiple {
-            border-color: #EC46A4 !important; /* Pink-500 */
+            border-color: #EC46A4 !important;
+            /* Pink-500 */
             box-shadow: 0 0 0 2px rgba(236, 70, 164, 0.2) !important;
         }
 
@@ -304,7 +332,8 @@
             border-radius: 0.5rem !important;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
             overflow: hidden !important;
-            z-index: 9999 !important; /* Ensure it's above modals */
+            z-index: 9999 !important;
+            /* Ensure it's above modals */
         }
 
         .select2-results__option {
@@ -318,7 +347,8 @@
         }
 
         .select2-container--default .select2-results__option--selected {
-            background-color: #fdf2f8 !important; /* Pink-50 */
+            background-color: #fdf2f8 !important;
+            /* Pink-50 */
             color: #EC46A4 !important;
         }
 
@@ -337,7 +367,7 @@
             border-right: 1px solid #fbcfe8 !important;
             margin-right: 6px !important;
         }
-        
+
         /* Fix for Modal interaction */
         /* width: 100% removed to prevent overflow on body-attached dropdowns */
     </style>
@@ -363,4 +393,5 @@
     </script>
     @yield('scripts')
 </body>
+
 </html>

@@ -85,6 +85,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('event/{id}/toggle-status', [App\Http\Controllers\AdminEventController::class, 'toggleStatus'])->name('event.toggleStatus');
 
     Route::resource('team', App\Http\Controllers\AdminTeamController::class);
+    Route::post('team/{id}/toggle-finalist', [App\Http\Controllers\AdminTeamController::class, 'toggleFinalist'])->name('team.toggleFinalist');
 
     // Event Tasks Management
     Route::prefix('events/{event}')->name('event.')->group(function () {
@@ -95,6 +96,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::put('tasks/{task}', [App\Http\Controllers\AdminTaskController::class, 'update'])->name('tasks.update');
         Route::delete('tasks/{task}', [App\Http\Controllers\AdminTaskController::class, 'destroy'])->name('tasks.destroy');
         Route::get('tasks/{task}/submissions', [App\Http\Controllers\AdminTaskController::class, 'submissions'])->name('tasks.submissions');
+        Route::post('tasks/{task}/submissions/{submission}/grade', [App\Http\Controllers\AdminTaskController::class, 'gradeSubmission'])->name('tasks.submissions.grade');
         Route::delete('tasks/{task}', [App\Http\Controllers\AdminTaskController::class, 'destroy'])->name('tasks.destroy');
     });
 

@@ -24,13 +24,13 @@ class AdminTeamController extends Controller
     public function show($id)
     {
         $team = Team::with(['user', 'event', 'members'])->findOrFail($id);
-        
+
         if (request()->expectsJson()) {
             // Append accessors or map data for easier JS handling
             // $team->setAppends(['leader_name', 'member_count']); 
             return response()->json($team);
         }
-        
+
         return abort(404);
     }
 
@@ -92,5 +92,32 @@ class AdminTeamController extends Controller
             'success' => false,
             'message' => 'Tim tidak ditemukan.'
         ], 404);
+    }
+    public function toggleFinalist(Request $request, $id)
+    {
+        $team = Team::findOrFail($id);
+        $isFinalist = filter_var($request->input('is_finalist'), FILTER_VALIDATE_BOOLEAN);
+
+        $team->update(['is_finalist' => $isFinalist]);
+
+        $message = $isFinalist
+            ? 'Selamat! Tim Anda (' . $team->name . ') dinyatakan lolos ke babak Final.'
+            : 'Status finalis tim Anda (' . $team->name . ') dibatalkan.';
+
+        $type = $isFinalist ? 'success' : 'info';
+
+        // Notify
+        \App\Models\Notification::create([
+            'user_id' => $team->user_id,
+            'title' => 'Pengumuman Finalis',
+            'message' => $message,
+            'type' => $type
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status finalis berhasil diperbarui.',
+            'is_finalist' => $isFinalist
+        ]);
     }
 }

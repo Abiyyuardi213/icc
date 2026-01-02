@@ -32,6 +32,7 @@ class AdminTaskController extends Controller
             'end_time' => 'required|date|after:start_time',
             'file' => 'nullable|file|mimes:pdf,zip,rar,doc,docx|max:10240',
             'type' => 'required|string|in:submission,quiz',
+            'stage' => 'required|string|in:preliminary,final',
         ]);
 
         $data = $request->except(['questions', 'file']);
@@ -97,6 +98,7 @@ class AdminTaskController extends Controller
             'end_time' => 'required|date|after:start_time',
             'file' => 'nullable|file|mimes:pdf,zip,rar,doc,docx|max:10240',
             'type' => 'required|string|in:submission,quiz',
+            'stage' => 'required|string|in:preliminary,final',
         ]);
 
         $data = $request->except(['questions', 'file']);
@@ -172,5 +174,28 @@ class AdminTaskController extends Controller
     {
         $submissions = $task->submissions()->with('team.leader')->orderByDesc('updated_at')->get();
         return view('admin.task.submissions', compact('event', 'task', 'submissions'));
+    }
+
+    public function gradeSubmission(Request $request, Event $event, Task $task, \App\Models\Submission $submission)
+    {
+        $request->validate([
+            'correct_answers' => 'required|integer|min:0',
+            'wrong_answers' => 'required|integer|min:0',
+            'score' => 'required|numeric|min:0|max:100',
+        ]);
+
+        $submission->update([
+            'correct_answers' => $request->correct_answers,
+            'wrong_answers' => $request->wrong_answers,
+            'score' => $request->score,
+        ]);
+
+        // Track history
+        $submission->histories()->create([
+            'user_id' => auth()->id(),
+            'action' => 'graded',
+        ]);
+
+        return back()->with('success', 'Nilai berhasil disimpan.');
     }
 }

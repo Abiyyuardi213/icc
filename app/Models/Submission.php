@@ -9,7 +9,7 @@ class Submission extends Model
     protected $fillable = [
         'event_id',
         'task_id',
-        'task_id',
+
         'team_id',
         'user_id',
         'title',
@@ -17,6 +17,8 @@ class Submission extends Model
         'link_repository',
         'notes',
         'score',
+        'correct_answers',
+        'wrong_answers',
         'answers',
         'submitted_at',
     ];

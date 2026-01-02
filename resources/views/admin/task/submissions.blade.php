@@ -81,7 +81,18 @@
                                     @endif
 
                                     @if (!$submission->file_path && !$submission->link_repository)
-                                        <span class="text-xs text-gray-400 italic">Tidak ada lampiran</span>
+                                        <div class="text-xs text-gray-400 italic mb-1">Tidak ada lampiran</div>
+                                    @endif
+
+                                    @if ($submission->score !== null)
+                                        <div
+                                            class="mt-2 text-sm font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded inline-block">
+                                            Nilai: {{ $submission->score }}
+                                            <span class="text-xs font-normal text-gray-500 block">
+                                                (Benar: {{ $submission->correct_answers }}, Salah:
+                                                {{ $submission->wrong_answers }})
+                                            </span>
+                                        </div>
                                     @endif
                                 @endif
                             </td>
@@ -89,15 +100,29 @@
                                 {{ Str::limit($submission->notes, 50) ?: '-' }}
                             </td>
                             <td class="px-6 py-4">
-                                <button onclick="openHistoryModal('{{ $submission->id }}')"
-                                    class="text-gray-500 hover:text-[#EC46A4] transition">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                        fill="currentColor">
-                                        <path fill-rule="evenodd"
-                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </button>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="openHistoryModal('{{ $submission->id }}')"
+                                        class="text-gray-500 hover:text-[#EC46A4] transition" title="Riwayat">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+
+                                    @if ($task->type !== 'quiz')
+                                        <button
+                                            onclick="openGradingModal('{{ $submission->id }}', '{{ $submission->score }}', '{{ $submission->correct_answers }}', '{{ $submission->wrong_answers }}')"
+                                            class="text-gray-500 hover:text-blue-600 transition" title="Nilai">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                                fill="currentColor">
+                                                <path
+                                                    d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                            </svg>
+                                        </button>
+                                    @endif
+                                </div>
 
                                 <!-- History Data (Hidden) -->
                                 <div id="history-data-{{ $submission->id }}" class="hidden">
@@ -123,7 +148,7 @@
                                             </div>
                                             <div>
                                                 <p class="font-medium text-gray-900">
-                                                    {{ $history->action == 'created' ? 'Mengumpulkan Tugas' : 'Memperbarui Submisi' }}
+                                                    {{ $history->action == 'created' ? 'Mengumpulkan Tugas' : ($history->action == 'graded' ? 'Dinilai' : 'Memperbarui Submisi') }}
                                                 </p>
                                                 <p class="text-xs text-gray-500">
                                                     {{ $history->created_at->format('d M Y, H:i:s') }}</p>
@@ -179,7 +204,128 @@
         </div>
     </div>
 
+    <!-- Grading Modal -->
+    <div id="gradingModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-60 transition-opacity backdrop-blur-sm" aria-hidden="true"
+                onclick="closeGradingModal()"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <!-- Modal panel -->
+            <div
+                class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border border-gray-100">
+                <form id="gradingForm" method="POST" action="">
+                    @csrf
+                    <div class="px-6 py-6 border-b border-gray-50 bg-gray-50/50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                <div class="p-2 bg-blue-100 rounded-lg text-blue-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                Input Penilaian
+                            </h3>
+                            <button type="button" onclick="closeGradingModal()"
+                                class="text-gray-400 hover:text-gray-500">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-6 space-y-6">
+                        <!-- Input Grid for Detailed Stats -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Correct Answers -->
+                            <div class="group">
+                                <label for="correct_answers" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <span class="flex items-center gap-1">
+                                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                        Jawaban Benar
+                                    </span>
+                                </label>
+                                <div class="relative">
+                                    <input type="number" name="correct_answers" id="correct_answers" min="0"
+                                        required
+                                        class="block w-full px-4 py-3 bg-green-50/30 border border-green-200 rounded-xl text-green-800 font-medium placeholder-green-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                                        placeholder="0">
+                                </div>
+                            </div>
+
+                            <!-- Wrong Answers -->
+                            <div class="group">
+                                <label for="wrong_answers" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <span class="flex items-center gap-1">
+                                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                        Jawaban Salah
+                                    </span>
+                                </label>
+                                <div class="relative">
+                                    <input type="number" name="wrong_answers" id="wrong_answers" min="0"
+                                        required
+                                        class="block w-full px-4 py-3 bg-red-50/30 border border-red-200 rounded-xl text-red-800 font-medium placeholder-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                                        placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total Score Input -->
+                        <div>
+                            <label for="score" class="block text-sm font-bold text-gray-800 mb-2">Total Score
+                                Akhir</label>
+                            <div class="relative">
+                                <input type="number" name="score" id="score" min="0" max="100"
+                                    step="0.01" required
+                                    class="block w-full px-4 py-4 text-2xl font-bold text-center text-gray-900 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#EC46A4] focus:border-transparent outline-none shadow-sm transition-all"
+                                    placeholder="0">
+                                <div
+                                    class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-400 font-medium select-none">
+                                    / 100
+                                </div>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500 text-center">
+                                Masukkan nilai akhir skala 0-100.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex flex-row-reverse gap-3">
+                        <button type="submit"
+                            class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-2.5 bg-[#EC46A4] border border-transparent rounded-xl font-semibold text-white hover:bg-[#d63f93] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#EC46A4] shadow-md hover:shadow-lg transition-all transform active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Simpan Nilai
+                        </button>
+                        <button type="button"
+                            class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-2.5 bg-white border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-all"
+                            onclick="closeGradingModal()">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
+        @if (session('success'))
+            Toast.fire({
+                icon: 'success',
+                title: '{{ session('success') }}'
+            });
+        @endif
+
         function openHistoryModal(id) {
             const content = document.getElementById('history-data-' + id).innerHTML;
             document.getElementById('modalContent').innerHTML = content;
@@ -188,6 +334,24 @@
 
         function closeHistoryModal() {
             document.getElementById('historyModal').classList.add('hidden');
+        }
+
+        function openGradingModal(id, score, correct, wrong) {
+            const form = document.getElementById('gradingForm');
+            // Construct the URL dynamically
+            // Use a dummy ID that we can easily replace
+            const baseUrl = "{{ route('admin.event.tasks.submissions.grade', [$event->id, $task->id, '999999']) }}";
+            form.action = baseUrl.replace('999999', id);
+
+            document.getElementById('score').value = score || '';
+            document.getElementById('correct_answers').value = correct || '';
+            document.getElementById('wrong_answers').value = wrong || '';
+
+            document.getElementById('gradingModal').classList.remove('hidden');
+        }
+
+        function closeGradingModal() {
+            document.getElementById('gradingModal').classList.add('hidden');
         }
     </script>
 @endsection

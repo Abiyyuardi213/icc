@@ -14,6 +14,7 @@ class Team extends Model
         'event_id',
         'name',
         'status',
+        'is_finalist',
     ];
 
     public function user()
@@ -35,13 +36,13 @@ class Team extends Model
     {
         return $this->hasMany(Submission::class);
     }
-    
+
     // Helpers
     public function leader()
     {
         return $this->hasOne(TeamMember::class)->where('role', 'leader');
     }
-    
+
     public function getMember1Attribute()
     {
         return $this->members->where('role', 'member')->skip(0)->first();
@@ -51,16 +52,40 @@ class Team extends Model
     {
         return $this->members->where('role', 'member')->skip(1)->first();
     }
-    
-    public function getLeaderNameAttribute() { return $this->leader?->name; }
-    public function getLeaderNpmAttribute() { return $this->leader?->npm; }
-    public function getLeaderPhoneAttribute() { return $this->leader?->phone; }
-    
-    public function getMember1NameAttribute() { return $this->member1?->name; }
-    public function getMember1NpmAttribute() { return $this->member1?->npm; }
-    
-    public function getMember2NameAttribute() { return $this->member2?->name; }
-    public function getMember2NpmAttribute() { return $this->member2?->npm; }
-    
-    public function getCategoryAttribute() { return $this->event->name; } // Mapped from event name
+
+    public function getLeaderNameAttribute()
+    {
+        return $this->leader?->name;
+    }
+    public function getLeaderNpmAttribute()
+    {
+        return $this->leader?->npm;
+    }
+    public function getLeaderPhoneAttribute()
+    {
+        return $this->leader?->phone;
+    }
+
+    public function getMember1NameAttribute()
+    {
+        return $this->member1?->name;
+    }
+    public function getMember1NpmAttribute()
+    {
+        return $this->member1?->npm;
+    }
+
+    public function getMember2NameAttribute()
+    {
+        return $this->member2?->name;
+    }
+    public function getMember2NpmAttribute()
+    {
+        return $this->member2?->npm;
+    }
+
+    public function getCategoryAttribute()
+    {
+        return $this->event->name;
+    } // Mapped from event name
 }

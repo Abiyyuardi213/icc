@@ -32,9 +32,9 @@
                             <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $team->event->name }}</h3>
                         </div>
                         <!-- Assuming edit route needs context now or just edit latest? For now keeps same route but might need param if generic edit exists.
-                                         However, TeamController@edit currently gets Auth::user()->team (latest).
-                                         Ideally we update edit to accept team id or event id.
-                                         For now, let's assume we need to fix TeamController@edit too. -->
+                                             However, TeamController@edit currently gets Auth::user()->team (latest).
+                                             Ideally we update edit to accept team id or event id.
+                                             For now, let's assume we need to fix TeamController@edit too. -->
                         <!-- Ideally: route('team.edit', $team->id) -->
                         <a href="{{ route('participants.edit') }}"
                             class="text-[#EC46A4] hover:text-[#d63f93] font-medium text-sm flex items-center gap-1 transition">
@@ -63,7 +63,7 @@
                                     <span
                                         class="font-medium text-gray-800">{{ $team->leader_name ?? auth()->user()->name }}</span>
                                     <!-- Assuming leader_name might be in related table or accessor. TeamController saves it in members table.
-                                                     We need a helper or relation. Team hasMany Members. -->
+                                                         We need a helper or relation. Team hasMany Members. -->
                                     @php
                                         // Quick fix to get leader name if not direct attribute, depending on model implementation
                                         // $leader = $team->members()->where('role', 'leader')->first();
@@ -138,6 +138,9 @@
                             @if ($team->event->tasks->count() > 0)
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     @foreach ($team->event->tasks as $task)
+                                        @if ($task->stage === 'final' && !$team->is_finalist)
+                                            @continue
+                                        @endif
                                         @php
                                             if ($task->type === 'quiz') {
                                                 // Check for individual submission first
