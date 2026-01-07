@@ -122,6 +122,113 @@
                                             </svg>
                                         </button>
                                     @endif
+
+                                    @if ($task->type === 'mixed' && $submission->answers)
+                                        @php
+                                            // Pre-calculate MC correct count for this submission
+                                            $currMcCorrect = 0;
+                                            if ($submission->answers) {
+                                                foreach ($task->questions as $q) {
+                                                    if ($q->options->count() > 0) {
+                                                        $ansId = $submission->answers[$q->id] ?? null;
+                                                        $opt = $q->options->where('id', $ansId)->first();
+                                                        if ($opt && $opt->is_correct) {
+                                                            $currMcCorrect++;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        @endphp
+
+                                        <button
+                                            onclick="openMixedGradingModal('{{ $submission->id }}', {{ $task->questions->count() }}, {{ $currMcCorrect }}, {{ $submission->grading_status ?? '{}' }})"
+                                            class="text-gray-500 hover:text-green-600 transition"
+                                            title="Lihat & Nilai Jawaban">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                                fill="currentColor">
+                                                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                                            </svg>
+                                        </button>
+
+                                        <!-- Hidden Answer Data with Grading Inputs -->
+                                        <div id="answer-data-{{ $submission->id }}" class="hidden">
+                                            <div class="space-y-4">
+                                                @foreach ($task->questions as $index => $question)
+                                                    <div class="p-3 bg-gray-50 rounded border border-gray-200">
+                                                        <h5 class="font-bold text-gray-700 mb-2">Soal No.
+                                                            {{ $index + 1 }}</h5>
+                                                        <p class="text-sm text-gray-600 mb-2">
+                                                            {{ $question->question_text }}</p>
+
+                                                        <div class="bg-white p-2 rounded border border-gray-200">
+                                                            @if ($question->options->count() > 0)
+                                                                <!-- Multiple Choice -->
+                                                                @php
+                                                                    $userAnswerId =
+                                                                        $submission->answers[$question->id] ?? null;
+                                                                    $selectedOption = $question->options
+                                                                        ->where('id', $userAnswerId)
+                                                                        ->first();
+                                                                    $correctOption = $question->options
+                                                                        ->where('is_correct', true)
+                                                                        ->first();
+                                                                    $isCorrect =
+                                                                        $selectedOption && $selectedOption->is_correct;
+                                                                @endphp
+                                                                <p class="text-sm">
+                                                                    <span class="font-semibold">Jawaban Peserta:</span>
+                                                                    <span
+                                                                        class="{{ $isCorrect ? 'text-green-600' : 'text-red-600' }}">
+                                                                        {{ $selectedOption->option_text ?? 'Tidak Menjawab' }}
+                                                                    </span>
+                                                                </p>
+                                                                <p class="text-xs text-gray-500 mt-1">Kunci:
+                                                                    {{ $correctOption->option_text }}</p>
+                                                            @else
+                                                                <!-- Essay grading controls -->
+                                                                <p class="text-sm font-semibold mb-1">Jawaban Peserta
+                                                                    (Isian)
+                                                                    :</p>
+                                                                <p
+                                                                    class="text-gray-800 whitespace-pre-wrap mb-3 p-2 bg-gray-50 rounded">
+                                                                    {{ $submission->answers[$question->id] ?? '-' }}</p>
+
+                                                                @php
+                                                                    $gradingStatus = $submission->grading_status ?? [];
+                                                                    $thisGrade = $gradingStatus[$question->id] ?? '0'; // default 0 (salah)
+                                                                @endphp
+                                                                <div class="flex items-center gap-4 border-t pt-2">
+                                                                    <span
+                                                                        class="text-xs font-bold text-gray-500 uppercase">Nilai
+                                                                        Jawaban Ini:</span>
+                                                                    <label class="flex items-center gap-2 cursor-pointer">
+                                                                        <input type="radio"
+                                                                            name="essay_grade_{{ $submission->id }}_{{ $question->id }}"
+                                                                            value="1"
+                                                                            class="text-green-600 focus:ring-green-500 essay-grade-radio"
+                                                                            onchange="recalcMixedScore()"
+                                                                            {{ $thisGrade == '1' ? 'checked' : '' }}>
+                                                                        <span
+                                                                            class="text-sm font-medium text-green-700">Benar</span>
+                                                                    </label>
+                                                                    <label class="flex items-center gap-2 cursor-pointer">
+                                                                        <input type="radio"
+                                                                            name="essay_grade_{{ $submission->id }}_{{ $question->id }}"
+                                                                            value="0"
+                                                                            class="text-red-600 focus:ring-red-500 essay-grade-radio"
+                                                                            onchange="recalcMixedScore()"
+                                                                            {{ $thisGrade == '0' ? 'checked' : '' }}>
+                                                                        <span
+                                                                            class="text-sm font-medium text-red-700">Salah</span>
+                                                                    </label>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <!-- History Data (Hidden) -->
@@ -173,8 +280,8 @@
     </div>
 
     <!-- History Modal -->
-    <div id="historyModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog"
-        aria-modal="true">
+    <div id="historyModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
                 onclick="closeHistoryModal()"></div>
@@ -200,6 +307,55 @@
                         Tutup
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mixed Grading Modal -->
+    <div id="mixedGradingModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+                onclick="closeMixedGradingModal()"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div
+                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl w-full">
+                <form id="mixedGradingForm" method="POST" action="">
+                    @csrf
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start flex-col w-full">
+                            <div class="mb-4 w-full flex justify-between items-center border-b pb-2">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                    Penilaian Jawaban (Mixed)
+                                </h3>
+                                <div class="text-right">
+                                    <div class="text-xs text-gray-500">Nilai Saat Ini (Otomatis)</div>
+                                    <div class="text-2xl font-bold text-[#EC46A4]" id="displayMixedScore">0</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2 text-left h-96 overflow-y-auto w-full pr-2" id="mixedGradingContent">
+                                <!-- Content injected via JS -->
+                            </div>
+
+                            <!-- Hidden inputs for submission -->
+                            <input type="hidden" name="score" id="mixedScoreInput">
+                            <input type="hidden" name="correct_answers" id="mixedCorrectInput">
+                            <input type="hidden" name="wrong_answers" id="mixedWrongInput">
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+                        <button type="submit"
+                            class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-2.5 bg-[#EC46A4] border border-transparent rounded-xl font-semibold text-white hover:bg-[#d63f93] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#EC46A4] shadow-md transition-all">
+                            Simpan Penilaian
+                        </button>
+                        <button type="button"
+                            class="mt-3 w-full sm:w-auto inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#EC46A4] sm:mt-0 sm:text-sm"
+                            onclick="closeMixedGradingModal()">
+                            Batal
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -352,6 +508,65 @@
 
         function closeGradingModal() {
             document.getElementById('gradingModal').classList.add('hidden');
+        }
+
+        // Mixed Grading Logic
+        let currentTotalQuestions = 0;
+        let currentMcCorrect = 0;
+
+        function openMixedGradingModal(id, totalQuestions, mcCorrect) {
+            currentTotalQuestions = totalQuestions;
+            currentMcCorrect = mcCorrect;
+
+            // Set Form Action
+            const form = document.getElementById('mixedGradingForm');
+            const baseUrl = "{{ route('admin.event.tasks.submissions.grade', [$event->id, $task->id, '999999']) }}";
+            form.action = baseUrl.replace('999999', id);
+
+            // Inject Content
+            const content = document.getElementById('answer-data-' + id).innerHTML;
+            document.getElementById('mixedGradingContent').innerHTML = content;
+
+            // Initial Calculation
+            recalcMixedScore();
+
+            // Open Modal
+            document.getElementById('mixedGradingModal').classList.remove('hidden');
+        }
+
+        function closeMixedGradingModal() {
+            document.getElementById('mixedGradingModal').classList.add('hidden');
+        }
+
+        function recalcMixedScore() {
+            // Count checked 'Benar' (value=1) radios inside the modal content
+            const modalContent = document.getElementById('mixedGradingContent');
+            const radiosp = modalContent.querySelectorAll('input[type="radio"]:checked');
+
+            let essayCorrect = 0;
+            radiosp.forEach(radio => {
+                if (radio.value === '1') {
+                    essayCorrect++;
+                }
+            });
+
+            const totalCorrect = currentMcCorrect + essayCorrect;
+            const totalWrong = currentTotalQuestions - totalCorrect;
+
+            // Calculate Score (Simple Percentage)
+            // Prevent division by zero
+            let score = 0;
+            if (currentTotalQuestions > 0) {
+                score = (totalCorrect / currentTotalQuestions) * 100;
+            }
+
+            // Update UI
+            document.getElementById('displayMixedScore').innerText = score.toFixed(2);
+
+            // Update Hidden Inputs
+            document.getElementById('mixedScoreInput').value = score.toFixed(2);
+            document.getElementById('mixedCorrectInput').value = totalCorrect;
+            document.getElementById('mixedWrongInput').value = totalWrong;
         }
     </script>
 @endsection

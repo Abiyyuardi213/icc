@@ -84,6 +84,7 @@
                     required>
                     <option value="submission">Submisi File / Link</option>
                     <option value="quiz">Quiz (Pilihan Ganda)</option>
+                    <option value="mixed">Quiz dan Isian</option>
                 </select>
             </div>
 
@@ -110,13 +111,24 @@
                 <div>
                     <h3 class="text-lg font-bold text-gray-800 mb-2">Quiz Builder</h3>
                     <p class="text-sm text-gray-500 mb-4">Masukan jumlah soal untuk men-generate form pertanyaan.</p>
-                    <div class="flex gap-4 items-end">
-                        <div class="w-1/3">
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Jumlah Soal</label>
-                            <input type="number" id="totalQuestionsInput" name="total_questions"
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div id="mcInputGroup">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Jumlah Soal Pilihan
+                                Ganda</label>
+                            <input type="number" id="totalQuestionsInput"
                                 class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#EC46A4] outline-none transition"
-                                min="1" max="100" placeholder="Contoh: 10">
+                                min="0" max="100" placeholder="Contoh: 10">
                         </div>
+                        <div id="essayInputGroup" class="hidden">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Jumlah Soal Isian</label>
+                            <input type="number" id="totalEssayQuestionsInput"
+                                class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#EC46A4] outline-none transition"
+                                min="0" max="100" placeholder="Contoh: 5">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
                         <button type="button" id="generateQuestionsBtn"
                             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition">Generate
                             Form</button>
@@ -158,10 +170,23 @@
         // Task Type Toggle
         $('#taskType').on('change', function() {
             const type = $(this).val();
+            // Reset inputs
+            $('#totalQuestionsInput').val('');
+            $('#totalEssayQuestionsInput').val('');
+            $('#questionsContainer').empty();
+
             if (type === 'quiz') {
                 $('#quizBuilderSection').removeClass('hidden');
                 $('#fileUploadSection').addClass('hidden');
+                $('#mcInputGroup').removeClass('hidden');
+                $('#essayInputGroup').addClass('hidden');
+            } else if (type === 'mixed') {
+                $('#quizBuilderSection').removeClass('hidden');
+                $('#fileUploadSection').removeClass('hidden');
+                $('#mcInputGroup').removeClass('hidden');
+                $('#essayInputGroup').removeClass('hidden');
             } else {
+                // Submission
                 $('#quizBuilderSection').addClass('hidden');
                 $('#fileUploadSection').removeClass('hidden');
             }
@@ -169,39 +194,53 @@
 
         // Generate Questions
         $('#generateQuestionsBtn').on('click', function() {
-            const total = parseInt($('#totalQuestionsInput').val());
+            const mcTotal = parseInt($('#totalQuestionsInput').val()) || 0;
+            const essayTotal = parseInt($('#totalEssayQuestionsInput').val()) || 0;
+            const type = $('#taskType').val();
             const container = $('#questionsContainer');
             container.empty();
 
-            if (!total || total < 1) {
+            if (type === 'quiz' && mcTotal < 1) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Perhatian',
-                    text: 'Silakan masukkan jumlah soal yang valid (min. 1).'
+                    text: 'Silakan masukkan jumlah soal Pilihan Ganda (min. 1).'
                 });
                 return;
             }
 
-            for (let i = 1; i <= total; i++) {
+            if (type === 'mixed' && (mcTotal < 1 && essayTotal < 1)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian',
+                    text: 'Silakan masukkan jumlah soal (min. 1 untuk salah satu tipe).'
+                });
+                return;
+            }
+
+            let globalCounter = 1;
+
+            // Generate MC Questions
+            for (let i = 1; i <= mcTotal; i++) {
                 const questionHtml = `
-                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 question-item">
+                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 question-item" data-type="mc">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="font-bold text-gray-700">Soal No. ${i}</h4>
+                            <h4 class="font-bold text-gray-700">Soal No. ${globalCounter} (Pilihan Ganda)</h4>
                             <div class="flex items-center gap-2">
                                 <label class="text-xs text-gray-500 font-semibold">Waktu (detik):</label>
-                                <input type="number" name="questions[${i}][time_limit]" class="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="60">
+                                <input type="number" name="questions[${globalCounter}][time_limit]" class="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="60">
                             </div>
                         </div>
                         
                         <div class="mb-4">
-                            <textarea name="questions[${i}][text]" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="Tulis pertanyaan di sini..." required></textarea>
+                            <textarea name="questions[${globalCounter}][text]" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="Tulis pertanyaan di sini..." required></textarea>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             ${[1, 2, 3, 4].map(opt => `
                                 <div class="flex items-center gap-2">
-                                    <input type="radio" name="questions[${i}][correct]" value="${opt - 1}" class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300" required>
-                                    <input type="text" name="questions[${i}][options][]" class="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="Pilihan ${String.fromCharCode(64 + opt)}" required>
+                                    <input type="radio" name="questions[${globalCounter}][correct]" value="${opt - 1}" class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300" required>
+                                    <input type="text" name="questions[${globalCounter}][options][]" class="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="Pilihan ${String.fromCharCode(64 + opt)}" required>
                                 </div>
                             `).join('')}
                         </div>
@@ -209,6 +248,31 @@
                     </div>
                 `;
                 container.append(questionHtml);
+                globalCounter++;
+            }
+
+            // Generate Essay Questions
+            for (let i = 1; i <= essayTotal; i++) {
+                const questionHtml = `
+                    <div class="bg-orange-50 p-6 rounded-lg border border-orange-200 question-item" data-type="essay">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-orange-800">Soal No. ${globalCounter} (Isian)</h4>
+                            <div class="flex items-center gap-2">
+                                <label class="text-xs text-gray-500 font-semibold">Bobot/Waktu:</label>
+                                <input type="number" name="questions[${globalCounter}][time_limit]" class="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="60">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-xs text-gray-500 mb-1">Label Pertanyaan (Admin)</label>
+                            <input type="text" name="questions[${globalCounter}][text]" value="Soal Isian No. ${i}" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" required>
+                        </div>
+
+                        <p class="text-xs text-orange-600 italic">* Soal ini akan muncul sebagai kolom isian teks untuk peserta. Pertanyaan detail ada di PDF.</p>
+                    </div>
+                `;
+                container.append(questionHtml);
+                globalCounter++;
             }
         });
 
@@ -219,22 +283,23 @@
             const submitBtn = $('#submitBtn');
             const originalBtnText = submitBtn.text();
 
-            // validation check
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-
             // Custom Quiz Validation
-            if ($('#taskType').val() === 'quiz') {
+            const type = $('#taskType').val();
+            if (type === 'quiz' || type === 'mixed') {
                 if ($('.question-item').length === 0) {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Belum Ada Soal',
-                        text: 'Silakan generate duli form soal.'
+                        text: 'Silakan generate form soal terlebih dahulu.'
                     });
                     return;
                 }
+            }
+
+            // validation check standard HTML5
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
             }
 
             const formData = new FormData(form);

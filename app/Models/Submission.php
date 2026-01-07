@@ -21,11 +21,13 @@ class Submission extends Model
         'wrong_answers',
         'answers',
         'submitted_at',
+        'grading_status',
     ];
 
     protected $casts = [
         'submitted_at' => 'datetime',
         'answers' => 'array',
+        'grading_status' => 'array',
     ];
 
     public function team()

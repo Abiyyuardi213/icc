@@ -18,15 +18,16 @@ class UserTaskController extends Controller
             abort(403, 'Unauthorized access to this task.');
         }
 
-        if ($task->type === 'quiz') {
-            // Check if quiz has started
-            if (now()->lessThan($task->start_time)) {
-                return redirect()->route('user.events.index')->with('error', 'Waktu pengerjaan quiz belum dimulai.');
-            }
+        // Check if task has not started yet
+        if (now()->lessThan($task->start_time)) {
+            return view('user.task.countdown', compact('task'));
+        }
 
+        if (in_array($task->type, ['quiz', 'mixed'])) {
             // QUIZ: Check individual submission
             $submission = Submission::where('task_id', $task->id)
                 ->where('user_id', auth()->id())
+                ->with('histories')
                 ->first();
 
             $task->load(['questions.options']);
@@ -168,11 +169,20 @@ class UserTaskController extends Controller
             'action' => 'created',
         ]);
 
-        return response()->json([
+        $responseData = [
             'success' => true,
-            'message' => 'Quiz berhasil dikirim!',
-            'score' => $score,
             'redirect' => route('user.tasks.show', $task->id)
-        ]);
+        ];
+
+        // Conditional Response for Mixed vs Quiz
+        if ($task->type === 'mixed') {
+            $responseData['message'] = 'Jawaban berhasil dikirim! Menunggu penilaian admin untuk soal isian.';
+            // Do NOT include score
+        } else {
+            $responseData['message'] = 'Quiz berhasil dikirim!';
+            $responseData['score'] = $score;
+        }
+
+        return response()->json($responseData);
     }
 }

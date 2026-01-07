@@ -32,9 +32,9 @@
                             <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $team->event->name }}</h3>
                         </div>
                         <!-- Assuming edit route needs context now or just edit latest? For now keeps same route but might need param if generic edit exists.
-                                             However, TeamController@edit currently gets Auth::user()->team (latest).
-                                             Ideally we update edit to accept team id or event id.
-                                             For now, let's assume we need to fix TeamController@edit too. -->
+                                                 However, TeamController@edit currently gets Auth::user()->team (latest).
+                                                 Ideally we update edit to accept team id or event id.
+                                                 For now, let's assume we need to fix TeamController@edit too. -->
                         <!-- Ideally: route('team.edit', $team->id) -->
                         <a href="{{ route('participants.edit') }}"
                             class="text-[#EC46A4] hover:text-[#d63f93] font-medium text-sm flex items-center gap-1 transition">
@@ -63,7 +63,7 @@
                                     <span
                                         class="font-medium text-gray-800">{{ $team->leader_name ?? auth()->user()->name }}</span>
                                     <!-- Assuming leader_name might be in related table or accessor. TeamController saves it in members table.
-                                                         We need a helper or relation. Team hasMany Members. -->
+                                                             We need a helper or relation. Team hasMany Members. -->
                                     @php
                                         // Quick fix to get leader name if not direct attribute, depending on model implementation
                                         // $leader = $team->members()->where('role', 'leader')->first();
@@ -175,6 +175,7 @@
                                             <p class="text-sm text-gray-500 mb-3 line-clamp-2">
                                                 {{ Str::limit(strip_tags($task->description), 80) }}</p>
                                             <div class="flex justify-between items-center text-xs text-gray-500 mb-4">
+                                                <span>Mulai: {{ $task->start_time->format('d M H:i') }}</span>
                                                 <span>Deadline: {{ $task->end_time->format('d M H:i') }}</span>
                                             </div>
                                             <a href="{{ route('user.tasks.show', $task->id) }}"

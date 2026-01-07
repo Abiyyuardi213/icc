@@ -61,9 +61,15 @@
                     <p class="text-gray-600 mb-6">Anda telah menyelesaikan quiz ini.</p>
 
                     <div class="inline-block bg-gray-50 rounded-xl p-6 border border-gray-100 min-w-[200px]">
-                        <p class="text-sm text-gray-500 uppercase tracking-wider font-semibold mb-1">Nilai Anda</p>
-                        <p class="text-5xl font-bold text-[#EC46A4]">{{ $submission->score }}</p>
-                        <p class="text-sm text-gray-400 mt-2">dari 100</p>
+                        @if ($task->type === 'mixed' && !$submission->histories->where('action', 'graded')->count())
+                            <p class="text-sm text-gray-500 uppercase tracking-wider font-semibold mb-1">Status Nilai</p>
+                            <p class="text-xl font-bold text-yellow-500">Menunggu Penilaian</p>
+                            <p class="text-xs text-gray-400 mt-2">Soal isian sedang diperiksa admin.</p>
+                        @else
+                            <p class="text-sm text-gray-500 uppercase tracking-wider font-semibold mb-1">Nilai Anda</p>
+                            <p class="text-5xl font-bold text-[#EC46A4]">{{ $submission->score }}</p>
+                            <p class="text-sm text-gray-400 mt-2">dari 100</p>
+                        @endif
                     </div>
 
                     <div class="mt-8">
@@ -100,20 +106,27 @@
                                 </div>
 
                                 <div class="ml-10 space-y-3">
-                                    @foreach ($question->options as $option)
-                                        <label
-                                            class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-pink-50 hover:border-pink-200 transition group">
-                                            <div class="relative flex items-center">
-                                                <input type="radio" name="answers[{{ $question->id }}]"
-                                                    value="{{ $option->id }}"
-                                                    class="peer h-5 w-5 cursor-pointer appearance-none rounded-full border border-gray-300 checked:border-[#EC46A4] transition-all">
+                                    @if ($question->options->count() > 0)
+                                        @foreach ($question->options as $option)
+                                            <label
+                                                class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-pink-50 hover:border-pink-200 transition group">
+                                                <div class="relative flex items-center">
+                                                    <input type="radio" name="answers[{{ $question->id }}]"
+                                                        value="{{ $option->id }}"
+                                                        class="peer h-5 w-5 cursor-pointer appearance-none rounded-full border border-gray-300 checked:border-[#EC46A4] transition-all">
+                                                    <span
+                                                        class="absolute bg-[#EC46A4] w-3 h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
+                                                </div>
                                                 <span
-                                                    class="absolute bg-[#EC46A4] w-3 h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
-                                            </div>
-                                            <span
-                                                class="text-gray-700 group-hover:text-gray-900">{{ $option->option_text }}</span>
-                                        </label>
-                                    @endforeach
+                                                    class="text-gray-700 group-hover:text-gray-900">{{ $option->option_text }}</span>
+                                            </label>
+                                        @endforeach
+                                    @else
+                                        <!-- Essay / Text Answer -->
+                                        <textarea name="answers[{{ $question->id }}]" rows="3"
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#EC46A4] focus:border-transparent outline-none transition"
+                                            placeholder="Tulis jawaban Anda di sini..."></textarea>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -220,17 +233,36 @@
             // 1. Load saved answers
             const savedAnswers = JSON.parse(localStorage.getItem(storageKey) || '{}');
             Object.keys(savedAnswers).forEach(questionId => {
-                const optionId = savedAnswers[questionId];
+                const value = savedAnswers[questionId];
+                // Try radio
                 const radio = document.querySelector(
-                    `input[name="answers[${questionId}]"][value="${optionId}"]`);
-                if (radio) radio.checked = true;
+                    `input[name="answers[${questionId}]"][value="${value}"]`);
+                if (radio) {
+                    radio.checked = true;
+                } else {
+                    // Try textarea
+                    const textarea = document.querySelector(`textarea[name="answers[${questionId}]"]`);
+                    if (textarea) textarea.value = value;
+                }
             });
 
-            // 2. Save on change
+            // 2. Save on change (Radios)
             const radios = document.querySelectorAll('input[type="radio"]');
             radios.forEach(radio => {
                 radio.addEventListener('change', function() {
-                    // Get question ID from name="answers[123]"
+                    const match = this.name.match(/\[(\d+)\]/);
+                    if (match) {
+                        const questionId = match[1];
+                        savedAnswers[questionId] = this.value;
+                        localStorage.setItem(storageKey, JSON.stringify(savedAnswers));
+                    }
+                });
+            });
+
+            // 3. Save on input (Textareas)
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                textarea.addEventListener('input', function() {
                     const match = this.name.match(/\[(\d+)\]/);
                     if (match) {
                         const questionId = match[1];
@@ -246,9 +278,14 @@
 
             if (submitBtn && form) {
                 submitBtn.addEventListener('click', function() {
-                    // Check if all questions are answered (Optional, maybe warn only)
+                    // Check if all questions are answered
                     const totalQuestions = {{ $task->questions->count() }};
-                    const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+                    const answeredRadios = document.querySelectorAll('input[type="radio"]:checked').length;
+                    const answeredTextareas = Array.from(document.querySelectorAll(
+                            'textarea[name^="answers"]'))
+                        .filter(t => t.value.trim() !== "").length;
+
+                    const answered = answeredRadios + answeredTextareas;
 
                     if (answered < totalQuestions) {
                         Swal.fire({
@@ -317,7 +354,7 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil!',
-                                text: `Quiz terkirim! Nilai Anda: ${data.score}`,
+                                text: data.message, // Use message from server
                                 confirmButtonColor: '#EC46A4',
                             }).then(() => {
                                 window.location.reload();

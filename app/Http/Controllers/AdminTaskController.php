@@ -31,7 +31,7 @@ class AdminTaskController extends Controller
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'file' => 'nullable|file|mimes:pdf,zip,rar,doc,docx|max:10240',
-            'type' => 'required|string|in:submission,quiz',
+            'type' => 'required|string|in:submission,quiz,mixed',
             'stage' => 'required|string|in:preliminary,final',
         ]);
 
@@ -46,7 +46,7 @@ class AdminTaskController extends Controller
         $task = $event->tasks()->create($data);
 
         // Handle Quiz Data
-        if ($request->type === 'quiz' && $request->has('questions')) {
+        if (in_array($request->type, ['quiz', 'mixed']) && $request->has('questions')) {
             foreach ($request->questions as $qData) {
                 $question = $task->questions()->create([
                     'question_text' => $qData['text'],
@@ -97,7 +97,7 @@ class AdminTaskController extends Controller
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'file' => 'nullable|file|mimes:pdf,zip,rar,doc,docx|max:10240',
-            'type' => 'required|string|in:submission,quiz',
+            'type' => 'required|string|in:submission,quiz,mixed',
             'stage' => 'required|string|in:preliminary,final',
         ]);
 
@@ -117,7 +117,7 @@ class AdminTaskController extends Controller
         $task->update($data);
 
         // Handle Quiz Data Update
-        if ($request->type === 'quiz') {
+        if (in_array($request->type, ['quiz', 'mixed'])) {
             // Simple approach: Delete all existing questions and recreate
             // In a production app with submissions, this would require soft deletes or versioning
             $task->questions()->delete();
@@ -184,10 +184,25 @@ class AdminTaskController extends Controller
             'score' => 'required|numeric|min:0|max:100',
         ]);
 
+        // Collect per-question grading status (essay_grade_{subId}_{qId})
+        $gradingStatus = [];
+        foreach ($request->all() as $key => $value) {
+            if (strpos($key, 'essay_grade_') === 0) {
+                // key is like essay_grade_10_5 (10=subId, 5=qId)
+                // We actually only need the qId part to map it back
+                $parts = explode('_', $key);
+                if (count($parts) >= 4) {
+                    $qId = $parts[3];
+                    $gradingStatus[$qId] = $value;
+                }
+            }
+        }
+
         $submission->update([
             'correct_answers' => $request->correct_answers,
             'wrong_answers' => $request->wrong_answers,
             'score' => $request->score,
+            'grading_status' => $gradingStatus,
         ]);
 
         // Track history
