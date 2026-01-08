@@ -525,18 +525,22 @@
                 })
                 .then(res => res.json())
                 .then(event => {
+                    // Populate Form
                     document.getElementById('editEventId').value = event.id;
                     document.getElementById('editName').value = event.name;
                     document.getElementById('editMaxMembers').value = event.max_members;
-                    document.getElementById('editRegStart').value = event.registration_start.split('T')[0];
-                    document.getElementById('editRegEnd').value = event.registration_end.split('T')[0];
-                    document.getElementById('editEventStart').value = event.event_start.split('T')[0];
-                    document.getElementById('editEventEnd').value = event.event_end.split('T')[0];
-                    document.getElementById('editPreliminary').value = event.preliminary_date ? event.preliminary_date
-                        .split('T')[0] : '';
-                    document.getElementById('editPreliminaryType').value = event.preliminary_type || ''; // Added
-                    document.getElementById('editFinal').value = event.final_date ? event.final_date.split('T')[0] : '';
-                    document.getElementById('editFinalType').value = event.final_type || ''; // Added
+
+                    // Backend now returns formatted Y-m-d strings
+                    document.getElementById('editRegStart').value = event.registration_start || '';
+                    document.getElementById('editRegEnd').value = event.registration_end || '';
+                    document.getElementById('editEventStart').value = event.event_start || '';
+                    document.getElementById('editEventEnd').value = event.event_end || '';
+
+                    document.getElementById('editPreliminary').value = event.preliminary_date || '';
+                    document.getElementById('editPreliminaryType').value = event.preliminary_type || '';
+
+                    document.getElementById('editFinal').value = event.final_date || '';
+                    document.getElementById('editFinalType').value = event.final_type || '';
 
                     // Set Description to Editor
                     if (editEditor) {
@@ -622,9 +626,34 @@
             }
         });
 
+        // Client-side Date Validation
+        const validateDates = (form) => {
+            const regStart = form.querySelector('[name="registration_start"]').value;
+            const regEnd = form.querySelector('[name="registration_end"]').value;
+            const eventStart = form.querySelector('[name="event_start"]').value;
+            const eventEnd = form.querySelector('[name="event_end"]').value;
+
+            if (regStart && regEnd && regEnd < regStart)
+                return "Registrasi Selesai tidak boleh sebelum Registrasi Mulai";
+            if (regEnd && eventStart && eventStart < regEnd)
+                return "Event Mulai tidak boleh sebelum Registrasi Selesai";
+            if (eventStart && eventEnd && eventEnd < eventStart) return "Event Selesai tidak boleh sebelum Event Mulai";
+            return null;
+        };
+
         // AJAX Create
         document.getElementById('createForm').addEventListener('submit', function(e) {
             e.preventDefault();
+
+            // Client Validation
+            const dateError = validateDates(this);
+            if (dateError) {
+                Toast.fire({
+                    icon: 'warning',
+                    title: dateError
+                });
+                return;
+            }
 
             const descriptionData = createEditor.value;
 
@@ -666,7 +695,8 @@
                 .catch(err => {
                     Toast.fire({
                         icon: 'error',
-                        title: err.message
+                        title: 'Gagal menyimpan',
+                        text: err.message
                     });
                 })
                 .finally(() => {
@@ -679,6 +709,16 @@
         document.getElementById('editForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
+            // Client Validation
+            const dateError = validateDates(this);
+            if (dateError) {
+                Toast.fire({
+                    icon: 'warning',
+                    title: dateError
+                });
+                return;
+            }
+
             const descriptionData = editEditor.value;
 
             const btn = document.getElementById('editBtn');
@@ -689,7 +729,10 @@
             btn.disabled = true;
             btn.innerText = 'Menyimpan...';
 
-            fetch(this.action, {
+            // Ensure action is set
+            const actionUrl = this.action;
+
+            fetch(actionUrl, {
                     method: 'POST', // Spoofed to PUT via _method
                     body: formData,
                     headers: {
@@ -713,13 +756,16 @@
                         });
                         setTimeout(() => window.location.reload(), 1000);
                     } else {
-                        throw new Error(body.message || Object.values(body.errors || {}).flat().join('\n'));
+                        // Display specific validation errors if available
+                        const errorMessage = body.message || Object.values(body.errors || {}).flat().join('\n');
+                        throw new Error(errorMessage);
                     }
                 })
                 .catch(err => {
                     Toast.fire({
                         icon: 'error',
-                        title: err.message
+                        title: 'Gagal memperbarui',
+                        text: err.message // Show the specific error text
                     });
                 })
                 .finally(() => {
