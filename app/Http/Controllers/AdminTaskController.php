@@ -25,6 +25,15 @@ class AdminTaskController extends Controller
 
     public function store(Request $request, Event $event)
     {
+        $messages = [
+            'title.required' => 'Judul tugas wajib diisi.',
+            'start_time.required' => 'Waktu mulai wajib diisi.',
+            'end_time.required' => 'Waktu selesai (deadline) wajib diisi.',
+            'end_time.after' => 'Waktu selesai harus setelah waktu mulai.',
+            'type.required' => 'Tipe tugas wajib dipilih.',
+            'stage.required' => 'Tahapan tugas wajib dipilih.',
+        ];
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -32,10 +41,19 @@ class AdminTaskController extends Controller
             'end_time' => 'required|date|after:start_time',
             'file' => 'nullable|file|mimes:pdf,zip,rar,doc,docx|max:10240',
             'type' => 'required|string|in:submission,quiz,mixed',
-            'stage' => 'required|string|in:preliminary,final',
-        ]);
+            'total_questions' => 'nullable|integer|min:0',
+            'stage' => 'required|string|in:preliminary,final', // Validate stage
+        ], $messages);
 
-        $data = $request->except(['questions', 'file']);
+        $data = [
+            'title' => $request->title,
+            'description' => $request->description,
+            'start_time' => \Carbon\Carbon::parse($request->start_time),
+            'end_time' => \Carbon\Carbon::parse($request->end_time),
+            'type' => $request->type,
+            'total_questions' => $request->total_questions,
+            'stage' => $request->stage,
+        ];
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
@@ -91,6 +109,15 @@ class AdminTaskController extends Controller
 
     public function update(Request $request, Event $event, Task $task)
     {
+        $messages = [
+            'title.required' => 'Judul tugas wajib diisi.',
+            'start_time.required' => 'Waktu mulai wajib diisi.',
+            'end_time.required' => 'Waktu selesai (deadline) wajib diisi.',
+            'end_time.after' => 'Waktu selesai harus setelah waktu mulai.',
+            'type.required' => 'Tipe tugas wajib dipilih.',
+            'stage.required' => 'Tahapan tugas wajib dipilih.',
+        ];
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -98,10 +125,19 @@ class AdminTaskController extends Controller
             'end_time' => 'required|date|after:start_time',
             'file' => 'nullable|file|mimes:pdf,zip,rar,doc,docx|max:10240',
             'type' => 'required|string|in:submission,quiz,mixed',
+            'total_questions' => 'nullable|integer|min:0',
             'stage' => 'required|string|in:preliminary,final',
-        ]);
+        ], $messages);
 
-        $data = $request->except(['questions', 'file']);
+        $data = [
+            'title' => $request->title,
+            'description' => $request->description,
+            'start_time' => \Carbon\Carbon::parse($request->start_time),
+            'end_time' => \Carbon\Carbon::parse($request->end_time),
+            'type' => $request->type,
+            'total_questions' => $request->total_questions,
+            'stage' => $request->stage,
+        ];
 
         if ($request->hasFile('file')) {
             // Delete old file

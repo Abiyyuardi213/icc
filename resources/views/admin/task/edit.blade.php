@@ -86,6 +86,19 @@
                     <option value="submission" {{ $task->type == 'submission' ? 'selected' : '' }}>Submisi File / Link
                     </option>
                     <option value="quiz" {{ $task->type == 'quiz' ? 'selected' : '' }}>Quiz (Pilihan Ganda)</option>
+                    <option value="mixed" {{ $task->type == 'mixed' ? 'selected' : '' }}>Quiz dan Isian</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Tahapan (Stage) <span
+                        class="text-red-500">*</span></label>
+                <select name="stage"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#EC46A4] outline-none transition bg-white"
+                    required>
+                    <option value="preliminary" {{ $task->stage == 'preliminary' ? 'selected' : '' }}>Penyisihan
+                    </option>
+                    <option value="final" {{ $task->stage == 'final' ? 'selected' : '' }}>Final</option>
                 </select>
             </div>
 
