@@ -111,62 +111,112 @@
             </div>
 
             <!-- Quiz Builder Section -->
-            <div id="quizBuilderSection" class="{{ $task->type == 'quiz' ? '' : 'hidden' }} space-y-6 border-t pt-6">
+            <!-- Quiz Builder Section -->
+            <div id="quizBuilderSection"
+                class="{{ in_array($task->type, ['quiz', 'mixed']) ? '' : 'hidden' }} space-y-6 border-t pt-6">
                 <div>
                     <h3 class="text-lg font-bold text-gray-800 mb-2">Quiz Builder</h3>
                     <p class="text-sm text-gray-500 mb-4">Masukan jumlah soal untuk men-generate form pertanyaan baru
                         (Akan menghapus soal yang ada).</p>
-                    <div class="flex gap-4 items-end">
-                        <div class="w-1/3">
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Jumlah Soal</label>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div id="mcInputGroup" class="{{ $task->type == 'submission' ? 'hidden' : '' }}">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Jumlah Soal Pilihan
+                                Ganda</label>
                             <input type="number" id="totalQuestionsInput" name="total_questions"
                                 class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#EC46A4] outline-none transition"
-                                min="1" max="100" placeholder="Contoh: 10">
+                                min="0" max="100" placeholder="Contoh: 10"
+                                value="{{ $task->type == 'quiz' ? $task->questions->count() : '' }}">
                         </div>
+                        <div id="essayInputGroup" class="{{ $task->type == 'mixed' ? '' : 'hidden' }}">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Jumlah Soal Isian</label>
+                            <input type="number" id="totalEssayQuestionsInput"
+                                class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#EC46A4] outline-none transition"
+                                min="0" max="100" placeholder="Contoh: 5">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
                         <button type="button" id="generateQuestionsBtn"
                             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition">Generate
-                            Form</button>
+                            Form Baru</button>
                     </div>
                 </div>
 
                 <div id="questionsContainer" class="space-y-6">
-                    @if ($task->type == 'quiz' && $task->questions)
+                    @if (in_array($task->type, ['quiz', 'mixed']) && $task->questions)
                         @foreach ($task->questions as $index => $question)
-                            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 question-item">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h4 class="font-bold text-gray-700">Soal No. {{ $index + 1 }}</h4>
-                                    <div class="flex items-center gap-2">
-                                        <label class="text-xs text-gray-500 font-semibold">Waktu (detik):</label>
-                                        <input type="number" name="questions[{{ $index + 1 }}][time_limit]"
-                                            value="{{ $question->time_limit }}"
-                                            class="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
-                                            placeholder="60">
-                                    </div>
-                                </div>
-
-                                <div class="mb-4">
-                                    <textarea name="questions[{{ $index + 1 }}][text]" rows="2"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
-                                        placeholder="Tulis pertanyaan di sini..." required>{{ $question->question_text }}</textarea>
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    @foreach ($question->options as $optIndex => $option)
+                            @if ($question->options->count() > 0)
+                                <!-- MC Question -->
+                                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 question-item"
+                                    data-type="mc">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h4 class="font-bold text-gray-700">Soal No. {{ $index + 1 }} (Pilihan
+                                            Ganda)</h4>
                                         <div class="flex items-center gap-2">
-                                            <input type="radio" name="questions[{{ $index + 1 }}][correct]"
-                                                value="{{ $optIndex }}" {{ $option->is_correct ? 'checked' : '' }}
-                                                class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                                required>
-                                            <input type="text" name="questions[{{ $index + 1 }}][options][]"
-                                                value="{{ $option->option_text }}"
-                                                class="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
-                                                placeholder="Pilihan" required>
+                                            <label class="text-xs text-gray-500 font-semibold">Waktu (detik):</label>
+                                            <input type="number" name="questions[{{ $index + 1 }}][time_limit]"
+                                                value="{{ $question->time_limit }}"
+                                                class="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                                placeholder="60">
                                         </div>
-                                    @endforeach
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <textarea name="questions[{{ $index + 1 }}][text]" rows="2"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                            placeholder="Tulis pertanyaan di sini..." required>{{ $question->question_text }}</textarea>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        @foreach ($question->options as $optIndex => $option)
+                                            <div class="flex items-center gap-2">
+                                                <input type="radio" name="questions[{{ $index + 1 }}][correct]"
+                                                    value="{{ $optIndex }}"
+                                                    {{ $option->is_correct ? 'checked' : '' }}
+                                                    class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                                    required>
+                                                <input type="text"
+                                                    name="questions[{{ $index + 1 }}][options][]"
+                                                    value="{{ $option->option_text }}"
+                                                    class="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                                    placeholder="Pilihan" required>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <p class="text-xs text-blue-500 mt-2 italic">* Pilih radio button di sebelah kiri
+                                        untuk
+                                        menentukan jawaban benar.</p>
                                 </div>
-                                <p class="text-xs text-blue-500 mt-2 italic">* Pilih radio button di sebelah kiri untuk
-                                    menentukan jawaban benar.</p>
-                            </div>
+                            @else
+                                <!-- Essay Question -->
+                                <div class="bg-orange-50 p-6 rounded-lg border border-orange-200 question-item"
+                                    data-type="essay">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h4 class="font-bold text-orange-800">Soal No. {{ $index + 1 }} (Isian)
+                                        </h4>
+                                        <div class="flex items-center gap-2">
+                                            <label class="text-xs text-gray-500 font-semibold">Bobot/Waktu:</label>
+                                            <input type="number" name="questions[{{ $index + 1 }}][time_limit]"
+                                                value="{{ $question->time_limit }}"
+                                                class="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                                placeholder="60">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="block text-xs text-gray-500 mb-1">Label Pertanyaan
+                                            (Admin)
+                                        </label>
+                                        <input type="text" name="questions[{{ $index + 1 }}][text]"
+                                            value="{{ $question->question_text }}"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                            required>
+                                    </div>
+                                    <p class="text-xs text-orange-600 italic">* Soal ini akan muncul sebagai kolom
+                                        isian teks untuk peserta.</p>
+                                </div>
+                            @endif
                         @endforeach
                     @endif
                 </div>
@@ -212,10 +262,20 @@
         // Task Type Toggle
         $('#taskType').on('change', function() {
             const type = $(this).val();
+
+            // Show/Hide sections based on type
             if (type === 'quiz') {
                 $('#quizBuilderSection').removeClass('hidden');
                 $('#fileUploadSection').addClass('hidden');
+                $('#mcInputGroup').removeClass('hidden');
+                $('#essayInputGroup').addClass('hidden');
+            } else if (type === 'mixed') {
+                $('#quizBuilderSection').removeClass('hidden');
+                $('#fileUploadSection').removeClass('hidden');
+                $('#mcInputGroup').removeClass('hidden');
+                $('#essayInputGroup').removeClass('hidden');
             } else {
+                // Submission
                 $('#quizBuilderSection').addClass('hidden');
                 $('#fileUploadSection').removeClass('hidden');
             }
@@ -240,40 +300,53 @@
         });
 
         function generateQuestions() {
-            const total = parseInt($('#totalQuestionsInput').val());
+            const mcTotal = parseInt($('#totalQuestionsInput').val()) || 0;
+            const essayTotal = parseInt($('#totalEssayQuestionsInput').val()) || 0;
+            const type = $('#taskType').val();
             const container = $('#questionsContainer');
 
-            if (!total || total < 1) {
+            if (type === 'quiz' && mcTotal < 1) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Perhatian',
-                    text: 'Silakan masukkan jumlah soal yang valid (min. 1).'
+                    text: 'Silakan masukkan jumlah soal Pilihan Ganda (min. 1).'
+                });
+                return;
+            }
+
+            if (type === 'mixed' && (mcTotal < 1 && essayTotal < 1)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian',
+                    text: 'Silakan masukkan jumlah soal (min. 1 untuk salah satu tipe).'
                 });
                 return;
             }
 
             container.empty();
+            let globalCounter = 1;
 
-            for (let i = 1; i <= total; i++) {
+            // Generate MC Questions
+            for (let i = 1; i <= mcTotal; i++) {
                 const questionHtml = `
-                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 question-item">
+                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 question-item" data-type="mc">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="font-bold text-gray-700">Soal No. ${i}</h4>
+                            <h4 class="font-bold text-gray-700">Soal No. ${globalCounter} (Pilihan Ganda)</h4>
                             <div class="flex items-center gap-2">
                                 <label class="text-xs text-gray-500 font-semibold">Waktu (detik):</label>
-                                <input type="number" name="questions[${i}][time_limit]" class="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="60" value="60">
+                                <input type="number" name="questions[${globalCounter}][time_limit]" class="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="60" value="60">
                             </div>
                         </div>
                         
                         <div class="mb-4">
-                            <textarea name="questions[${i}][text]" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="Tulis pertanyaan di sini..." required></textarea>
+                            <textarea name="questions[${globalCounter}][text]" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="Tulis pertanyaan di sini..." required></textarea>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             ${[1, 2, 3, 4].map(opt => `
                                 <div class="flex items-center gap-2">
-                                    <input type="radio" name="questions[${i}][correct]" value="${opt - 1}" class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300" required>
-                                    <input type="text" name="questions[${i}][options][]" class="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="Pilihan ${String.fromCharCode(64 + opt)}" required>
+                                    <input type="radio" name="questions[${globalCounter}][correct]" value="${opt - 1}" class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300" required>
+                                    <input type="text" name="questions[${globalCounter}][options][]" class="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="Pilihan ${String.fromCharCode(64 + opt)}" required>
                                 </div>
                             `).join('')}
                         </div>
@@ -281,6 +354,31 @@
                     </div>
                 `;
                 container.append(questionHtml);
+                globalCounter++;
+            }
+
+            // Generate Essay Questions
+            for (let i = 1; i <= essayTotal; i++) {
+                const questionHtml = `
+                    <div class="bg-orange-50 p-6 rounded-lg border border-orange-200 question-item" data-type="essay">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-orange-800">Soal No. ${globalCounter} (Isian)</h4>
+                            <div class="flex items-center gap-2">
+                                <label class="text-xs text-gray-500 font-semibold">Bobot/Waktu:</label>
+                                <input type="number" name="questions[${globalCounter}][time_limit]" class="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" placeholder="60">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-xs text-gray-500 mb-1">Label Pertanyaan (Admin)</label>
+                            <input type="text" name="questions[${globalCounter}][text]" value="Soal Isian No. ${i}" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" required>
+                        </div>
+
+                        <p class="text-xs text-orange-600 italic">* Soal ini akan muncul sebagai kolom isian teks untuk peserta.</p>
+                    </div>
+                `;
+                container.append(questionHtml);
+                globalCounter++;
             }
         }
 

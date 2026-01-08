@@ -24,6 +24,22 @@
                     {!! $task->description !!}
                 </div>
 
+                @if ($task->file_path)
+                    <div class="mb-6 mt-4 pt-4 border-t border-gray-100">
+                        <h4 class="font-semibold text-sm text-gray-700 mb-2">File Pendukung:</h4>
+                        <a href="{{ asset('storage/' . $task->file_path) }}" target="_blank"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg border border-gray-200 transition text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#EC46A4]" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span>Download Lampiran/Soal</span>
+                        </a>
+                    </div>
+                @endif
+
                 <div class="flex gap-4 text-sm text-gray-500 bg-gray-50 p-4 rounded-lg">
                     <div class="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#EC46A4]" viewBox="0 0 20 20"

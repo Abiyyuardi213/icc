@@ -141,7 +141,7 @@
                                         @endphp
 
                                         <button
-                                            onclick="openMixedGradingModal('{{ $submission->id }}', {{ $task->questions->count() }}, {{ $currMcCorrect }}, {{ $submission->grading_status ?? '{}' }})"
+                                            onclick="openMixedGradingModal('{{ $submission->id }}', {{ $task->questions->count() }}, {{ $currMcCorrect }})"
                                             class="text-gray-500 hover:text-green-600 transition"
                                             title="Lihat & Nilai Jawaban">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
